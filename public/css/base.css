@@ -1,0 +1,91 @@
+/* ── Design tokens & shared foundations ─────────────────────────
+   Brand is inherited from the PDF documents the app produces:
+   navy #233154, accent blue #2563eb, pill chips, Barlow type. */
+:root {
+  --navy: #233154;
+  --navy-deep: #1a2540;
+  --blue: #2563eb;
+  --blue-ink: #1d4ed8;
+  --blue-mist: #eff6ff;
+  --blue-line: #bfdbfe;
+  --paper: #f4f6fa;
+  --card: #ffffff;
+  --line: #e2e8f0;
+  --muted: #64748b;
+  --ink: #1e293b;
+  --green: #16a34a;
+  --amber: #d97706;
+  --sky: #0284c7;
+  --danger: #b91c1c;
+  --radius: 10px;
+  --font-body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+body { font-family: var(--font-body); color: var(--ink); background: var(--paper); }
+img, svg { display: block; max-width: 100%; }
+a { color: var(--blue-ink); }
+
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+/* Buttons */
+.btn {
+  display: inline-block; font: inherit; font-size: 15px; font-weight: 600;
+  border-radius: 9px; padding: 12px 22px; cursor: pointer;
+  border: 1px solid transparent; text-decoration: none; text-align: center;
+  transition: background .12s, border-color .12s, transform .08s;
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--blue-ink); }
+.btn-light { background: #fff; color: var(--navy); border-color: var(--line); }
+.btn-light:hover { border-color: var(--blue-line); }
+.btn-ghost-dark { background: transparent; color: #fff; border-color: rgba(255,255,255,.35); }
+.btn-ghost-dark:hover { background: rgba(255,255,255,.1); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Form fields */
+.field { text-align: left; }
+.field label {
+  display: block; font-size: 12px; font-weight: 600; color: var(--muted);
+  letter-spacing: .3px; margin-bottom: 5px;
+}
+.field input, .field textarea, .field select {
+  width: 100%; font: inherit; font-size: 14.5px; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+  background: #fff; transition: border-color .12s, box-shadow .12s;
+}
+.field textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none; border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .14);
+}
+
+/* Section title with the PDF's blue tick mark */
+.sec-title { display: flex; align-items: center; gap: 9px; }
+.sec-title::before { content: ''; width: 4px; height: 18px; background: var(--blue); border-radius: 2px; }
+.sec-title h2, .sec-title h1 {
+  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase; color: var(--navy);
+}
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff; font-size: 13.5px; padding: 10px 18px;
+  border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40;
+}
+.toast.show { opacity: 1; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}

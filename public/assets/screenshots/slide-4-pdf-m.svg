@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 800" font-family="Barlow, Arial, sans-serif">
+  <rect width="390" height="800" fill="#e9edf4"/>
+  <g>
+    <rect x="35" y="40" width="320" height="720" rx="6" fill="#ffffff" stroke="#d3dbe8"/>
+    <rect x="35" y="40" width="320" height="86" fill="#233154"/>
+    <rect x="35" y="126" width="320" height="4" fill="#2563eb"/>
+    <rect x="51" y="54" width="56" height="56" rx="7" fill="#ffffff" opacity="0.14"/>
+    <text x="79" y="91" text-anchor="middle" font-size="24" fill="#ffffff" font-weight="bold">A</text>
+    <text x="121" y="76" font-size="15" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+    <text x="121" y="94" font-size="10" fill="#b4c3dc">Neat. On time. Guaranteed.</text>
+    <text x="343" y="76" text-anchor="end" font-size="13" fill="#ffffff" font-weight="bold">REPORT &amp;</text>
+    <text x="343" y="92" text-anchor="end" font-size="13" fill="#ffffff" font-weight="bold">QUOTATION</text>
+    <text x="343" y="110" text-anchor="end" font-size="9" fill="#b4c3dc">APC-260720-412</text>
+
+    <g font-size="9" fill="#64748b">
+      <text x="55" y="152" font-weight="bold">FROM</text><text x="215" y="152" font-weight="bold">TO</text>
+    </g>
+    <text x="55" y="168" font-size="11" fill="#1e293b" font-weight="bold">Atlas Painting Co.</text>
+    <text x="215" y="168" font-size="11" fill="#1e293b" font-weight="bold">J. Naidoo</text>
+    <text x="55" y="182" font-size="9" fill="#64748b">Cape Town, South Africa</text>
+    <text x="215" y="182" font-size="9" fill="#64748b">14 Marine Drive, Muizenberg</text>
+    <line x1="51" y1="196" x2="339" y2="196" stroke="#e2e8f0"/>
+
+    <rect x="55" y="212" width="4" height="12" fill="#2563eb"/>
+    <text x="66" y="222" font-size="10" fill="#233154" font-weight="bold" letter-spacing="1">METHODS USED</text>
+    <g font-size="9">
+      <rect x="55" y="232" width="122" height="18" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="116" y="244" text-anchor="middle" fill="#1d4ed8">High-pressure cleaning</text>
+      <rect x="183" y="232" width="74" height="18" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="220" y="244" text-anchor="middle" fill="#1d4ed8">Crack filling</text>
+      <rect x="263" y="232" width="58" height="18" rx="9" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="292" y="244" text-anchor="middle" fill="#1d4ed8">Priming</text>
+    </g>
+
+    <rect x="55" y="266" width="4" height="12" fill="#2563eb"/>
+    <text x="66" y="276" font-size="10" fill="#233154" font-weight="bold" letter-spacing="1">INSPECTION FINDINGS</text>
+    <g fill="#cbd5e1">
+      <rect x="55" y="288" width="284" height="6" rx="3"/>
+      <rect x="55" y="301" width="284" height="6" rx="3"/>
+      <rect x="55" y="314" width="196" height="6" rx="3"/>
+    </g>
+    <rect x="55" y="330" width="146" height="21" rx="4" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="64" y="344" font-size="9.5" fill="#d97706" font-weight="bold">Further work required</text>
+
+    <rect x="55" y="368" width="4" height="12" fill="#2563eb"/>
+    <text x="66" y="378" font-size="10" fill="#233154" font-weight="bold" letter-spacing="1">SITE PHOTOS</text>
+    <rect x="55" y="390" width="90" height="64" rx="3" fill="#c7d5e8"/>
+    <rect x="152" y="390" width="90" height="64" rx="3" fill="#d5cfc2"/>
+    <rect x="249" y="390" width="90" height="64" rx="3" fill="#cbd9cd"/>
+
+    <rect x="55" y="472" width="284" height="22" rx="3" fill="#233154"/>
+    <g font-size="8.5" fill="#ffffff" font-weight="bold">
+      <text x="63" y="486">DESCRIPTION</text><text x="255" y="486">QTY</text><text x="300" y="486">TOTAL</text>
+    </g>
+    <g fill="#f1f5f9"><rect x="55" y="498" width="284" height="20"/><rect x="55" y="538" width="284" height="20"/></g>
+    <g fill="#cbd5e1">
+      <rect x="63" y="504" width="140" height="6" rx="3"/><rect x="63" y="524" width="140" height="6" rx="3"/>
+      <rect x="63" y="544" width="140" height="6" rx="3"/>
+    </g>
+    <g font-size="9.5" fill="#64748b">
+      <text x="150" y="586">Subtotal (excl. VAT)</text><text x="334" y="586" text-anchor="end">R 42 500.00</text>
+      <text x="150" y="602" font-size="9.5">VAT (15%)</text><text x="334" y="602" text-anchor="end">R 6 375.00</text>
+    </g>
+    <rect x="150" y="612" width="189" height="26" rx="3" fill="#233154"/>
+    <text x="160" y="629" font-size="9.5" fill="#ffffff" font-weight="bold">Total due (incl. VAT)</text>
+    <text x="330" y="629" text-anchor="end" font-size="9.5" fill="#ffffff" font-weight="bold">R 48 875.00</text>
+
+    <g font-size="8.5" fill="#64748b">
+      <text x="55" y="668">Payment terms: 50% deposit, balance on completion</text>
+      <text x="55" y="682">Bank: FNB  |  Atlas Painting Co.  |  Branch 250655</text>
+    </g>
+    <text x="195" y="740" text-anchor="middle" font-size="8" fill="#94a3b8">Page 1 of 2  -  Atlas Painting Co.</text>
+  </g>
+</svg>

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 800" font-family="Barlow, Arial, sans-serif">
+  <rect width="390" height="800" fill="#f4f6fa"/>
+  <rect width="390" height="66" fill="#233154"/>
+  <rect y="66" width="390" height="3" fill="#2563eb"/>
+  <rect x="14" y="13" width="40" height="40" rx="8" fill="#ffffff" opacity="0.14"/>
+  <text x="34" y="40" text-anchor="middle" font-size="19" fill="#ffffff" font-weight="bold">A</text>
+  <text x="64" y="31" font-size="15" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+  <text x="64" y="47" font-size="9.5" fill="#b4c3dc">APC-260720-412</text>
+
+  <rect x="12" y="82" width="366" height="252" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="26" y="98" width="4" height="14" rx="2" fill="#2563eb"/>
+  <text x="38" y="110" font-size="12" fill="#233154" font-weight="bold" letter-spacing="1.2">SITE PHOTOS</text>
+  <rect x="26" y="124" width="162" height="110" rx="8" fill="#c7d5e8"/>
+  <path d="M26 208 L70 176 L108 204 L140 182 L188 214 L188 234 L26 234 Z" fill="#8aa5c8"/>
+  <circle cx="164" cy="148" r="10" fill="#f5f0da"/>
+  <text x="107" y="252" text-anchor="middle" font-size="9.5" fill="#64748b">Parapet crack - north wall</text>
+  <rect x="202" y="124" width="162" height="110" rx="8" fill="#d5cfc2"/>
+  <path d="M202 212 L252 182 L292 210 L326 190 L364 214 L364 234 L202 234 Z" fill="#b3a893"/>
+  <text x="283" y="252" text-anchor="middle" font-size="9.5" fill="#64748b">Damp patch - bedroom</text>
+  <rect x="26" y="262" width="162" height="52" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-dasharray="5 4"/>
+  <text x="107" y="293" text-anchor="middle" font-size="11.5" fill="#1d4ed8">+ Add photos</text>
+  <rect x="202" y="262" width="162" height="52" rx="8" fill="#cbd9cd"/>
+  <text x="283" y="293" text-anchor="middle" font-size="9.5" fill="#475569">Membrane junction</text>
+
+  <rect x="12" y="346" width="366" height="356" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="26" y="362" width="4" height="14" rx="2" fill="#2563eb"/>
+  <text x="38" y="374" font-size="12" fill="#233154" font-weight="bold" letter-spacing="1.2">QUOTATION</text>
+
+  <rect x="26" y="388" width="338" height="26" rx="5" fill="#233154"/>
+  <text x="36" y="405" font-size="9.5" fill="#ffffff" font-weight="bold" letter-spacing="0.6">DESCRIPTION</text>
+  <text x="300" y="405" font-size="9.5" fill="#ffffff" font-weight="bold" letter-spacing="0.6">TOTAL</text>
+
+  <rect x="26" y="414" width="338" height="46" fill="#f8fafc"/>
+  <text x="36" y="432" font-size="11.5" fill="#1e293b" font-weight="bold">Parapet waterproofing</text>
+  <text x="36" y="448" font-size="9.5" fill="#64748b" font-style="italic">18 m at R 485.00</text>
+  <text x="364" y="440" text-anchor="end" font-size="11.5" fill="#1e293b">R 8 730.00</text>
+
+  <text x="36" y="480" font-size="11.5" fill="#1e293b" font-weight="bold">Exterior repaint - two coats</text>
+  <text x="36" y="496" font-size="9.5" fill="#64748b" font-style="italic">320 m2 at R 98.00, 5% disc</text>
+  <text x="364" y="488" text-anchor="end" font-size="11.5" fill="#1e293b">R 29 792.00</text>
+
+  <rect x="26" y="508" width="338" height="46" fill="#f8fafc"/>
+  <text x="36" y="526" font-size="11.5" fill="#1e293b" font-weight="bold">Damp treatment - bedroom</text>
+  <text x="36" y="542" font-size="9.5" fill="#64748b" font-style="italic">1 at R 3 978.00</text>
+  <text x="364" y="534" text-anchor="end" font-size="11.5" fill="#1e293b">R 3 978.00</text>
+
+  <line x1="26" y1="566" x2="364" y2="566" stroke="#e2e8f0"/>
+  <text x="140" y="590" font-size="11" fill="#64748b">Subtotal (excl. VAT)</text>
+  <text x="364" y="590" text-anchor="end" font-size="11" fill="#334155">R 42 500.00</text>
+  <text x="140" y="610" font-size="11" fill="#64748b">VAT (15%)</text>
+  <text x="364" y="610" text-anchor="end" font-size="11" fill="#334155">R 6 375.00</text>
+  <rect x="140" y="624" width="224" height="34" rx="7" fill="#233154"/>
+  <text x="152" y="646" font-size="11.5" fill="#ffffff" font-weight="bold">Total (incl. VAT)</text>
+  <text x="352" y="646" text-anchor="end" font-size="11.5" fill="#ffffff" font-weight="bold">R 48 875.00</text>
+
+  <rect y="726" width="390" height="74" fill="#1a2540"/>
+  <rect y="726" width="390" height="3" fill="#2563eb"/>
+  <text x="16" y="752" font-size="9" fill="#a0afc8" letter-spacing="1">TOTAL DUE (INCL. VAT)</text>
+  <text x="16" y="776" font-size="20" fill="#ffffff" font-weight="bold">R 48 875.00</text>
+  <rect x="270" y="744" width="104" height="34" rx="8" fill="#2563eb"/>
+  <text x="322" y="766" text-anchor="middle" font-size="12.5" fill="#ffffff" font-weight="bold">Full PDF</text>
+</svg>

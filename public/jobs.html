@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My jobs - SiteWise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/jobs.css">
+</head>
+<body>
+
+<header class="app-band">
+  <div class="wrap">
+    <div class="app-logo" id="companyLogo">S</div>
+    <div>
+      <div class="app-title" id="companyName">SiteWise</div>
+      <div class="app-sub" id="companyTagline">Your job cards</div>
+    </div>
+    <div class="app-meta">
+      <a class="btn btn-primary" href="/app" id="newJob">+ New job card</a>
+      <div class="acct" id="acct">
+        <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="acct-avatar" id="acctAvatar">S</span>
+          <span class="acct-name" id="acctName">Your business</span>
+          <span class="acct-caret">&#9662;</span>
+        </button>
+        <div class="acct-menu" role="menu">
+          <div class="acct-head">
+            <div class="nm" id="acctHeadName">Your business</div>
+            <div class="em" id="acctHeadEmail"></div>
+          </div>
+          <a class="acct-item" href="/app" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New job card
+          </a>
+          <button class="acct-item" id="editProfile" type="button" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+            Company details
+          </button>
+          <div class="acct-sep"></div>
+          <button class="acct-item danger" id="logout" type="button" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="jobs-head">
+    <div class="sec-title"><h1>Job cards</h1></div>
+    <span class="jobs-count" id="jobsCount"></span>
+  </div>
+  <div id="jobList" class="job-list" aria-live="polite"></div>
+  <div class="jobs-empty" id="jobsEmpty" hidden>
+    <p><strong>No job cards yet.</strong></p>
+    <p>Start your first one - it saves automatically as you work,
+       and you can come back to it any time.</p>
+    <a class="btn btn-primary" href="/app">Start your first job card</a>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="/js/config/IndustryPresets.js"></script>
+<script src="/js/services/Theme.js"></script>
+<script src="/js/services/ApiClient.js"></script>
+<script src="/js/services/SessionGuard.js"></script>
+<script src="/js/models/Job.js"></script>
+<script src="/js/services/AccountMenu.js"></script>
+<script src="/js/pages/jobs.js" defer></script>
+</body>
+</html>

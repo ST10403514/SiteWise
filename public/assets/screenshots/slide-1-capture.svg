@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="Barlow, Arial, sans-serif">
+  <defs>
+    <clipPath id="win"><rect x="40" y="30" width="1120" height="690" rx="14"/></clipPath>
+  </defs>
+  <rect x="40" y="30" width="1120" height="690" rx="14" fill="#ffffff" stroke="#dbe2ee"/>
+  <g clip-path="url(#win)">
+    <rect x="40" y="30" width="1120" height="44" fill="#eef2f8"/>
+    <circle cx="72" cy="52" r="6" fill="#f87171"/><circle cx="94" cy="52" r="6" fill="#fbbf24"/><circle cx="116" cy="52" r="6" fill="#34d399"/>
+    <rect x="440" y="41" width="320" height="22" rx="11" fill="#ffffff" stroke="#dbe2ee"/>
+    <text x="600" y="57" text-anchor="middle" font-size="13" fill="#94a3b8">app.sitewise.co.za/job</text>
+    <rect x="40" y="74" width="1120" height="86" fill="#233154"/>
+    <rect x="40" y="160" width="1120" height="4" fill="#2563eb"/>
+    <rect x="76" y="92" width="50" height="50" rx="8" fill="#ffffff" opacity="0.12"/>
+    <text x="101" y="123" text-anchor="middle" font-size="20" fill="#ffffff" font-weight="bold">A</text>
+    <text x="142" y="112" font-size="21" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+    <text x="142" y="134" font-size="13" fill="#b4c3dc">Neat. On time. Guaranteed. - job capture &amp; quotation</text>
+    <rect x="960" y="96" width="164" height="30" rx="6" fill="#ffffff" opacity="0.12"/>
+    <text x="1042" y="116" text-anchor="middle" font-size="13" fill="#ffffff">APC-260720-412</text>
+    <rect x="80" y="190" width="1040" height="220" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="214" width="5" height="20" rx="2" fill="#2563eb"/>
+    <text x="120" y="230" font-size="16" fill="#233154" font-weight="bold" letter-spacing="1.5">CLIENT &amp; SITE</text>
+    <g font-size="12" fill="#64748b">
+      <text x="106" y="262">CLIENT NAME</text><text x="620" y="262">PHONE</text>
+      <text x="106" y="330">EMAIL</text><text x="620" y="330">SITE ADDRESS</text>
+    </g>
+    <rect x="104" y="270" width="486" height="36" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="118" y="293" font-size="14" fill="#1e293b">J. Naidoo</text>
+    <rect x="618" y="270" width="478" height="36" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="632" y="293" font-size="14" fill="#1e293b">082 555 0100</text>
+    <rect x="104" y="338" width="486" height="36" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="118" y="361" font-size="14" fill="#1e293b">jnaidoo@email.com</text>
+    <rect x="618" y="338" width="478" height="36" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+    <text x="632" y="361" font-size="14" fill="#1e293b">14 Marine Drive, Muizenberg, Cape Town</text>
+    <rect x="80" y="430" width="1040" height="230" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="454" width="5" height="20" rx="2" fill="#2563eb"/>
+    <text x="120" y="470" font-size="16" fill="#233154" font-weight="bold" letter-spacing="1.5">JOB TYPE</text>
+    <g font-size="14">
+      <rect x="104" y="492" width="150" height="36" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="179" y="515" text-anchor="middle" fill="#1d4ed8" font-weight="bold">Exterior painting</text>
+      <rect x="266" y="492" width="146" height="36" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="339" y="515" text-anchor="middle" fill="#64748b">Interior painting</text>
+      <rect x="424" y="492" width="132" height="36" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="490" y="515" text-anchor="middle" fill="#64748b">Roof painting</text>
+      <rect x="568" y="492" width="140" height="36" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="638" y="515" text-anchor="middle" fill="#64748b">Waterproofing</text>
+      <rect x="720" y="492" width="138" height="36" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="789" y="515" text-anchor="middle" fill="#64748b">Damp proofing</text>
+      <rect x="870" y="492" width="130" height="36" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="935" y="515" text-anchor="middle" fill="#64748b">Plaster repair</text>
+    </g>
+    <text x="120" y="570" font-size="16" fill="#233154" font-weight="bold" letter-spacing="1.5">METHODS USED</text>
+    <rect x="104" y="554" width="5" height="20" rx="2" fill="#2563eb"/>
+    <g font-size="14">
+      <rect x="104" y="592" width="196" height="36" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="202" y="615" text-anchor="middle" fill="#1d4ed8" font-weight="bold">High-pressure cleaning</text>
+      <rect x="312" y="592" width="120" height="36" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="372" y="615" text-anchor="middle" fill="#1d4ed8" font-weight="bold">Crack filling</text>
+      <rect x="444" y="592" width="98" height="36" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="493" y="615" text-anchor="middle" fill="#1d4ed8" font-weight="bold">Priming</text>
+      <rect x="554" y="592" width="188" height="36" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="648" y="615" text-anchor="middle" fill="#1d4ed8" font-weight="bold">Two-coat application</text>
+      <rect x="754" y="592" width="150" height="36" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="829" y="615" text-anchor="middle" fill="#64748b">Roller &amp; brush</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 800" font-family="Barlow, Arial, sans-serif">
+  <rect width="390" height="800" fill="#f4f6fa"/>
+  <rect width="390" height="66" fill="#233154"/>
+  <rect y="66" width="390" height="3" fill="#2563eb"/>
+  <rect x="14" y="13" width="40" height="40" rx="8" fill="#ffffff" opacity="0.14"/>
+  <text x="34" y="40" text-anchor="middle" font-size="19" fill="#ffffff" font-weight="bold">A</text>
+  <text x="64" y="31" font-size="15" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+  <text x="64" y="47" font-size="9.5" fill="#b4c3dc">APC-260720-412</text>
+
+  <rect x="12" y="82" width="366" height="560" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="26" y="98" width="4" height="14" rx="2" fill="#2563eb"/>
+  <text x="38" y="110" font-size="12" fill="#233154" font-weight="bold" letter-spacing="1.2">INSPECTION REPORT</text>
+
+  <text x="26" y="134" font-size="9" fill="#64748b" font-weight="bold">PROBLEM REPORTED BY CLIENT</text>
+  <rect x="26" y="140" width="338" height="66" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="36" y="160" font-size="11.5" fill="#1e293b">Flaking paint and damp patches on the</text>
+  <text x="36" y="177" font-size="11.5" fill="#1e293b">seaward wall after winter rains. Mould</text>
+  <text x="36" y="194" font-size="11.5" fill="#1e293b">forming in the main bedroom.</text>
+
+  <text x="26" y="228" font-size="9" fill="#64748b" font-weight="bold">INSPECTION FINDINGS</text>
+  <rect x="26" y="234" width="338" height="82" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="1.4"/>
+  <text x="36" y="254" font-size="11.5" fill="#1e293b">Hairline cracking along the parapet with</text>
+  <text x="36" y="271" font-size="11.5" fill="#1e293b">failed waterproofing at two junctions.</text>
+  <text x="36" y="288" font-size="11.5" fill="#1e293b">Moisture readings of 22-28% on the</text>
+  <text x="36" y="305" font-size="11.5" fill="#1e293b">seaward wall. Poor adhesion throughout.</text>
+
+  <text x="26" y="339" font-size="9" fill="#64748b" font-weight="bold">CONCLUSION &amp; RECOMMENDATION</text>
+  <rect x="26" y="345" width="338" height="66" rx="7" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="36" y="365" font-size="11.5" fill="#1e293b">Strip and re-waterproof the parapet,</text>
+  <text x="36" y="382" font-size="11.5" fill="#1e293b">treat damp, then full exterior repaint:</text>
+  <text x="36" y="399" font-size="11.5" fill="#1e293b">clean, repair, prime, two coats.</text>
+
+  <text x="26" y="437" font-size="9" fill="#64748b" font-weight="bold">OUTCOME</text>
+  <rect x="26" y="445" width="338" height="48" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="42" y="466" font-size="12.5" fill="#64748b" font-weight="bold">Pass</text>
+  <text x="42" y="482" font-size="10" fill="#94a3b8">No further action required</text>
+  <rect x="26" y="501" width="338" height="48" rx="9" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
+  <text x="42" y="522" font-size="12.5" fill="#d97706" font-weight="bold">Further work required</text>
+  <text x="42" y="538" font-size="10" fill="#b98a3e">Quoted below</text>
+  <rect x="26" y="557" width="338" height="48" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="42" y="578" font-size="12.5" fill="#64748b" font-weight="bold">Monitor</text>
+  <text x="42" y="594" font-size="10" fill="#94a3b8">Review in 30 days</text>
+
+  <rect y="726" width="390" height="74" fill="#1a2540"/>
+  <rect y="726" width="390" height="3" fill="#2563eb"/>
+  <text x="16" y="752" font-size="9" fill="#a0afc8" letter-spacing="1">TOTAL DUE (INCL. VAT)</text>
+  <text x="16" y="776" font-size="20" fill="#ffffff" font-weight="bold">R 48 875.00</text>
+  <rect x="270" y="744" width="104" height="34" rx="8" fill="#2563eb"/>
+  <text x="322" y="766" text-anchor="middle" font-size="12.5" fill="#ffffff" font-weight="bold">Full PDF</text>
+</svg>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SiteWise diagnostic</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 780px; margin: 30px auto;
+           padding: 0 18px; color: #1e293b; line-height: 1.5; }
+    h1 { font-size: 22px; }
+    button { font: inherit; font-weight: 600; background: #2563eb; color: #fff;
+             border: none; border-radius: 8px; padding: 11px 20px; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    pre { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px;
+          padding: 12px; overflow-x: auto; font-size: 13px; white-space: pre-wrap; }
+    .verdict { border-radius: 10px; padding: 14px 16px; margin: 16px 0; font-size: 15px; }
+    .ok   { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+    .bad  { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+    .warn { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+    code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>SiteWise profile diagnostic</h1>
+  <p>Make sure you are signed in first, then run the check. This writes a test
+     value to your company profile and reads it back, so we can see exactly
+     where the new fields are being lost.</p>
+
+  <button id="run">Run the check</button>
+  <div id="verdict"></div>
+  <pre id="out">Not run yet.</pre>
+
+<script>
+const NEW_FIELDS = ['phone', 'addressLine', 'website', 'regNumber', 'quoteValidity', 'quoteNotes'];
+const out = document.getElementById('out');
+const verdictBox = document.getElementById('verdict');
+const log = (msg) => { out.textContent += msg + '\n'; };
+
+function verdict(kind, html) {
+  verdictBox.innerHTML = `<div class="verdict ${kind}">${html}</div>`;
+}
+
+document.getElementById('run').addEventListener('click', async () => {
+  const btn = document.getElementById('run');
+  btn.disabled = true;
+  out.textContent = '';
+  verdictBox.innerHTML = '';
+
+  try {
+    // 1. Who are we?
+    log('1. Reading your profile...');
+    const meRes = await fetch('/api/auth/me', { credentials: 'same-origin' });
+    if (!meRes.ok) {
+      verdict('bad', 'You are not signed in. <a href="/auth?mode=login">Sign in</a> then run this again.');
+      btn.disabled = false;
+      return;
+    }
+    const me = (await meRes.json()).user;
+    const profile = me.profile || {};
+    log('   signed in as: ' + me.email);
+    log('   profile keys currently stored:');
+    log('   ' + JSON.stringify(Object.keys(profile)));
+
+    const present = NEW_FIELDS.filter((f) => f in profile);
+    log('   new fields present in stored profile: '
+        + (present.length ? present.join(', ') : 'NONE'));
+
+    // 2. Does the SERVER accept the new fields?
+    log('');
+    log('2. Saving a test value to "phone" via the server...');
+    const testValue = 'DIAGNOSTIC-' + Date.now().toString().slice(-5);
+    const payload = {
+      companyName: profile.companyName || 'Test Co',
+      email: profile.email || me.email,
+      industry: profile.industry || 'general',
+      scheme: profile.scheme || 'slate',
+      phone: testValue,
+      addressLine: 'DIAGNOSTIC ADDRESS',
+    };
+    const saveRes = await fetch('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(payload),
+    });
+    const saved = await saveRes.json();
+    log('   server responded: HTTP ' + saveRes.status);
+    if (!saveRes.ok) {
+      log('   error: ' + (saved.error || 'unknown'));
+      verdict('bad', 'The server rejected the save: <b>' + (saved.error || 'unknown') + '</b>');
+      btn.disabled = false;
+      return;
+    }
+
+    // 3. Read it back
+    log('');
+    log('3. Reading the profile back...');
+    const back = (await (await fetch('/api/auth/me', { credentials: 'same-origin' })).json()).user.profile || {};
+    log('   phone       = ' + JSON.stringify(back.phone));
+    log('   addressLine = ' + JSON.stringify(back.addressLine));
+
+    const serverKeeps = back.phone === testValue;
+
+    // 4. Does the ONBOARDING PAGE send the new fields?
+    log('');
+    log('4. Checking the onboarding page code...');
+    const pageSrc = await (await fetch('/js/pages/onboarding.js')).text();
+    const sendsPhone = pageSrc.includes("this._$('phone').value");
+    const sendsAddress = pageSrc.includes("this._$('addressLine').value");
+    log('   onboarding.js sends phone:       ' + sendsPhone);
+    log('   onboarding.js sends addressLine: ' + sendsAddress);
+    const clientOk = sendsPhone && sendsAddress;
+
+    // 5. Verdict
+    log('');
+    if (serverKeeps && clientOk) {
+      verdict('ok',
+        '<b>Everything is wired correctly.</b> The server saved and returned the test value, '
+        + 'and the onboarding page sends all the new fields.<br><br>'
+        + 'Go to <a href="/onboarding">Company details</a> - you should see '
+        + '<code>' + testValue + '</code> in the Phone box. Replace it with your real number, '
+        + 'fill the rest, save, then generate a fresh PDF.');
+    } else if (!serverKeeps) {
+      verdict('bad',
+        '<b>The server is discarding the new fields.</b> It accepted the save but did not store '
+        + '<code>phone</code>.<br><br>This means <code>server\\controllers\\ProfileController.js</code> '
+        + 'is either the old version, or the server has not been restarted since you replaced it.<br><br>'
+        + '<b>Fix:</b> confirm that file is in place, then press Ctrl+C in your terminal and run '
+        + '<code>npm start</code> again.');
+    } else {
+      verdict('warn',
+        '<b>The server is fine, but the onboarding page is the old version.</b> It does not send '
+        + 'the new fields when you press save.<br><br>'
+        + '<b>Fix:</b> replace <code>public\\js\\pages\\onboarding.js</code> with the updated file, '
+        + 'then hard refresh (Ctrl+F5).');
+    }
+  } catch (err) {
+    log('ERROR: ' + err.message);
+    verdict('bad', 'Something went wrong: ' + err.message);
+  }
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>

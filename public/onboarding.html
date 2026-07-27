@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Set up your business - SiteWise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-top">
+  <a href="/">SiteWise<small>Job cards for trade businesses</small></a>
+</div>
+
+<main class="auth-shell">
+  <div class="auth-card wide">
+    <h1>Build your version of SiteWise</h1>
+    <p class="sub">Tell us who you are and how you work. This brands your app,
+       loads the right presets for your trade, and puts your details on every
+       PDF you send. You can change any of it later.</p>
+    <div class="steps" aria-hidden="true"><span class="on"></span><span class="on"></span><span></span></div>
+
+    <div class="form-error" id="formError" role="alert"></div>
+
+    <form id="onbForm" novalidate>
+      <div class="onb-section">
+        <div class="sec-title"><h2>Your business</h2></div>
+        <p class="hint">Shown in your app header and on every PDF.</p>
+        <div class="onb-grid">
+          <div class="field"><label for="companyName">Company name *</label>
+            <input id="companyName" placeholder="e.g. Atlas Painting Co" required /></div>
+          <div class="field"><label for="tagline">Tagline</label>
+            <input id="tagline" placeholder="e.g. Neat. On time. Guaranteed." /></div>
+          <div class="field"><label for="companyEmail">Company email *</label>
+            <input id="companyEmail" type="email" placeholder="info@company.co.za" required /></div>
+          <div class="field"><label for="phone">Phone</label>
+            <input id="phone" placeholder="e.g. 082 555 0100" /></div>
+          <div class="field" style="grid-column:1/-1"><label for="addressLine">Street address</label>
+            <input id="addressLine" placeholder="e.g. 12 Main Road, Salt Rock" /></div>
+          <div class="field"><label for="city">City / region</label>
+            <input id="city" placeholder="e.g. Cape Town, South Africa" /></div>
+          <div class="field"><label for="website">Website</label>
+            <input id="website" placeholder="e.g. www.company.co.za" /></div>
+          <div class="field"><label for="regNumber">Company reg. number</label>
+            <input id="regNumber" placeholder="Optional" /></div>
+          <div class="field"><label for="vatNumber">VAT number</label>
+            <input id="vatNumber" placeholder="Optional" /></div>
+          <div class="field"><label for="industry">Industry *</label>
+            <select id="industry" required></select></div>
+        </div>
+        <div class="logo-pick" style="margin-top:14px">
+          <button type="button" class="box" id="logoBox">Add<br>logo</button>
+          <input type="file" id="logoInput" accept="image/*" class="visually-hidden" />
+          <div class="meta">Optional - square works best.<br>Printed top-left on every PDF.</div>
+        </div>
+      </div>
+
+      <div class="onb-section">
+        <div class="sec-title"><h2>Your colours</h2></div>
+        <p class="hint">Themes your whole app - headers, buttons, chips - and your PDF branding.</p>
+        <div class="swatches" id="swatches" role="radiogroup" aria-label="Colour scheme"></div>
+      </div>
+
+      <div class="onb-section">
+        <div class="sec-title"><h2>Banking &amp; terms</h2></div>
+        <p class="hint">Printed under the quote totals so clients can pay you.</p>
+        <div class="onb-grid">
+          <div class="field"><label for="bankName">Bank</label>
+            <input id="bankName" placeholder="e.g. FNB" /></div>
+          <div class="field"><label for="bankHolder">Account holder</label>
+            <input id="bankHolder" placeholder="Account holder name" /></div>
+          <div class="field"><label for="bankAccount">Account number</label>
+            <input id="bankAccount" inputmode="numeric" /></div>
+          <div class="field"><label for="branchCode">Branch code</label>
+            <input id="branchCode" inputmode="numeric" /></div>
+          <div class="field" style="grid-column:1/-1"><label for="paymentTerms">Default payment terms</label>
+            <input id="paymentTerms" value="50% deposit, balance on completion" /></div>
+          <div class="field"><label for="quoteValidity">Quote valid for</label>
+            <input id="quoteValidity" placeholder="e.g. 30 days from date of issue" /></div>
+          <div class="field"><label for="quoteNotes">Standard note on quotes</label>
+            <input id="quoteNotes" placeholder="e.g. Prices exclude after-hours callouts" /></div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="submitBtn" type="submit" style="width:100%;margin-top:26px">
+        Finish setup &amp; open your app
+      </button>
+    </form>
+  </div>
+</main>
+
+<script src="/js/config/IndustryPresets.js"></script>
+<script src="/js/services/ApiClient.js"></script>
+<script src="/js/services/SessionGuard.js"></script>
+<script src="/js/services/ImageTools.js"></script>
+<script src="/js/services/Theme.js"></script>
+<script src="/js/pages/onboarding.js" defer></script>
+</body>
+</html>vfv
