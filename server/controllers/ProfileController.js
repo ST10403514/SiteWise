@@ -10,6 +10,7 @@ const INDUSTRIES = new Set([
 ]);
 const SCHEMES = new Set([
   'slate', 'forest', 'terracotta', 'ocean', 'charcoal', 'plum',
+  'crimson', 'teal', 'midnight', 'graphite', 'burgundy', 'bronze', 'indigo', 'pine',
 ]);
 
 /**
@@ -70,6 +71,7 @@ class ProfileController {
         city:         v.optionalString(b.city, 'City', { max: 100 }),
         addressLine:  v.optionalString(b.addressLine, 'Street address', { max: 160 }),
         phone:        v.optionalString(b.phone, 'Phone', { max: 40 }),
+        whatsapp:     v.optionalString(b.whatsapp, 'WhatsApp number', { max: 40 }),
         website:      v.optionalString(b.website, 'Website', { max: 120 }),
         regNumber:    v.optionalString(b.regNumber, 'Registration number', { max: 60 }),
         vatNumber:    v.optionalString(b.vatNumber, 'VAT number', { max: 40 }),

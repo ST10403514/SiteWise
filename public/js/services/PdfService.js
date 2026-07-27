@@ -42,6 +42,7 @@ class PDFService {
     city: '',
     addressLine: '',
     phone: '',
+    whatsapp: '',
     website: '',
     regNumber: '',
     vatNumber: '',
@@ -149,7 +150,9 @@ class PDFService {
     doc.setFontSize(7.5);
     doc.setTextColor(160, 175, 200);
     doc.text(
-      [PROFILE.email, PROFILE.phone, PROFILE.website].filter(Boolean).join('  |  '),
+      [PROFILE.email, PROFILE.phone,
+       PROFILE.whatsapp ? `WhatsApp ${PROFILE.whatsapp}` : '',
+       PROFILE.website].filter(Boolean).join('  |  '),
       46, 25,
     );
 

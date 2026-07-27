@@ -38,6 +38,9 @@
             <input id="companyEmail" type="email" placeholder="info@company.co.za" required /></div>
           <div class="field"><label for="phone">Phone</label>
             <input id="phone" placeholder="e.g. 082 555 0100" /></div>
+          <div class="field"><label for="whatsapp">WhatsApp number</label>
+            <input id="whatsapp" inputmode="tel" placeholder="e.g. 082 555 0100" />
+            <span class="field-hint" id="waHint"></span></div>
           <div class="field" style="grid-column:1/-1"><label for="addressLine">Street address</label>
             <input id="addressLine" placeholder="e.g. 12 Main Road, Salt Rock" /></div>
           <div class="field"><label for="city">City / region</label>
@@ -93,10 +96,11 @@
 </main>
 
 <script src="/js/config/IndustryPresets.js"></script>
+<script src="/js/models/Job.js"></script>
 <script src="/js/services/ApiClient.js"></script>
 <script src="/js/services/SessionGuard.js"></script>
 <script src="/js/services/ImageTools.js"></script>
 <script src="/js/services/Theme.js"></script>
 <script src="/js/pages/onboarding.js" defer></script>
 </body>
-</html>vfv
+</html>

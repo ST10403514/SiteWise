@@ -62,7 +62,8 @@
       <div class="field"><label for="clientName">Client name</label>
         <input id="clientName" placeholder="e.g. J. Naidoo" /></div>
       <div class="field"><label for="clientPhone">Phone</label>
-        <input id="clientPhone" placeholder="e.g. 082 555 0100" /></div>
+        <input id="clientPhone" placeholder="e.g. 082 555 0100" />
+        <span class="field-note" id="waFieldNote" hidden>WhatsApp available in the bar below</span></div>
       <div class="field"><label for="clientEmail">Email</label>
         <input id="clientEmail" type="email" placeholder="client@email.com" /></div>
       <div class="field"><label for="siteAddress">Site address</label>
@@ -157,6 +158,10 @@
       <span class="save-state" id="saveState" role="status"></span>
     </div>
     <div class="bar-actions">
+      <button class="btn wa-bar" id="waClient" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.5-6c-.2-.1-1.4-.7-1.7-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5 0a6.5 6.5 0 0 1-1.9-1.2 7.3 7.3 0 0 1-1.4-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3A2.8 2.8 0 0 0 6.8 9a4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c2 .8 2 .5 2.4.5a2.5 2.5 0 0 0 1.6-1.2 2 2 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3z"/></svg>
+        Send to client on WhatsApp
+      </button>
       <button class="btn btn-ghost-dark" id="dlReport" type="button">Report PDF</button>
       <button class="btn btn-ghost-dark" id="dlQuote" type="button">Quote PDF</button>
       <button class="btn btn-primary btn-full" id="dlFull" type="button">Full report + quote</button>

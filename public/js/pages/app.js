@@ -108,6 +108,40 @@ class AppPage {
     this._bind('paymentTerms', 'paymentTerms');
     this._bind('globalDiscount', 'discount', clampPct);
     this._bind('vatRate', 'vatRate', clampPct);
+
+    // "Send to client on WhatsApp": show the button only when the client's
+    // number looks valid, and open a chat pre-filled with quote details.
+    const phoneInput = this._$('clientPhone');
+    const waBtn = this._$('waClient');
+    const waNote = this._$('waFieldNote');
+    const refreshWa = () => {
+      const valid = Boolean(Job.waNumber(phoneInput.value));
+      waBtn.hidden = !valid;
+      if (waNote) waNote.hidden = !valid;
+    };
+    phoneInput.addEventListener('input', refreshWa);
+    waBtn.addEventListener('click', () => this._messageClientOnWhatsApp());
+    refreshWa();
+  }
+
+  /** Open WhatsApp to the client with a message about their quote. */
+  _messageClientOnWhatsApp() {
+    const job = this._job;
+    const company = this._profile.companyName || 'us';
+    const greeting = job.clientName ? `Hi ${job.clientName}, ` : 'Hi, ';
+    const total = Job.formatCurrency(job.grandTotal);
+    const message =
+      `${greeting}thanks for the opportunity to quote. `
+      + `Please find your quote ${job.quoteNumber} from ${company}`
+      + (job.grandTotal > 0 ? ` for ${total} (incl. VAT).` : '.')
+      + ` I'll send the full report and quotation through shortly.`;
+    const link = Job.waLink(job.clientPhone, message);
+    if (!link) {
+      this._toast('Add a valid client phone number first');
+      return;
+    }
+    this._flushSave();
+    window.open(link, '_blank');
   }
 
   // ── Chips ─────────────────────────────────────────────────────
@@ -323,6 +357,9 @@ class AppPage {
     set('quoteNumber', job.quoteNumber);
     set('clientName', job.clientName);
     set('clientPhone', job.clientPhone);
+    this._$('waClient').hidden = !Job.waNumber(job.clientPhone);
+    const note = this._$('waFieldNote');
+    if (note) note.hidden = !Job.waNumber(job.clientPhone);
     set('clientEmail', job.clientEmail);
     set('siteAddress', job.siteAddress);
     set('problemReport', job.problemReport);

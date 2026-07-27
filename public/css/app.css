@@ -209,4 +209,16 @@ section.card { background: var(--card); border: 1px solid var(--line); border-ra
   .action-bar .bar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .action-bar .bar-actions .btn { width: 100%; padding: 11px 8px; font-size: 13px; }
   .action-bar .bar-actions .btn-full { grid-column: 1 / -1; }
+  .action-bar .bar-actions .wa-bar { grid-column: 1 / -1; order: -1; }
 }
+
+/* == WhatsApp button in the action bar ======================= */
+.wa-bar {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  color: #fff; background: #25d366; border: none;
+}
+.wa-bar:hover { background: #1eb959; }
+.wa-bar svg { width: 17px; height: 17px; }
+
+/* Small hint by the phone field pointing to the bar button */
+.field-note { display: block; font-size: 11.5px; color: #16a34a; margin-top: 6px; font-weight: 600; }

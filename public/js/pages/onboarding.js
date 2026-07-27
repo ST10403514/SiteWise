@@ -24,6 +24,18 @@ class OnboardingPage {
     if (!this._$('companyEmail').value) this._$('companyEmail').value = user.email;
 
     this._$('logoBox').addEventListener('click', () => this._$('logoInput').click());
+
+    // Live feedback so the user can see we understood their number.
+    const waInput = this._$('whatsapp');
+    const waHint = this._$('waHint');
+    const updateWaHint = () => {
+      const num = Job.waNumber(waInput.value);
+      if (!waInput.value.trim()) { waHint.textContent = ''; waHint.className = 'field-hint'; }
+      else if (num) { waHint.textContent = `Chat link: wa.me/${num}`; waHint.className = 'field-hint ok'; }
+      else { waHint.textContent = "That doesn't look like a valid number yet"; waHint.className = 'field-hint warn'; }
+    };
+    waInput.addEventListener('input', updateWaHint);
+    updateWaHint();
     this._$('logoInput').addEventListener('change', (e) => this._pickLogo(e));
     this._$('onbForm').addEventListener('submit', (e) => this._submit(e));
   }
@@ -66,7 +78,7 @@ class OnboardingPage {
   _prefill(p) {
     const map = {
       companyName: p.companyName, tagline: p.tagline, companyEmail: p.email,
-      phone: p.phone, addressLine: p.addressLine, city: p.city,
+      phone: p.phone, whatsapp: p.whatsapp, addressLine: p.addressLine, city: p.city,
       website: p.website, regNumber: p.regNumber, vatNumber: p.vatNumber,
       bankName: p.bankName, bankHolder: p.bankHolder, bankAccount: p.bankAccount,
       branchCode: p.branchCode, paymentTerms: p.paymentTerms,
@@ -113,6 +125,7 @@ class OnboardingPage {
         tagline: this._$('tagline').value,
         email: this._$('companyEmail').value,
         phone: this._$('phone').value,
+        whatsapp: this._$('whatsapp').value,
         addressLine: this._$('addressLine').value,
         city: this._$('city').value,
         website: this._$('website').value,

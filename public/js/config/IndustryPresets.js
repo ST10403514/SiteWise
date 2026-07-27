@@ -140,6 +140,14 @@ const IndustryPresets = {
     ocean:      { label: 'Ocean & Sky',       primary: '#0c4a6e', primaryDeep: '#083a57', accent: '#0284c7', accentInk: '#0369a1', accentMist: '#f0f9ff', accentLine: '#bae6fd' },
     charcoal:   { label: 'Charcoal & Amber',  primary: '#26272b', primaryDeep: '#1b1c1f', accent: '#d97706', accentInk: '#b45309', accentMist: '#fffbeb', accentLine: '#fde68a' },
     plum:       { label: 'Plum & Violet',     primary: '#3b2352', primaryDeep: '#2c1a3e', accent: '#7c3aed', accentInk: '#6d28d9', accentMist: '#f5f3ff', accentLine: '#ddd6fe' },
+    crimson:    { label: 'Charcoal & Red',    primary: '#2a1416', primaryDeep: '#1e0d0f', accent: '#dc2626', accentInk: '#b91c1c', accentMist: '#fef2f2', accentLine: '#fecaca' },
+    teal:       { label: 'Deep Teal',         primary: '#134e4a', primaryDeep: '#0c3b38', accent: '#0d9488', accentInk: '#0f766e', accentMist: '#f0fdfa', accentLine: '#99f6e4' },
+    midnight:   { label: 'Midnight & Gold',   primary: '#1e293b', primaryDeep: '#0f172a', accent: '#ca8a04', accentInk: '#a16207', accentMist: '#fefce8', accentLine: '#fef08a' },
+    graphite:   { label: 'Graphite & Sky',    primary: '#334155', primaryDeep: '#1e293b', accent: '#0ea5e9', accentInk: '#0284c7', accentMist: '#f0f9ff', accentLine: '#bae6fd' },
+    burgundy:   { label: 'Burgundy & Rose',   primary: '#4c1d24', primaryDeep: '#3a141a', accent: '#e11d48', accentInk: '#be123c', accentMist: '#fff1f2', accentLine: '#fecdd3' },
+    bronze:     { label: 'Bronze & Cream',    primary: '#44403c', primaryDeep: '#292524', accent: '#b45309', accentInk: '#92400e', accentMist: '#fffbeb', accentLine: '#fde68a' },
+    indigo:     { label: 'Indigo & Lilac',    primary: '#312e6b', primaryDeep: '#232155', accent: '#6366f1', accentInk: '#4f46e5', accentMist: '#eef2ff', accentLine: '#c7d2fe' },
+    pine:       { label: 'Pine & Lime',       primary: '#1a3329', primaryDeep: '#11241d', accent: '#65a30d', accentInk: '#4d7c0f', accentMist: '#f7fee7', accentLine: '#d9f99d' },
   },
 
   /** @returns {object} industry entry, falling back to `general` */

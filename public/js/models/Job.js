@@ -88,6 +88,42 @@ class Job {
 
   /** South African style: R 12 345.00 */
   /**
+   * Normalise a South African (or international) phone number into the
+   * digits-only international form WhatsApp expects, e.g.
+   *   082 555 0100   -> 27825550100
+   *   +27 82 555 0100 -> 27825550100
+   *   27825550100    -> 27825550100
+   * Returns '' if there aren't enough digits to be a real number.
+   * @param {string} raw
+   * @returns {string}
+   */
+  static waNumber(raw) {
+    if (!raw) return '';
+    let digits = String(raw).replace(/[^\d+]/g, '');
+    if (digits.startsWith('+')) digits = digits.slice(1);
+    digits = digits.replace(/\D/g, '');
+    // Local SA format starting with 0 -> swap for country code 27.
+    if (digits.startsWith('0')) digits = '27' + digits.slice(1);
+    // Bare 9-digit local (no leading 0) -> assume SA.
+    else if (digits.length === 9) digits = '27' + digits;
+    return digits.length >= 10 ? digits : '';
+  }
+
+  /**
+   * Build a wa.me link that opens a chat with the given number,
+   * optionally pre-filling a message.
+   * @param {string} raw  phone number in any common format
+   * @param {string} [message]
+   * @returns {string} URL, or '' if the number is unusable
+   */
+  static waLink(raw, message = '') {
+    const num = Job.waNumber(raw);
+    if (!num) return '';
+    const base = `https://wa.me/${num}`;
+    return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+  }
+
+  /**
    * South African style: R 12 345.67
    * Built explicitly rather than via toLocaleString, because the en-ZA
    * locale uses a comma as the decimal separator and space as the
