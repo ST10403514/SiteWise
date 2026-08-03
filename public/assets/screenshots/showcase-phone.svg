@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 620" font-family="Barlow, Arial, sans-serif">
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f6fa" stop-opacity="0"/>
+      <stop offset="1" stop-color="#f4f6fa" stop-opacity="1"/>
+    </linearGradient>
+    <!-- clip everything to the phone screen so nothing spills over the bezel -->
+    <clipPath id="screen"><rect x="160" y="24" width="270" height="572" rx="26"/></clipPath>
+  </defs>
+
+  <!-- phone body -->
+  <rect x="150" y="14" width="290" height="592" rx="34" fill="#0f172a"/>
+  <!-- screen background -->
+  <rect x="160" y="24" width="270" height="572" rx="26" fill="#f4f6fa"/>
+
+  <!-- ALL screen content clipped to the screen -->
+  <g clip-path="url(#screen)">
+    <!-- app header -->
+    <rect x="160" y="24" width="270" height="84" fill="#233154"/>
+    <rect x="160" y="108" width="270" height="3" fill="#2563eb"/>
+    <rect x="176" y="42" width="40" height="40" rx="8" fill="#ffffff" opacity="0.14"/>
+    <text x="196" y="68" text-anchor="middle" font-size="19" fill="#ffffff" font-weight="bold">A</text>
+    <text x="226" y="58" font-size="14" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+    <text x="226" y="74" font-size="9" fill="#b4c3dc">Your job cards</text>
+
+    <rect x="176" y="122" width="238" height="34" rx="8" fill="#2563eb"/>
+    <text x="295" y="144" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">+ New job card</text>
+
+    <text x="176" y="180" font-size="13" fill="#233154" font-weight="bold" letter-spacing="0.6">JOB CARDS</text>
+    <text x="414" y="180" text-anchor="end" font-size="9.5" fill="#64748b">4 saved</text>
+
+    <!-- card 1 -->
+    <rect x="176" y="190" width="238" height="96" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="190" y="211" font-size="12.5" fill="#1e293b" font-weight="bold">J. Naidoo</text>
+    <text x="400" y="211" text-anchor="end" font-size="13" fill="#1e293b" font-weight="bold">R 48 875.00</text>
+    <rect x="190" y="219" width="90" height="16" rx="8" fill="#fef9c3" stroke="#fde047"/>
+    <text x="235" y="231" text-anchor="middle" font-size="8" fill="#a16207">APC-260720-412</text>
+    <text x="190" y="251" font-size="9" fill="#64748b">14 Marine Drive - 4 photos</text>
+    <rect x="190" y="259" width="112" height="17" rx="8.5" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="246" y="271" text-anchor="middle" font-size="8" fill="#c2410c" font-weight="bold">Further work required</text>
+    <text x="400" y="272" text-anchor="end" font-size="9.5" fill="#1d4ed8" font-weight="bold">Open</text>
+
+    <!-- card 2 -->
+    <rect x="176" y="294" width="238" height="96" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="190" y="315" font-size="12.5" fill="#1e293b" font-weight="bold">Bergview BC</text>
+    <text x="400" y="315" text-anchor="end" font-size="13" fill="#1e293b" font-weight="bold">R 112 240.00</text>
+    <rect x="190" y="323" width="90" height="16" rx="8" fill="#fef9c3" stroke="#fde047"/>
+    <text x="235" y="335" text-anchor="middle" font-size="8" fill="#a16207">APC-260718-411</text>
+    <text x="190" y="355" font-size="9" fill="#64748b">Bergview Estate - 9 photos</text>
+    <rect x="190" y="363" width="46" height="17" rx="8.5" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="213" y="375" text-anchor="middle" font-size="8" fill="#15803d" font-weight="bold">Pass</text>
+    <text x="400" y="375" text-anchor="end" font-size="9.5" fill="#1d4ed8" font-weight="bold">Open</text>
+
+    <!-- card 3 -->
+    <rect x="176" y="398" width="238" height="96" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="190" y="419" font-size="12.5" fill="#1e293b" font-weight="bold">M. van Wyk</text>
+    <text x="400" y="419" text-anchor="end" font-size="13" fill="#1e293b" font-weight="bold">R 6 210.00</text>
+    <rect x="190" y="427" width="90" height="16" rx="8" fill="#fef9c3" stroke="#fde047"/>
+    <text x="235" y="439" text-anchor="middle" font-size="8" fill="#a16207">APC-260715-409</text>
+    <text x="190" y="459" font-size="9" fill="#64748b">8 Protea Road - 2 photos</text>
+    <rect x="190" y="467" width="66" height="17" rx="8.5" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="223" y="479" text-anchor="middle" font-size="8" fill="#1d4ed8" font-weight="bold">Monitor</text>
+    <text x="400" y="479" text-anchor="end" font-size="9.5" fill="#1d4ed8" font-weight="bold">Open</text>
+
+    <!-- card 4 (peeking) -->
+    <rect x="176" y="502" width="238" height="96" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="190" y="523" font-size="12.5" fill="#1e293b" font-weight="bold">Salt Rock GH</text>
+    <text x="400" y="523" text-anchor="end" font-size="13" fill="#1e293b" font-weight="bold">R 27 480.00</text>
+    <rect x="190" y="531" width="90" height="16" rx="8" fill="#fef9c3" stroke="#fde047"/>
+    <text x="235" y="543" text-anchor="middle" font-size="8" fill="#a16207">APC-260712-405</text>
+
+    <!-- fade at the bottom to suggest scroll, sits ABOVE the home indicator zone -->
+    <rect x="160" y="548" width="270" height="48" fill="url(#fade)"/>
+  </g>
+
+  <!-- notch (on top of everything) -->
+  <rect x="258" y="30" width="74" height="9" rx="4.5" fill="#0f172a"/>
+  <!-- home indicator (on the screen, below content) -->
+  <rect x="260" y="580" width="70" height="5" rx="2.5" fill="#cbd5e1"/>
+</svg>

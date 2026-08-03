@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="Barlow, Arial, sans-serif">
+  <defs><clipPath id="win5"><rect x="40" y="30" width="1120" height="690" rx="14"/></clipPath></defs>
+  <rect x="40" y="30" width="1120" height="690" rx="14" fill="#ffffff" stroke="#dbe2ee"/>
+  <g clip-path="url(#win5)">
+    <rect x="40" y="30" width="1120" height="44" fill="#eef2f8"/>
+    <circle cx="72" cy="52" r="6" fill="#f87171"/><circle cx="94" cy="52" r="6" fill="#fbbf24"/><circle cx="116" cy="52" r="6" fill="#34d399"/>
+    <rect x="440" y="41" width="320" height="22" rx="11" fill="#ffffff" stroke="#dbe2ee"/>
+    <text x="600" y="57" text-anchor="middle" font-size="13" fill="#94a3b8">app.sitewise.co.za/jobs</text>
+
+    <!-- header band -->
+    <rect x="40" y="74" width="1120" height="86" fill="#233154"/>
+    <rect x="40" y="160" width="1120" height="4" fill="#2563eb"/>
+    <rect x="76" y="92" width="50" height="50" rx="8" fill="#ffffff" opacity="0.12"/>
+    <text x="101" y="123" text-anchor="middle" font-size="20" fill="#ffffff" font-weight="bold">A</text>
+    <text x="142" y="112" font-size="21" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+    <text x="142" y="134" font-size="13" fill="#b4c3dc">Your job cards</text>
+    <rect x="928" y="96" width="140" height="34" rx="7" fill="#2563eb"/>
+    <text x="998" y="118" text-anchor="middle" font-size="13.5" fill="#ffffff" font-weight="bold">+ New job card</text>
+
+    <!-- title row -->
+    <text x="80" y="204" font-size="22" fill="#233154" font-weight="bold" letter-spacing="1">JOB CARDS</text>
+    <text x="212" y="204" font-size="13" fill="#64748b">4 saved job cards - every one autosaves as you work</text>
+
+    <!-- job card 1 -->
+    <rect x="80" y="224" width="1040" height="112" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="104" y="254" font-size="16" fill="#1e293b" font-weight="bold">J. Naidoo</text>
+    <rect x="196" y="240" width="128" height="22" rx="11" fill="#fef9c3" stroke="#fde047"/>
+    <text x="260" y="255" text-anchor="middle" font-size="11" fill="#a16207">APC-260720-412</text>
+    <text x="104" y="278" font-size="12.5" fill="#64748b">14 Marine Drive, Muizenberg - Updated 20 Jul 2026 - 4 photos</text>
+    <rect x="104" y="292" width="150" height="24" rx="12" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="179" y="308" text-anchor="middle" font-size="11" fill="#c2410c" font-weight="bold">Further work required</text>
+    <text x="1096" y="258" text-anchor="end" font-size="17" fill="#1e293b" font-weight="bold">R 48 875.00</text>
+    <text x="1096" y="308" text-anchor="end" font-size="13" fill="#1d4ed8" font-weight="bold">Open job card</text>
+
+    <!-- job card 2 -->
+    <rect x="80" y="348" width="1040" height="112" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="104" y="378" font-size="16" fill="#1e293b" font-weight="bold">Bergview Body Corporate</text>
+    <rect x="300" y="364" width="128" height="22" rx="11" fill="#fef9c3" stroke="#fde047"/>
+    <text x="364" y="379" text-anchor="middle" font-size="11" fill="#a16207">APC-260718-411</text>
+    <text x="104" y="402" font-size="12.5" fill="#64748b">Block C, Bergview Estate, Plumstead - Updated 18 Jul 2026 - 9 photos</text>
+    <rect x="104" y="416" width="66" height="24" rx="12" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="137" y="432" text-anchor="middle" font-size="11" fill="#15803d" font-weight="bold">Pass</text>
+    <text x="1096" y="382" text-anchor="end" font-size="17" fill="#1e293b" font-weight="bold">R 112 240.00</text>
+    <text x="1096" y="432" text-anchor="end" font-size="13" fill="#1d4ed8" font-weight="bold">Open job card</text>
+
+    <!-- job card 3 -->
+    <rect x="80" y="472" width="1040" height="112" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="104" y="502" font-size="16" fill="#1e293b" font-weight="bold">M. van Wyk</text>
+    <rect x="208" y="488" width="128" height="22" rx="11" fill="#fef9c3" stroke="#fde047"/>
+    <text x="272" y="503" text-anchor="middle" font-size="11" fill="#a16207">APC-260715-409</text>
+    <text x="104" y="526" font-size="12.5" fill="#64748b">8 Protea Road, Constantia - Updated 15 Jul 2026 - 2 photos</text>
+    <rect x="104" y="540" width="90" height="24" rx="12" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="149" y="556" text-anchor="middle" font-size="11" fill="#1d4ed8" font-weight="bold">Monitor</text>
+    <text x="1096" y="506" text-anchor="end" font-size="17" fill="#1e293b" font-weight="bold">R 6 210.00</text>
+    <text x="1096" y="556" text-anchor="end" font-size="13" fill="#1d4ed8" font-weight="bold">Open job card</text>
+
+    <!-- job card 4 (partially visible) -->
+    <rect x="80" y="596" width="1040" height="112" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="104" y="626" font-size="16" fill="#1e293b" font-weight="bold">Salt Rock Guest House</text>
+    <rect x="286" y="612" width="128" height="22" rx="11" fill="#fef9c3" stroke="#fde047"/>
+    <text x="350" y="627" text-anchor="middle" font-size="11" fill="#a16207">APC-260712-405</text>
+    <text x="104" y="650" font-size="12.5" fill="#64748b">2 Ocean View Drive, Salt Rock - Updated 12 Jul 2026 - 6 photos</text>
+    <rect x="104" y="664" width="150" height="24" rx="12" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="179" y="680" text-anchor="middle" font-size="11" fill="#c2410c" font-weight="bold">Further work required</text>
+    <text x="1096" y="630" text-anchor="end" font-size="17" fill="#1e293b" font-weight="bold">R 27 480.00</text>
+    <text x="1096" y="680" text-anchor="end" font-size="13" fill="#1d4ed8" font-weight="bold">Open job card</text>
+  </g>
+</svg>

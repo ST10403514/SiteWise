@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="Barlow, Arial, sans-serif">
+  <defs><clipPath id="win6"><rect x="40" y="30" width="1120" height="690" rx="14"/></clipPath></defs>
+  <rect x="40" y="30" width="1120" height="690" rx="14" fill="#ffffff" stroke="#dbe2ee"/>
+  <g clip-path="url(#win6)">
+    <rect x="40" y="30" width="1120" height="44" fill="#eef2f8"/>
+    <circle cx="72" cy="52" r="6" fill="#f87171"/><circle cx="94" cy="52" r="6" fill="#fbbf24"/><circle cx="116" cy="52" r="6" fill="#34d399"/>
+    <rect x="440" y="41" width="320" height="22" rx="11" fill="#ffffff" stroke="#dbe2ee"/>
+    <text x="600" y="57" text-anchor="middle" font-size="13" fill="#94a3b8">app.sitewise.co.za/onboarding</text>
+    <rect x="40" y="74" width="1120" height="14" fill="#233154"/>
+
+    <text x="80" y="128" font-size="22" fill="#233154" font-weight="bold" letter-spacing="1">MAKE IT YOURS</text>
+    <text x="80" y="152" font-size="13.5" fill="#64748b">Pick a colour scheme and add your logo. It themes your whole app and every PDF you send.</text>
+
+    <!-- swatch grid: 3 cols x 4 rows -->
+    <g font-size="14">
+      <!-- row 1 -->
+      <rect x="80" y="176" width="330" height="52" rx="11" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+      <circle cx="108" cy="202" r="11" fill="#233154"/><circle cx="126" cy="202" r="11" fill="#2563eb"/>
+      <text x="150" y="208" fill="#1e293b" font-weight="bold">Slate &amp; Blue</text>
+      <text x="392" y="207" text-anchor="end" font-size="16" fill="#2563eb" font-weight="bold">&#10003;</text>
+      <rect x="426" y="176" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="454" cy="202" r="11" fill="#1c3a2c"/><circle cx="472" cy="202" r="11" fill="#16a34a"/>
+      <text x="496" y="208" fill="#475569">Forest &amp; Green</text>
+      <rect x="772" y="176" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="800" cy="202" r="11" fill="#5b2120"/><circle cx="818" cy="202" r="11" fill="#ea580c"/>
+      <text x="842" y="208" fill="#475569">Brick &amp; Orange</text>
+      <!-- row 2 -->
+      <rect x="80" y="240" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="108" cy="266" r="11" fill="#0c4a6e"/><circle cx="126" cy="266" r="11" fill="#0284c7"/>
+      <text x="150" y="272" fill="#475569">Ocean &amp; Sky</text>
+      <rect x="426" y="240" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="454" cy="266" r="11" fill="#26272b"/><circle cx="472" cy="266" r="11" fill="#d97706"/>
+      <text x="496" y="272" fill="#475569">Charcoal &amp; Amber</text>
+      <rect x="772" y="240" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="800" cy="266" r="11" fill="#3b2352"/><circle cx="818" cy="266" r="11" fill="#7c3aed"/>
+      <text x="842" y="272" fill="#475569">Plum &amp; Violet</text>
+      <!-- row 3 -->
+      <rect x="80" y="304" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="108" cy="330" r="11" fill="#1e293b"/><circle cx="126" cy="330" r="11" fill="#ca8a04"/>
+      <text x="150" y="336" fill="#475569">Midnight &amp; Gold</text>
+      <rect x="426" y="304" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="454" cy="330" r="11" fill="#134e4a"/><circle cx="472" cy="330" r="11" fill="#0d9488"/>
+      <text x="496" y="336" fill="#475569">Deep Teal</text>
+      <rect x="772" y="304" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="800" cy="330" r="11" fill="#4c1d24"/><circle cx="818" cy="330" r="11" fill="#e11d48"/>
+      <text x="842" y="336" fill="#475569">Burgundy &amp; Rose</text>
+      <!-- row 4 -->
+      <rect x="80" y="368" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="108" cy="394" r="11" fill="#1e2a4a"/><circle cx="126" cy="394" r="11" fill="#f97316"/>
+      <text x="150" y="400" fill="#475569">Navy &amp; Coral</text>
+      <rect x="426" y="368" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="454" cy="394" r="11" fill="#064e3b"/><circle cx="472" cy="394" r="11" fill="#10b981"/>
+      <text x="496" y="400" fill="#475569">Emerald &amp; Mint</text>
+      <rect x="772" y="368" width="330" height="52" rx="11" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="800" cy="394" r="11" fill="#312e6b"/><circle cx="818" cy="394" r="11" fill="#6366f1"/>
+      <text x="842" y="400" fill="#475569">Indigo &amp; Lilac</text>
+    </g>
+    <text x="80" y="452" font-size="13" fill="#94a3b8" font-style="italic">20 colour schemes in total - one to match nearly any brand.</text>
+
+    <!-- logo + live preview strip -->
+    <rect x="80" y="474" width="1040" height="186" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+    <rect x="104" y="498" width="120" height="120" rx="12" fill="#eff6ff" stroke="#bfdbfe" stroke-dasharray="7 5"/>
+    <text x="164" y="552" text-anchor="middle" font-size="15" fill="#1d4ed8">Add</text>
+    <text x="164" y="574" text-anchor="middle" font-size="15" fill="#1d4ed8">your logo</text>
+    <text x="252" y="520" font-size="14" fill="#233154" font-weight="bold" letter-spacing="1">LIVE PREVIEW</text>
+    <text x="252" y="542" font-size="12.5" fill="#64748b">This is how your app header and PDF will look.</text>
+    <!-- mini header preview -->
+    <rect x="252" y="556" width="844" height="80" rx="10" fill="#233154"/>
+    <rect x="252" y="632" width="844" height="4" fill="#2563eb"/>
+    <rect x="276" y="574" width="44" height="44" rx="8" fill="#ffffff" opacity="0.14"/>
+    <text x="298" y="602" text-anchor="middle" font-size="18" fill="#ffffff" font-weight="bold">A</text>
+    <text x="336" y="592" font-size="18" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+    <text x="336" y="612" font-size="12" fill="#b4c3dc">Neat. On time. Guaranteed.</text>
+    <rect x="960" y="578" width="120" height="34" rx="6" fill="#ffffff" opacity="0.12"/>
+    <text x="1020" y="600" text-anchor="middle" font-size="12.5" fill="#ffffff">APC-260720-412</text>
+  </g>
+</svg>

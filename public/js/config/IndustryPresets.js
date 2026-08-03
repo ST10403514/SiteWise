@@ -113,6 +113,130 @@ const IndustryPresets = {
         plant: 'Planting', mulch: 'Mulching',
       },
     },
+    it: {
+      label: 'IT & Networking',
+      jobTypes: {
+        support: 'IT support callout', network: 'Network setup',
+        wifi: 'WiFi & coverage', server: 'Server / NAS',
+        cctv: 'CCTV & access control', backup: 'Backup & recovery',
+        cloud: 'Cloud & email', security: 'Cybersecurity',
+      },
+      methods: {
+        diagnostics: 'Diagnostics & triage', cabling: 'Structured cabling',
+        router: 'Router / firewall config', ap: 'Access point install',
+        switch: 'Switch configuration', imaging: 'Device imaging & setup',
+        migration: 'Data migration', patching: 'Updates & patching',
+        antivirus: 'Antivirus & hardening', remote: 'Remote monitoring setup',
+      },
+    },
+    security: {
+      label: 'Security & CCTV',
+      jobTypes: {
+        cctv: 'CCTV installation', alarm: 'Alarm system', access: 'Access control',
+        electric: 'Electric fencing', intercom: 'Intercom / gate',
+        monitor: 'Monitoring setup', service: 'Service & repair', audit: 'Security audit',
+      },
+      methods: {
+        camera: 'Camera mounting & aiming', nvr: 'NVR / DVR setup',
+        cabling: 'Cabling & trunking', sensor: 'Sensor placement',
+        keypad: 'Keypad & reader install', energizer: 'Fence energizer setup',
+        signal: 'Signal & network test', remote: 'Remote view setup',
+        battery: 'Battery & backup', handover: 'Client handover & training',
+      },
+    },
+    appliance: {
+      label: 'Appliance Repair',
+      jobTypes: {
+        washing: 'Washing machine', fridge: 'Fridge / freezer',
+        oven: 'Oven / stove', dishwasher: 'Dishwasher',
+        dryer: 'Tumble dryer', microwave: 'Microwave',
+        smallappliance: 'Small appliances', callout: 'Diagnostic callout',
+      },
+      methods: {
+        diagnose: 'Fault diagnosis', element: 'Element replacement',
+        motor: 'Motor / pump replacement', thermostat: 'Thermostat replacement',
+        seal: 'Seal & gasket replacement', board: 'Control board repair',
+        belt: 'Belt replacement', regas: 'Re-gassing',
+        clean: 'Deep clean & service', wiring: 'Wiring repair',
+      },
+    },
+    pest: {
+      label: 'Pest Control',
+      jobTypes: {
+        general: 'General pest treatment', rodent: 'Rodent control',
+        termite: 'Termite / borer', cockroach: 'Cockroach treatment',
+        bees: 'Bee / wasp removal', fumigation: 'Fumigation',
+        birdproofing: 'Bird proofing', inspection: 'Inspection & report',
+      },
+      methods: {
+        inspect: 'Site inspection', bait: 'Baiting stations',
+        spray: 'Residual spraying', gel: 'Gel application',
+        fog: 'Fogging / misting', dust: 'Dusting treatment',
+        seal: 'Entry-point sealing', trap: 'Trapping',
+        soil: 'Soil poisoning', followup: 'Follow-up scheduling',
+      },
+    },
+    solar: {
+      label: 'Solar & Renewables',
+      jobTypes: {
+        grid: 'Grid-tied system', hybrid: 'Hybrid system',
+        offgrid: 'Off-grid system', backup: 'Backup / UPS',
+        geyser: 'Solar geyser', battery: 'Battery expansion',
+        service: 'Service & repair', assessment: 'Site assessment',
+      },
+      methods: {
+        panel: 'Panel mounting', inverter: 'Inverter installation',
+        batterybank: 'Battery bank wiring', mppt: 'MPPT / charge controller',
+        db: 'DB & changeover', earthing: 'Earthing & lightning',
+        monitoring: 'Monitoring setup', commissioning: 'Commissioning & test',
+        coc: 'Certificate of Compliance', loadtest: 'Load & backup test',
+      },
+    },
+    flooring: {
+      label: 'Flooring',
+      jobTypes: {
+        laminate: 'Laminate', vinyl: 'Vinyl / LVT', tiles: 'Tiling',
+        carpet: 'Carpeting', wood: 'Solid wood', screed: 'Screeding',
+        epoxy: 'Epoxy / industrial', restore: 'Restoration',
+      },
+      methods: {
+        prep: 'Surface preparation', level: 'Self-levelling',
+        moisture: 'Moisture testing', underlay: 'Underlay install',
+        adhesive: 'Adhesive application', cut: 'Cutting & fitting',
+        grout: 'Grouting & sealing', sand: 'Sanding & sealing',
+        skirting: 'Skirting & trims', polish: 'Polishing',
+      },
+    },
+    glazing: {
+      label: 'Glazing & Aluminium',
+      jobTypes: {
+        windows: 'Windows', doors: 'Doors', shopfront: 'Shopfronts',
+        shower: 'Shower enclosures', mirror: 'Mirrors', balustrade: 'Balustrades',
+        repair: 'Glass repair', screens: 'Screens & sliders',
+      },
+      methods: {
+        measure: 'Measure & template', remove: 'Removal of old units',
+        frame: 'Frame installation', glass: 'Glass cutting & fitting',
+        seal: 'Sealing & silicone', beading: 'Beading & gaskets',
+        hinge: 'Hinges & rollers', lock: 'Locks & handles',
+        align: 'Alignment & adjustment', safety: 'Safety-glass compliance',
+      },
+    },
+    automotive: {
+      label: 'Automotive & Mechanical',
+      jobTypes: {
+        service: 'Service', diagnostic: 'Diagnostics', brakes: 'Brakes',
+        engine: 'Engine repair', suspension: 'Suspension', electrical: 'Auto electrical',
+        aircon: 'Auto air-con', tyres: 'Tyres & alignment',
+      },
+      methods: {
+        scan: 'OBD diagnostic scan', oil: 'Oil & filter change',
+        pad: 'Brake pad / disc', fluid: 'Fluid flush & top-up',
+        belt: 'Belt & timing', battery: 'Battery & charging test',
+        suspension: 'Suspension & shocks', regas: 'Air-con re-gas',
+        balance: 'Wheel balance & align', roadtest: 'Road test',
+      },
+    },
     general: {
       label: 'General / Other trades',
       jobTypes: {
@@ -148,6 +272,12 @@ const IndustryPresets = {
     bronze:     { label: 'Bronze & Cream',    primary: '#44403c', primaryDeep: '#292524', accent: '#b45309', accentInk: '#92400e', accentMist: '#fffbeb', accentLine: '#fde68a' },
     indigo:     { label: 'Indigo & Lilac',    primary: '#312e6b', primaryDeep: '#232155', accent: '#6366f1', accentInk: '#4f46e5', accentMist: '#eef2ff', accentLine: '#c7d2fe' },
     pine:       { label: 'Pine & Lime',       primary: '#1a3329', primaryDeep: '#11241d', accent: '#65a30d', accentInk: '#4d7c0f', accentMist: '#f7fee7', accentLine: '#d9f99d' },
+    steel:      { label: 'Steel & Cyan',      primary: '#1f2937', primaryDeep: '#111827', accent: '#06b6d4', accentInk: '#0e7490', accentMist: '#ecfeff', accentLine: '#a5f3fc' },
+    aubergine:  { label: 'Aubergine & Pink',  primary: '#3b1a3a', primaryDeep: '#2b122a', accent: '#db2777', accentInk: '#be185d', accentMist: '#fdf2f8', accentLine: '#fbcfe8' },
+    navy:       { label: 'Navy & Coral',      primary: '#1e2a4a', primaryDeep: '#151d33', accent: '#f97316', accentInk: '#ea580c', accentMist: '#fff7ed', accentLine: '#fed7aa' },
+    emerald:    { label: 'Emerald & Mint',    primary: '#064e3b', primaryDeep: '#043a2c', accent: '#10b981', accentInk: '#059669', accentMist: '#ecfdf5', accentLine: '#a7f3d0' },
+    slateRose:  { label: 'Slate & Rose',      primary: '#3f3f46', primaryDeep: '#27272a', accent: '#f43f5e', accentInk: '#e11d48', accentMist: '#fff1f2', accentLine: '#fecdd3' },
+    cobalt:     { label: 'Cobalt & Ice',      primary: '#1e3a8a', primaryDeep: '#172554', accent: '#3b82f6', accentInk: '#2563eb', accentMist: '#eff6ff', accentLine: '#bfdbfe' },
   },
 
   /** @returns {object} industry entry, falling back to `general` */

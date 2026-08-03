@@ -5,14 +5,16 @@ const ApiError = require('../utils/ApiError');
 const v = require('../utils/validators');
 
 const INDUSTRIES = new Set([
-  'painting', 'plumbing', 'electrical', 'roofing',
-  'building', 'hvac', 'landscaping', 'general',
+  'painting', 'plumbing', 'electrical', 'roofing', 'building', 'hvac',
+  'landscaping', 'it', 'security', 'appliance', 'pest', 'solar',
+  'flooring', 'glazing', 'automotive', 'general',
 ]);
 const SCHEMES = new Set([
   'slate', 'forest', 'terracotta', 'ocean', 'charcoal', 'plum',
-  'crimson', 'teal', 'midnight', 'graphite', 'burgundy', 'bronze', 'indigo', 'pine',
+  'crimson', 'teal', 'midnight', 'graphite', 'burgundy', 'bronze',
+  'indigo', 'pine', 'steel', 'aubergine', 'navy', 'emerald',
+  'slateRose', 'cobalt',
 ]);
-
 /**
  * Company profile captured during onboarding.
  * This is what turns SiteWise into the tenant's own branded suite:

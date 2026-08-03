@@ -1,139 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SiteWise | Your trade. Your brand. One job card.</title>
-  <meta name="description" content="SiteWise gives trade businesses their own branded job-card suite: capture inspections, photos and pricing on site, then hand over a VAT-ready report and quotation before you leave." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/base.css">
-  <link rel="stylesheet" href="/css/landing.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SiteWise | Quote on site. Get paid faster.</title>
+
+<!-- Favicons & PWA -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#233154">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SiteWise">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #233154;
+    --navy-deep: #1a2540;
+    --blue: #2563eb;
+    --blue-ink: #1d4ed8;
+    --blue-mist: #eff6ff;
+    --blue-line: #bfdbfe;
+    --paper: #f4f6fa;
+    --card: #ffffff;
+    --line: #e2e8f0;
+    --muted: #64748b;
+    --ink: #1e293b;
+    --green: #16a34a;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); color: var(--ink); background: var(--paper); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 44px); }
+
+  /* the ONE signature: a thin tick-marked rule, like a tape measure edge */
+  .tick-rule { height: 8px; background-image: repeating-linear-gradient(90deg, var(--blue-line) 0 1px, transparent 1px 22px); }
+
+  /* ---------- NAV (top, with burger) ---------- */
+  .nav { position: sticky; top: 0; z-index: 40; background: var(--navy); border-bottom: 2px solid var(--blue); }
+  .nav .wrap { display: flex; align-items: center; height: 60px; gap: 14px; }
+  .brand { font-family: var(--font-display); font-weight: 700; font-size: 21px; color: #fff; letter-spacing: .4px; }
+  .brand small { display: block; font-family: var(--font-body); font-weight: 400; font-size: 9px; color: #b4c3dc; letter-spacing: 1.4px; text-transform: uppercase; margin-top: -3px; }
+  .nav-links { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+  .nav-links a { color: #cdd8ea; font-size: 14px; }
+  .nav-links a:hover { color: #fff; }
+  .nav-cta { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; background: var(--blue); color: #fff !important; padding: 8px 16px; border-radius: 6px; font-size: 14px; }
+  .burger { display: none; margin-left: auto; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.25); border-radius: 8px; background: none; cursor: pointer; place-items: center; }
+  .burger span, .burger span::before, .burger span::after { content: ""; display: block; width: 20px; height: 2px; background: #fff; position: relative; }
+  .burger span::before { position: absolute; top: -6px; } .burger span::after { position: absolute; top: 6px; }
+  @media (max-width: 720px) {
+    .burger { display: grid; }
+    .nav-links { position: fixed; inset: 60px 0 auto 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--navy-deep); padding: 6px 0; transform: translateY(-130%); transition: transform .25s ease; border-bottom: 2px solid var(--blue); }
+    .nav-links.open { transform: none; }
+    .nav-links a { padding: 13px clamp(20px,4vw,44px); }
+    .nav-links .nav-cta { margin: 8px clamp(20px,4vw,44px); text-align: center; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%); color: #fff; }
+  .hero .wrap { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 40px; align-items: center; padding: clamp(48px,7vw,80px) clamp(20px,4vw,44px); max-width: 1240px; }
+  @media (max-width: 880px) { .hero .wrap { grid-template-columns: 1fr; gap: 32px; } }
+  .kicker { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 3px; font-size: 13px; color: #9db9f2; margin-bottom: 16px; }
+  .hero h1 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: clamp(36px,5.5vw,60px); line-height: 1.0; letter-spacing: .5px; }
+  .hero h1 .accent { color: #7dd3fc; }
+  .hero p.lede { margin-top: 18px; font-size: clamp(15px,1.5vw,18px); color: #c3cfe3; max-width: 34em; line-height: 1.6; }
+  .hero-cta { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; font-size: 15px; padding: 12px 22px; border-radius: 7px; border: none; cursor: pointer; transition: transform .1s, box-shadow .12s, background .12s; }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: var(--blue-ink); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.28); }
+  .btn-ghost:hover { border-color: #7dd3fc; color: #7dd3fc; }
+  .hero-sign { margin-top: 16px; font-size: 13px; color: #8fa2c2; }
+  .hero-sign a { color: #9db9f2; text-decoration: underline; }
+
+  /* hero card: calm, minimal tilt */
+  .card-vis { background: var(--card); border-radius: 12px; box-shadow: 0 24px 50px rgba(8,15,35,.4); overflow: hidden; line-height: 0; }
+  .card-vis img { width: 100%; height: auto; display: block; }
+  .cv-top { background: var(--navy); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+  .cv-top b { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+  .cv-top span { font-size: 11px; color: #9fb0c6; font-family: var(--font-display); letter-spacing: 1px; }
+  .cv-body { padding: 16px 18px 18px; }
+  .cv-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .cv-row .k { color: var(--muted); } .cv-row .v { font-weight: 600; color: var(--ink); }
+  .cv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+  .cv-chip { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 20px; background: var(--blue-mist); color: var(--blue-ink); border: 1px solid var(--blue-line); }
+  .cv-total { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; background: var(--navy); color: #fff; padding: 12px 16px; border-radius: 8px; }
+  .cv-total .l { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
+  .cv-total .a { font-family: var(--font-display); font-weight: 700; font-size: 23px; color: #7dd3a8; }
+
+  /* ---------- SECTION SHELL ---------- */
+  .sect { padding: clamp(52px,7vw,88px) 0; scroll-margin-top: 68px; }
+  .sect.alt { background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .shead { margin-bottom: 40px; }
+  .shead .kick { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 2.5px; font-size: 12.5px; color: var(--blue-ink); }
+  .shead h2 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: clamp(26px,3.6vw,40px); color: var(--navy); line-height: 1.02; margin-top: 8px; letter-spacing: .4px; }
+  .shead p { margin-top: 10px; color: var(--muted); font-size: 16px; max-width: 46ch; }
+  .shead.mid { text-align: center; } .shead.mid p { margin-left: auto; margin-right: auto; }
+
+  /* ---------- STEPS (quiet numbering) ---------- */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 460px) { .steps { grid-template-columns: 1fr; } }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 20px; }
+  .step .num { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--blue); letter-spacing: 1px; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .step .num::before { content: ""; width: 22px; height: 2px; background: var(--blue); }
+  .step h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 19px; color: var(--navy); letter-spacing: .3px; }
+  .step p { margin-top: 7px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+  /* ---------- BENEFITS ---------- */
+  .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 820px) { .benefits { grid-template-columns: 1fr; } }
+  .benefit { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .benefit .ic { width: 42px; height: 42px; border-radius: 9px; background: var(--blue-mist); border: 1px solid var(--blue-line); display: grid; place-items: center; margin-bottom: 16px; }
+  .benefit .ic svg { width: 21px; height: 21px; stroke: var(--blue-ink); fill: none; stroke-width: 2; }
+  .benefit h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 18px; color: var(--navy); letter-spacing: .3px; }
+  .benefit p { margin-top: 8px; color: var(--muted); font-size: 14.5px; }
+
+  /* ---------- SHOWCASE ---------- */
+  .showcase { display: grid; grid-template-columns: 1fr 1fr; gap: 46px; align-items: center; }
+  @media (max-width: 860px) { .showcase { grid-template-columns: 1fr; gap: 28px; } }
+  .showcase-media { display: flex; justify-content: center; }
+  .showcase-media img { width: 100%; max-width: 340px; height: auto; display: block; filter: drop-shadow(0 20px 40px rgba(21,33,63,.28)); }
+  .mini { background: var(--card); border-radius: 9px; overflow: hidden; }
+  .mini-h { background: var(--navy-deep); color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 15px; padding: 11px 15px; }
+  .mini-b { padding: 14px 15px; }
+  .mini-l { height: 9px; border-radius: 5px; background: #e7ebf2; margin-bottom: 8px; } .mini-l.s { width: 55%; }
+  .mini-ph { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin: 11px 0; }
+  .mini-ph i { aspect-ratio: 4/3; border-radius: 6px; display: block; }
+  .mini-t { display: flex; justify-content: space-between; background: var(--navy); color: #7dd3a8; font-family: var(--font-display); font-weight: 700; padding: 11px 15px; border-radius: 7px; margin-top: 10px; font-size: 18px; }
+  .showcase h2 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: clamp(24px,3.2vw,36px); color: var(--navy); line-height: 1.04; letter-spacing: .3px; }
+  .showcase .kick { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 2.5px; font-size: 12.5px; color: var(--blue-ink); display: block; margin-bottom: 8px; }
+  .showcase ul { list-style: none; margin-top: 18px; }
+  .showcase li { display: flex; gap: 11px; padding: 8px 0; font-size: 15px; }
+  .showcase li::before { content: ""; flex-shrink: 0; width: 20px; height: 20px; border-radius: 5px; background: var(--blue); margin-top: 2px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); background-size: 13px; background-repeat: no-repeat; background-position: center; }
+
+  /* ---------- PRICING ---------- */
+  .pricing { background: var(--navy); color: #fff; }
+  .pricing .shead h2 { color: #fff; } .pricing .shead p { color: #c3cfe3; }
+  .pcard { max-width: 440px; margin: 0 auto; background: var(--card); color: var(--ink); border-radius: 14px; overflow: hidden; box-shadow: 0 20px 44px rgba(0,0,0,.34); }
+  .pflag { background: var(--blue); color: #fff; text-align: center; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 13px; padding: 10px; }
+  .pbody { padding: 30px 30px 32px; text-align: center; }
+  .pamt { font-family: var(--font-display); font-weight: 700; font-size: 60px; line-height: 1; color: var(--navy); }
+  .pamt small { font-size: 19px; color: var(--muted); font-weight: 600; }
+  .psub { color: var(--muted); font-size: 14px; margin: 6px 0 22px; }
+  .pfeats { list-style: none; text-align: left; max-width: 290px; margin: 0 auto 24px; }
+  .pfeats li { display: flex; gap: 10px; padding: 7px 0; font-size: 14px; }
+  .pfeats li::before { content: ""; flex-shrink: 0; width: 19px; height: 19px; border-radius: 5px; background: var(--green); margin-top: 1px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); background-size: 13px; background-repeat: no-repeat; background-position: center; }
+  .pbody .btn { width: 100%; justify-content: center; }
+
+  /* ---------- TESTIMONIALS ---------- */
+  .tgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 820px) { .tgrid { grid-template-columns: 1fr; } }
+  .tcard { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 10px; padding: 22px; }
+  .tcard .q { font-size: 14.5px; color: var(--ink); line-height: 1.55; }
+  .tcard .w { display: flex; align-items: center; gap: 11px; margin-top: 16px; }
+  .tcard .av { width: 38px; height: 38px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+  .tcard .w b { display: block; font-size: 13.5px; color: var(--navy); }
+  .tcard .w span { font-size: 12px; color: var(--muted); }
+  .tnote { text-align: center; font-size: 12px; color: var(--muted); font-style: italic; margin-top: 18px; }
+
+  /* ---------- FAQ ---------- */
+  .faq { max-width: 760px; margin: 0 auto; }
+  .fitem { border-bottom: 1px solid var(--line); }
+  .fq { width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; font-size: 16.5px; color: var(--navy); padding: 18px 40px 18px 0; position: relative; }
+  .fq::after { content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 24px; color: var(--blue-ink); }
+  .fitem.open .fq::after { content: "\2013"; }
+  .fa { max-height: 0; overflow: hidden; transition: max-height .28s ease; }
+  .fa p { padding: 0 40px 18px 0; color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+
+  /* ---------- FINAL CTA ---------- */
+  .final { background: var(--navy-deep); color: #fff; text-align: center; }
+  .final .wrap { padding: clamp(52px,7vw,84px) 20px; }
+  .final h2 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: clamp(28px,4.5vw,52px); line-height: 1.0; letter-spacing: .4px; }
+  .final h2 .accent { color: #7dd3fc; }
+  .final p { color: #c3cfe3; font-size: 16px; margin: 16px auto 28px; max-width: 34em; }
+
+  /* ---------- FOOTER ---------- */
+  footer { background: #0e1622; color: #8fa2c2; }
+  .ft-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 26px; padding: 38px 0 26px; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .ft-brand b { font-family: var(--font-display); font-weight: 700; font-size: 21px; color: #fff; }
+  .ft-brand p { margin-top: 6px; max-width: 26em; line-height: 1.55; font-size: 14px; }
+  .ft-cols { display: flex; gap: 46px; flex-wrap: wrap; }
+  .ft-col h4 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 1px; color: #fff; font-size: 14px; margin-bottom: 10px; }
+  .ft-col a { display: block; font-size: 14px; padding: 4px 0; }
+  .ft-col a:hover { color: #7dd3fc; }
+  .ft-bot { padding: 16px 0; font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+
+  /* ---------- SLIDESHOW (walkthrough) ---------- */
+  .slideshow { position: relative; width: 100%; margin: 0 auto; }
+  .slides { position: relative; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 40px rgba(21,33,63,.16); background: var(--card); border: 1px solid var(--line); }
+  .slide { display: none; }
+  /* every slide image sits in the SAME fixed-ratio box, so the card never resizes */
+  .slide img { width: 100%; aspect-ratio: 1200 / 750; height: auto; object-fit: contain; background: var(--card); display: block; }
+  .slide.active { display: block; animation: slidefade .35s ease; }
+  @keyframes slidefade { from { opacity: .35; } to { opacity: 1; } }
+  .slide figcaption { display: flex; align-items: baseline; gap: 10px; padding: 13px 18px; border-top: 1px solid var(--line); background: var(--card); min-height: 50px; }
+  @media (max-width: 620px) { .slide figcaption { flex-direction: column; gap: 3px; min-height: 58px; } }
+  .slide figcaption strong { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--navy); font-size: 14.5px; white-space: nowrap; }
+  .slide figcaption span { color: var(--muted); font-size: 13px; }
+  .slide-arrow { position: absolute; top: 42%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--navy); font-size: 17px; cursor: pointer; box-shadow: 0 3px 10px rgba(21,33,63,.14); z-index: 2; display: grid; place-items: center; }
+  .slide-arrow:hover { border-color: var(--blue-line); color: var(--blue-ink); }
+  .slide-arrow.prev { left: -16px; } .slide-arrow.next { right: -16px; }
+  @media (max-width: 940px) { .slide-arrow.prev { left: 8px; } .slide-arrow.next { right: 8px; } }
+  .slide-dots { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+  .slide-dots button { width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer; background: rgba(255,255,255,.3); padding: 0; transition: transform .12s, background .12s; }
+  .slide-dots button[aria-current="true"] { background: #7dd3fc; transform: scale(1.25); }
+
+  /* ---------- PHONE SECTION ---------- */
+  .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 760px; margin: 0 auto; align-items: end; }
+  .phone-card { text-align: center; }
+  .phone-card img { width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto 14px; filter: drop-shadow(0 18px 34px rgba(21,33,63,.26)); }
+  .phone-card .cap { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; font-size: 15px; color: var(--navy); }
+  .phone-card .sub { color: var(--muted); font-size: 13px; margin-top: 3px; }
+  .phone-card.mid img { max-width: 240px; }
+  @media (max-width: 720px) {
+    .phones { grid-template-columns: 1fr; gap: 34px; max-width: 300px; }
+    .phone-card img, .phone-card.mid img { max-width: 240px; }
+  }
+
+  /* ---------- SYNC CALLOUT ---------- */
+  .sync { margin-top: 46px; background: var(--navy); border-radius: 16px; padding: 30px 34px; display: flex; align-items: center; gap: 26px; color: #fff; box-shadow: 0 18px 40px rgba(21,33,63,.2); }
+  @media (max-width: 680px) { .sync { flex-direction: column; text-align: center; gap: 16px; padding: 26px 22px; } }
+  .sync-ic { flex-shrink: 0; width: 60px; height: 60px; border-radius: 14px; background: rgba(125,211,252,.15); border: 1px solid rgba(125,211,252,.35); display: grid; place-items: center; }
+  .sync-ic svg { width: 30px; height: 30px; stroke: #7dd3fc; fill: none; stroke-width: 2; }
+  .sync-txt { flex: 1; }
+  .sync-txt h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 22px; letter-spacing: .4px; display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .sync-badge { font-family: var(--font-body); font-weight: 700; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #0e1622; background: #7dd3fc; padding: 3px 10px; border-radius: 20px; }
+  .sync-txt p { color: #c3cfe3; font-size: 14.5px; margin-top: 6px; line-height: 1.55; }
+
+  /* reveal (subtle) */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .5s ease, transform .5s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+</style>
 </head>
 <body>
 
-<nav class="nav" aria-label="Main">
+<!-- NAV -->
+<nav class="nav">
   <div class="wrap">
-    <a class="nav-brand" href="/">SiteWise
-      <small>Job cards for trade businesses</small></a>
-    <div class="nav-links">
-      <a class="nav-plain" href="#trades">Your trade</a>
-      <a class="nav-plain" href="#benefits">Why it works</a>
-      <a class="nav-plain" href="#app">See it in action</a>
+    <a class="brand" href="#top">SiteWise<small>Job cards for trades</small></a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span></button>
+    <div class="nav-links" id="navLinks">
+      <a href="#how">How it works</a>
+      <a href="#why">Why it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
       <a href="/auth?mode=login">Sign in</a>
-      <a class="btn btn-primary" href="/auth?mode=signup">Get started</a>
+      <a class="nav-cta" href="/auth?mode=signup">Start free</a>
     </div>
   </div>
 </nav>
 
-<header class="hero">
+<!-- HERO -->
+<header class="hero" id="top">
   <div class="wrap">
     <div>
-      <h1>Your trade.<br><span class="stroke">Your brand.</span><br>One job card.</h1>
-      <p class="lede">
-        Your own branded job-card suite. Capture inspections, photos and pricing
-        on site, then hand over a VAT-ready report and quotation before you leave.
-      </p>
+      <div class="kicker">The branded job card for trades</div>
+      <h1>Quote on site.<br><span class="accent">Get paid</span> faster.</h1>
+      <p class="lede">SiteWise gives your business its own branded job-card app. Capture the job, price it, and hand the client a professional PDF before you pack up.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="/auth?mode=signup">Create your business</a>
-        <a class="btn btn-ghost-dark" href="#app">See it in action</a>
+        <a class="btn btn-primary" href="/auth?mode=signup">Build your version &rarr;</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
-      <p class="hero-note">Already set up? <a href="/auth?mode=login" style="color:#9db9f2">Sign in to your app</a></p>
+      <p class="hero-sign">Already set up? <a href="/auth?mode=login">Sign in to your app</a></p>
     </div>
-    <div class="hero-visual">
-      <img src="/assets/screenshots/slide-4-pdf.svg" alt="A branded report and quotation PDF generated by a SiteWise business" width="970" height="690">
-    </div>
-  </div>
-</header>
-
-<div class="strip">
-  <div class="wrap">
-    <span>Any trade</span>
-    <span>Your logo and colours</span>
-    <span>VAT-ready quotes</span>
-    <span>Saved to your account</span>
-  </div>
-</div>
-
-<section id="trades" class="block">
-  <div class="wrap">
-    <div class="block-head">
-      <span class="eyebrow">Built for your trade</span>
-      <h2>Pick your industry, we set the presets</h2>
-      <p>SiteWise loads your trade's job types and methods as tappable chips.</p>
-    </div>
-    <div class="service-wall" role="list">
-      <span class="chip" role="listitem">Painting &amp; Decorating</span>
-      <span class="chip" role="listitem">Plumbing</span>
-      <span class="chip" role="listitem">Electrical</span>
-      <span class="chip" role="listitem">Roofing &amp; Waterproofing</span>
-      <span class="chip" role="listitem">Building &amp; Renovations</span>
-      <span class="chip" role="listitem">HVAC &amp; Refrigeration</span>
-      <span class="chip" role="listitem">Landscaping</span>
-      <span class="chip" role="listitem">General / Other trades</span>
-    </div>
-    <p class="service-note">
-      A plumber taps "Pressure testing". A painter taps "Two-coat application".
-      Your trade's language, ready to go.
-    </p>
-  </div>
-</section>
-
-<section id="benefits" class="block alt">
-  <div class="wrap">
-    <div class="block-head">
-      <span class="eyebrow">Why it works</span>
-      <h2>How it will benefit you</h2>
-    </div>
-    <div class="benefits">
-      <article class="benefit">
-        <h3>Your brand, not ours</h3>
-        <p>Your logo, colours, VAT and banking details on every screen and every
-        PDF. SiteWise stays invisible.</p>
-      </article>
-      <article class="benefit">
-        <h3>Quote on the driveway</h3>
-        <p>Live totals with VAT as you walk the site. One tap makes the report,
-        the quote, or both.</p>
-      </article>
-      <article class="benefit">
-        <h3>A suite that remembers</h3>
-        <p>Every job card autosaves. Reopen, tweak and re-issue any PDF in
-        seconds.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section id="app" class="block">
-  <div class="wrap">
-    <div class="block-head">
-      <span class="eyebrow">See it in action</span>
-      <h2>A walk through a real job</h2>
-      <p>Shown here in one business's colours. Yours will wear yours.</p>
-    </div>
-
-    <div class="slideshow" data-slideshow data-interval="5000">
+    <div class="slideshow" data-slideshow>
       <div class="slides">
         <figure class="slide active">
-          <img src="/assets/screenshots/slide-1-capture.svg" alt="Capturing client details, job type and methods as chips" width="1200" height="750" loading="lazy">
-          <figcaption><strong>1. Capture the job</strong>
-            <span>Client, site and methods tapped in as chips.</span></figcaption>
+          <img src="/assets/screenshots/slide-1-capture.svg" alt="Capturing client details, job type and methods as chips" width="1200" height="750" loading="eager">
+          <figcaption><strong>1. Capture the job</strong><span>Client, site and methods tapped in as chips.</span></figcaption>
         </figure>
         <figure class="slide">
           <img src="/assets/screenshots/slide-2-report.svg" alt="Writing the inspection report and choosing an outcome" width="1200" height="750" loading="lazy">
-          <figcaption><strong>2. Write the report</strong>
-            <span>Findings, recommendation and outcome.</span></figcaption>
+          <figcaption><strong>2. Write the report</strong><span>Findings, recommendation and outcome.</span></figcaption>
         </figure>
         <figure class="slide">
           <img src="/assets/screenshots/slide-3-quote.svg" alt="Site photos and the quotation with live totals" width="1200" height="750" loading="lazy">
-          <figcaption><strong>3. Photos &amp; pricing</strong>
-            <span>Photos and live VAT-inclusive totals.</span></figcaption>
+          <figcaption><strong>3. Photos &amp; pricing</strong><span>Photos and live VAT-inclusive totals.</span></figcaption>
         </figure>
         <figure class="slide">
-          <img src="/assets/screenshots/slide-4-pdf.svg" alt="The finished branded PDF" width="970" height="690" loading="lazy">
-          <figcaption><strong>4. Hand over the PDF</strong>
-            <span>Branded, numbered, bank details included.</span></figcaption>
+          <img src="/assets/screenshots/slide-4-pdf.svg" alt="The finished branded PDF" width="1200" height="750" loading="lazy">
+          <figcaption><strong>4. Hand over the PDF</strong><span>Branded, numbered, bank details included.</span></figcaption>
+        </figure>
+        <figure class="slide">
+          <img src="/assets/screenshots/slide-5-jobs.svg" alt="The jobs dashboard listing saved job cards with totals and outcomes" width="1200" height="750" loading="lazy">
+          <figcaption><strong>5. Every job, saved</strong><span>Your whole book of work, autosaved and reopenable.</span></figcaption>
+        </figure>
+        <figure class="slide">
+          <img src="/assets/screenshots/slide-6-brand.svg" alt="Choosing brand colours and adding a logo, with a live preview of the app header" width="1200" height="750" loading="lazy">
+          <figcaption><strong>6. Make it yours</strong><span>Pick a colour scheme and add your logo.</span></figcaption>
+        </figure>
+        <figure class="slide">
+          <img src="/assets/screenshots/slide-7-whatsapp.svg" alt="Sending the finished quote to a client on WhatsApp with a pre-filled message" width="1200" height="750" loading="lazy">
+          <figcaption><strong>7. Send it on WhatsApp</strong><span>One tap, message ready, before you leave.</span></figcaption>
         </figure>
       </div>
       <button class="slide-arrow prev" aria-label="Previous slide">&#8249;</button>
@@ -141,22 +312,210 @@
       <div class="slide-dots" role="tablist" aria-label="Slides"></div>
     </div>
   </div>
+</header>
+
+<div class="tick-rule"></div>
+
+<!-- HOW IT WORKS -->
+<section class="sect" id="how">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="kick">The job, start to finish</span>
+      <h2>Four steps. One driveway.</h2>
+      <p>SiteWise follows the exact order you already work in, so there's nothing new to learn.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="num">01</div><h3>Log the job</h3><p>Client, site and methods tapped in as chips. No clipboard.</p></div>
+      <div class="step"><div class="num">02</div><h3>Write the report</h3><p>Findings, recommendation and a clear outcome.</p></div>
+      <div class="step"><div class="num">03</div><h3>Build the quote</h3><p>Line items and photos. VAT-inclusive total, live.</p></div>
+      <div class="step"><div class="num">04</div><h3>Hand it over</h3><p>Branded PDF, or WhatsApp, before you leave.</p></div>
+    </div>
+  </div>
 </section>
 
-<div class="cta-band">
-  <h2>Ready to stop typing quotes at 9pm?</h2>
-  <p>Company details, colours and trade presets in minutes. Every PDF carries
-     your brand.</p>
-  <a class="btn btn-primary" href="/auth?mode=signup">Create your business</a>
-</div>
+<!-- WHY / BENEFITS -->
+<section class="sect alt" id="why">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="kick">Why tradies switch</span>
+      <h2>Look bigger. Work lighter.</h2>
+    </div>
+    <div class="benefits reveal">
+      <div class="benefit">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <h3>Your brand, not ours</h3>
+        <p>Your logo, colours, VAT and banking on every screen and every PDF. SiteWise stays invisible.</p>
+      </div>
+      <div class="benefit">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>Quote on the driveway</h3>
+        <p>Live totals with VAT as you walk the site. One tap makes the report, the quote, or both.</p>
+      </div>
+      <div class="benefit">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 9h16M9 19V9"/></svg></div>
+        <h3>A book that remembers</h3>
+        <p>Every job card autosaves to your account. Reopen, tweak and re-issue any PDF in seconds.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- WORKS ON YOUR PHONE -->
+<section class="sect" id="mobile">
+  <div class="wrap">
+    <div class="shead mid reveal">
+      <span class="kick">Built for the site, not the office</span>
+      <h2>The whole app, on your phone</h2>
+      <p>No laptop, no paperwork back at the bakkie. Capture, price and send the job from the phone in your pocket.</p>
+    </div>
+    <div class="phones reveal">
+      <div class="phone-card">
+        <img src="/assets/screenshots/phone-capture.svg" alt="Capturing a job on a phone: client, site and method chips" width="440" height="900" loading="lazy">
+        <div class="cap">Capture</div>
+        <div class="sub">Tap in the job on site</div>
+      </div>
+      <div class="phone-card mid">
+        <img src="/assets/screenshots/phone-quote.svg" alt="Building a quote on a phone with photos and live totals" width="440" height="900" loading="lazy">
+        <div class="cap">Price</div>
+        <div class="sub">Photos and live VAT totals</div>
+      </div>
+      <div class="phone-card">
+        <img src="/assets/screenshots/phone-jobs.svg" alt="The jobs list on a phone showing saved job cards" width="440" height="900" loading="lazy">
+        <div class="cap">Manage</div>
+        <div class="sub">Every job, in your pocket</div>
+      </div>
+    </div>
+
+    <!-- sync: coming soon -->
+    <div class="sync reveal">
+      <div class="sync-ic">
+        <svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M20 8a8 8 0 0 0-14.5-3M4 16a8 8 0 0 0 14.5 3"/></svg>
+      </div>
+      <div class="sync-txt">
+        <h3>One account, every device <span class="sync-badge">Coming soon</span></h3>
+        <p>Start a job on your phone on site, finish it on your desktop back home. Your job cards stay in sync across every device you sign in on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sect pricing" id="pricing">
+  <div class="wrap">
+    <div class="shead mid reveal">
+      <span class="kick" style="color:#9db9f2">Simple pricing</span>
+      <h2>Free while we're in beta</h2>
+      <p>Get set up now and lock in early. No card required, no catch, just help us shape it.</p>
+    </div>
+    <div class="pcard reveal">
+      <div class="pflag">Beta &mdash; free for early users</div>
+      <div class="pbody">
+        <div class="pamt">R0<small>/month</small></div>
+        <div class="psub">While SiteWise is in beta</div>
+        <ul class="pfeats">
+          <li>Your fully branded job-card app</li>
+          <li>Unlimited job cards and PDFs</li>
+          <li>All 15+ trade presets and colour themes</li>
+          <li>WhatsApp handover built in</li>
+          <li>Install to your phone like an app</li>
+        </ul>
+        <a class="btn btn-primary" href="/auth?mode=signup">Start free &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sect alt" id="faq">
+  <div class="wrap">
+    <div class="shead mid reveal">
+      <span class="kick">Straight answers</span>
+      <h2>Questions, sorted</h2>
+    </div>
+    <div class="faq reveal">
+      <div class="fitem"><button class="fq">Do I need to install anything?</button><div class="fa"><p>No. SiteWise runs in your phone's browser, nothing from an app store. You can add it to your home screen so it opens like a normal app, but that's optional.</p></div></div>
+      <div class="fitem"><button class="fq">Can I use my own logo and colours?</button><div class="fa"><p>Yes, that's the whole point. During setup you add your logo, pick a colour scheme, and enter your banking and VAT details. Everything the client sees is your brand.</p></div></div>
+      <div class="fitem"><button class="fq">Which trades does it work for?</button><div class="fa"><p>Fifteen and counting, from painting and plumbing to solar, security, flooring and automotive, each with job types and methods in your trade's own language.</p></div></div>
+      <div class="fitem"><button class="fq">What does it cost?</button><div class="fa"><p>Nothing while we're in beta. Get set up now, use it on real jobs, and help us shape it. We'll give early users plenty of notice before any paid plans arrive.</p></div></div>
+      <div class="fitem"><button class="fq">Is my client data safe?</button><div class="fa"><p>Your account is protected with a secure sign-in, and each business only ever sees its own jobs and clients. We're building toward full POPIA compliance as we grow.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+  <div class="wrap">
+    <h2 class="reveal">Stop typing quotes at <span class="accent">9pm.</span></h2>
+    <p class="reveal">Set up your branded version of SiteWise in minutes. Free while we're in beta.</p>
+    <a class="btn btn-primary reveal" href="/auth?mode=signup">Build your version &rarr;</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
   <div class="wrap">
-    <span>&copy; SiteWise. Job cards for trade businesses.</span>
-    <span>hello@sitewise.co.za</span>
+    <div class="ft-top">
+      <div class="ft-brand"><b>SiteWise</b><p>The branded job-card app for trade businesses. Capture, report, quote and hand over, all from the phone in your pocket.</p></div>
+      <div class="ft-cols">
+        <div class="ft-col"><h4>Product</h4><a href="#how">How it works</a><a href="#why">Why it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></div>
+        <div class="ft-col"><h4>Account</h4><a href="/auth?mode=login">Sign in</a><a href="/auth?mode=signup">Create account</a></div>
+        <div class="ft-col"><h4>Contact</h4><a href="mailto:hello@sitewise.co.za">hello@sitewise.co.za</a></div>
+      </div>
+    </div>
+    <div class="ft-bot"><span>&copy; SiteWise. Job cards for trade businesses.</span><span>Privacy &middot; Terms</span></div>
   </div>
 </footer>
 
-<script src="/js/pages/landing.js" defer></script>
+<script>
+  // burger
+  var burger = document.getElementById('burger'), links = document.getElementById('navLinks');
+  burger.addEventListener('click', function () { links.classList.toggle('open'); });
+  links.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { links.classList.remove('open'); }); });
+  // FAQ accordion
+  document.querySelectorAll('.fq').forEach(function (q) {
+    q.addEventListener('click', function () {
+      var item = q.parentElement, a = q.nextElementSibling, open = item.classList.contains('open');
+      document.querySelectorAll('.fitem').forEach(function (i) { i.classList.remove('open'); i.querySelector('.fa').style.maxHeight = null; });
+      if (!open) { item.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+    });
+  });
+  // subtle reveal
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+  // Slideshow (self-contained, in case landing.js isn't present)
+  (function () {
+    var root = document.querySelector('[data-slideshow]');
+    if (!root) return;
+    var slides = Array.prototype.slice.call(root.querySelectorAll('.slide'));
+    var dotsWrap = root.querySelector('.slide-dots');
+    var i = 0;
+    var dots = slides.map(function (_, n) {
+      var b = document.createElement('button');
+      b.setAttribute('role', 'tab');
+      b.addEventListener('click', function () { go(n); });
+      dotsWrap.appendChild(b);
+      return b;
+    });
+    function go(n) {
+      slides[i].classList.remove('active'); dots[i].removeAttribute('aria-current');
+      i = (n + slides.length) % slides.length;
+      slides[i].classList.add('active'); dots[i].setAttribute('aria-current', 'true');
+    }
+    root.querySelector('.slide-arrow.next').addEventListener('click', function () { go(i + 1); });
+    root.querySelector('.slide-arrow.prev').addEventListener('click', function () { go(i - 1); });
+    dots[0].setAttribute('aria-current', 'true');
+    // swipe support for touch devices
+    var x0 = null;
+    root.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    root.addEventListener('touchend', function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) { go(dx < 0 ? i + 1 : i - 1); }
+      x0 = null;
+    }, { passive: true });
+  })();
+</script>
+<script src="/js/pwa.js" defer></script>
 </body>
 </html>

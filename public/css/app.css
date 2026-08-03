@@ -222,3 +222,54 @@ section.card { background: var(--card); border: 1px solid var(--line); border-ra
 
 /* Small hint by the phone field pointing to the bar button */
 .field-note { display: block; font-size: 11.5px; color: #16a34a; margin-top: 6px; font-weight: 600; }
+
+/* ============================================================
+   PWA "Install SiteWise" button
+   PASTE THIS AT THE BOTTOM OF:  public/css/app.css
+   ============================================================ */
+.pwa-install {
+  position: fixed;
+  bottom: 96px;                 /* clears the sticky action bar */
+  right: 16px;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--blue, #2563eb);
+  border: none;
+  border-radius: 999px;
+  padding: 11px 18px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .25);
+  transition: filter .12s, transform .08s;
+}
+.pwa-install:hover { filter: brightness(1.06); }
+.pwa-install:active { transform: translateY(1px); }
+.pwa-install svg { width: 16px; height: 16px; }
+
+/* Jobs page has no sticky bar, so sit lower there. */
+body:not(.app-body) .pwa-install { bottom: 20px; }
+
+.pwa-install { position: fixed; }          /* (already set; harmless if repeated) */
+.pwa-dismiss {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  border-radius: 50%;
+  font-size: 13px;
+  line-height: 1;
+  color: #fff;
+  background: rgba(255, 255, 255, .22);
+  cursor: pointer;
+}
+.pwa-dismiss:hover { background: rgba(255, 255, 255, .38); }
+
+/* Button is hidden until the script proves it's installable */
+.pwa-install { display: none; }
+.pwa-install.pwa-show { display: inline-flex; }

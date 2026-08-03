@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 800" font-family="Barlow, Arial, sans-serif">
+  <rect width="390" height="800" fill="#f4f6fa"/>
+  <rect width="390" height="66" fill="#233154"/>
+  <rect y="66" width="390" height="3" fill="#2563eb"/>
+  <rect x="14" y="13" width="40" height="40" rx="8" fill="#ffffff" opacity="0.14"/>
+  <text x="34" y="40" text-anchor="middle" font-size="19" fill="#ffffff" font-weight="bold">A</text>
+  <text x="64" y="31" font-size="15" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+  <text x="64" y="47" font-size="9.5" fill="#b4c3dc">Make it yours</text>
+
+  <text x="14" y="98" font-size="15" fill="#233154" font-weight="bold" letter-spacing="0.8">MAKE IT YOURS</text>
+  <text x="14" y="116" font-size="10.5" fill="#64748b">Pick a colour scheme and add your logo.</text>
+  <text x="14" y="130" font-size="10.5" fill="#64748b">It themes your whole app and every PDF.</text>
+
+  <!-- swatch grid 2x4 -->
+  <g font-size="10.5">
+    <rect x="12" y="144" width="180" height="42" rx="9" fill="#ffffff" stroke="#2563eb" stroke-width="1.8"/>
+    <circle cx="34" cy="165" r="9" fill="#233154"/><circle cx="48" cy="165" r="9" fill="#2563eb"/>
+    <text x="66" y="169" fill="#1e293b" font-weight="bold">Slate &amp; Blue</text>
+    <text x="180" y="169" text-anchor="end" font-size="12" fill="#2563eb" font-weight="bold">&#10003;</text>
+    <rect x="198" y="144" width="180" height="42" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+    <circle cx="220" cy="165" r="9" fill="#1c3a2c"/><circle cx="234" cy="165" r="9" fill="#16a34a"/>
+    <text x="252" y="169" fill="#475569">Forest &amp; Green</text>
+    <rect x="12" y="194" width="180" height="42" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+    <circle cx="34" cy="215" r="9" fill="#5b2120"/><circle cx="48" cy="215" r="9" fill="#ea580c"/>
+    <text x="66" y="219" fill="#475569">Brick &amp; Orange</text>
+    <rect x="198" y="194" width="180" height="42" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+    <circle cx="220" cy="215" r="9" fill="#0c4a6e"/><circle cx="234" cy="215" r="9" fill="#0284c7"/>
+    <text x="252" y="219" fill="#475569">Ocean &amp; Sky</text>
+    <rect x="12" y="244" width="180" height="42" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+    <circle cx="34" cy="265" r="9" fill="#1e293b"/><circle cx="48" cy="265" r="9" fill="#ca8a04"/>
+    <text x="66" y="269" fill="#475569">Midnight &amp; Gold</text>
+    <rect x="198" y="244" width="180" height="42" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+    <circle cx="220" cy="265" r="9" fill="#3b2352"/><circle cx="234" cy="265" r="9" fill="#7c3aed"/>
+    <text x="252" y="269" fill="#475569">Plum &amp; Violet</text>
+    <rect x="12" y="294" width="180" height="42" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+    <circle cx="34" cy="315" r="9" fill="#4c1d24"/><circle cx="48" cy="315" r="9" fill="#e11d48"/>
+    <text x="66" y="319" fill="#475569">Burgundy &amp; Rose</text>
+    <rect x="198" y="294" width="180" height="42" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+    <circle cx="220" cy="315" r="9" fill="#1e2a4a"/><circle cx="234" cy="315" r="9" fill="#f97316"/>
+    <text x="252" y="319" fill="#475569">Navy &amp; Coral</text>
+  </g>
+  <text x="14" y="360" font-size="10" fill="#94a3b8" font-style="italic">20 colour schemes in total.</text>
+
+  <!-- logo + preview -->
+  <rect x="12" y="376" width="366" height="196" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+  <rect x="26" y="392" width="96" height="96" rx="10" fill="#eff6ff" stroke="#bfdbfe" stroke-dasharray="6 4"/>
+  <text x="74" y="436" text-anchor="middle" font-size="11.5" fill="#1d4ed8">Add</text>
+  <text x="74" y="452" text-anchor="middle" font-size="11.5" fill="#1d4ed8">your logo</text>
+  <text x="138" y="410" font-size="12" fill="#233154" font-weight="bold" letter-spacing="0.8">LIVE PREVIEW</text>
+  <text x="138" y="428" font-size="10" fill="#64748b">How your app header and PDF will look.</text>
+  <rect x="138" y="440" width="226" height="56" rx="9" fill="#233154"/>
+  <rect x="138" y="492" width="226" height="4" fill="#2563eb"/>
+  <rect x="152" y="452" width="34" height="34" rx="7" fill="#ffffff" opacity="0.14"/>
+  <text x="169" y="474" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="bold">A</text>
+  <text x="196" y="468" font-size="12.5" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+  <text x="196" y="484" font-size="9" fill="#b4c3dc">Neat. On time. Guaranteed.</text>
+
+  <text x="14" y="602" font-size="11" fill="#64748b" font-style="italic">Everything your client sees carries your brand,</text>
+  <text x="14" y="620" font-size="11" fill="#64748b" font-style="italic">not ours.</text>
+</svg>
