@@ -19,12 +19,20 @@ class AuthService {
    * @param {{name: string, email: string, password: string}} input (pre-validated)
    * @returns {Promise<object>} the created user
    */
-  async signup({ name, email, password }) {
+  async signup({ name, email, password, acceptedTerms }) {
+    // Server-side enforcement: the client checkbox can be bypassed, so we
+    // never create an account unless the terms were explicitly accepted.
+    if (!acceptedTerms) {
+      throw ApiError.badRequest('You must accept the Terms & Conditions to create an account');
+    }
     if (this._users.findByEmail(email)) {
       throw ApiError.conflict('An account with that email already exists');
     }
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    return this._users.create({ name, email, passwordHash });
+    const user = this._users.create({ name, email, passwordHash });
+    // Record proof of consent (the moment they accepted).
+    this._users.update(user.id, { acceptedTermsAt: new Date().toISOString() });
+    return this._users.findById(user.id);
   }
 
   /**

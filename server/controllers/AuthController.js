@@ -26,6 +26,7 @@ class AuthController {
         name: v.requireString(req.body?.name, 'Name', { max: 100 }),
         email: v.requireEmail(req.body?.email),
         password: v.requirePassword(req.body?.password),
+        acceptedTerms: req.body?.acceptedTerms === true,
       };
       const user = await this._auth.signup(input);
       this._setSession(res, user);

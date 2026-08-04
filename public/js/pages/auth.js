@@ -20,6 +20,8 @@ class AuthPage {
       submit: document.getElementById('submitBtn'),
       error: document.getElementById('formError'),
       form: document.getElementById('authForm'),
+      termsField: document.getElementById('termsField'),
+      acceptTerms: document.getElementById('acceptTerms'),
     };
   }
 
@@ -40,6 +42,8 @@ class AuthPage {
     this._els.tabLogin.setAttribute('aria-selected', String(!signup));
     this._els.tabSignup.setAttribute('aria-selected', String(signup));
     this._els.nameField.hidden = !signup;
+    this._els.termsField.hidden = !signup;
+    if (!signup) this._els.acceptTerms.checked = false;
     this._els.title.textContent = signup ? 'Create your account' : 'Welcome back';
     this._els.sub.textContent = signup
       ? 'One account for reports, quotes and PDFs.'
@@ -62,8 +66,13 @@ class AuthPage {
     try {
       const email = this._els.email.value.trim();
       const password = this._els.password.value;
+      if (this._mode === 'signup' && !this._els.acceptTerms.checked) {
+        this._showError('Please accept the Terms & Conditions to create an account.');
+        this._els.submit.disabled = false;
+        return;
+      }
       const { user } = this._mode === 'signup'
-        ? await this._api.signup({ name: this._els.name.value.trim(), email, password })
+        ? await this._api.signup({ name: this._els.name.value.trim(), email, password, acceptedTerms: true })
         : await this._api.login({ email, password });
       location.replace(SessionGuard.destinationFor(user));
     } catch (err) {
