@@ -19,6 +19,18 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Apply saved colour scheme before paint to avoid a default-scheme flash -->
+  <script>
+    (function () {
+      try {
+        var t = JSON.parse(localStorage.getItem('sitewise_theme') || 'null');
+        if (t) {
+          var r = document.documentElement.style;
+          for (var k in t) r.setProperty(k, t[k]);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/app.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
