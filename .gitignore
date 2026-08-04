@@ -1,4 +1,10 @@
 node_modules/
+
+# Runtime data (never commit)
 server/data/*.json
 server/data/.jwt-secret
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm
+
 .env

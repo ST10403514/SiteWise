@@ -1,0 +1,21 @@
+# Render deployment config for SiteWise.
+# Commit this to your repo root. When you connect the repo to Render,
+# it reads this file and sets up the service, persistent disk, and env vars.
+services:
+  - type: web
+    name: sitewise
+    runtime: node
+    plan: starter          # smallest paid plan; required for a persistent disk
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true   # Render generates a strong secret ONCE and keeps it stable
+      - key: DATA_DIR
+        value: /data          # must match the disk mountPath below
+    disk:
+      name: sitewise-data
+      mountPath: /data        # the persistent disk lives here; the SQLite db goes here
+      sizeGB: 1

@@ -1,7 +1,7 @@
 {
   "name": "sitewise",
   "version": "1.0.0",
-  "description": "SiteWise \u2014 branded job-card, report and quotation suites for trade businesses",
+  "description": "SiteWise — branded job-card, report and quotation suites for trade businesses",
   "main": "server/index.js",
   "type": "commonjs",
   "scripts": {
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^13.0.2",
     "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2"

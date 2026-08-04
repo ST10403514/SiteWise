@@ -22,8 +22,8 @@ const jobRoutes = require('./routes/jobRoutes');
  * and returns a configured Express app.
  */
 function createApp() {
-  const userRepository = new UserRepository(config.usersFile);
-  const jobRepository = new JobRepository(config.jobsFile);
+  const userRepository = new UserRepository(config.dbFile);
+  const jobRepository = new JobRepository(config.dbFile);
   const tokenService = new TokenService(config.jwtSecret, config.tokenTtl);
   const authService = new AuthService(userRepository);
 

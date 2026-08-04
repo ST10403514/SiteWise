@@ -6,15 +6,24 @@ const crypto = require('crypto');
 
 /**
  * Central application configuration.
- * The JWT secret is taken from the environment when provided; otherwise a
- * random secret is generated once and persisted so sessions survive restarts.
+ *
+ * Works in two environments without code changes:
+ *   - Local dev: data lives in server/data, JWT secret auto-generated once.
+ *   - Production (Render): set DATA_DIR to a persistent disk mount (e.g. /data)
+ *     and JWT_SECRET as an environment variable. Both are read from env below.
  */
 class Config {
   constructor() {
     this.port = Number(process.env.PORT) || 3000;
-    this.dataDir = path.join(__dirname, 'data');
+
+    // DATA_DIR lets the host point storage at a persistent disk.
+    // Falls back to the local server/data folder for development.
+    this.dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
+
     this.usersFile = path.join(this.dataDir, 'users.json');
     this.jobsFile = path.join(this.dataDir, 'jobs.json');
+    this.dbFile = path.join(this.dataDir, 'sitewise.db');
+
     this.publicDir = path.join(__dirname, '..', 'public');
     this.cookieName = 'ssp_session';
     this.tokenTtl = '7d';
@@ -24,6 +33,14 @@ class Config {
   }
 
   _loadOrCreateSecret() {
+    // In production a stable JWT_SECRET must be provided via the environment,
+    // otherwise every restart/redeploy would invalidate all sessions.
+    if (this.isProduction) {
+      throw new Error(
+        'JWT_SECRET environment variable is required in production. ' +
+        'Set it in your host\'s environment settings.'
+      );
+    }
     const secretFile = path.join(this.dataDir, '.jwt-secret');
     fs.mkdirSync(this.dataDir, { recursive: true });
     if (fs.existsSync(secretFile)) {

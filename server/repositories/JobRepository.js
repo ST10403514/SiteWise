@@ -1,33 +1,37 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+const { getDb } = require('./db');
 
 /**
- * File-backed job store, scoped per user.
- * Same contract idea as UserRepository - swap for a database
- * implementation without touching controllers.
+ * SQLite-backed job store, scoped per user.
+ *
+ * Public interface is unchanged from the previous JSON implementation:
+ * listByUser, findByIdForUser, upsert, removeForUser. Controllers untouched.
+ *
+ * The full job payload (client, photos, line items, totals, etc.) is kept
+ * as JSON text in the `data` column, exactly as it was in the JSON store.
  */
 class JobRepository {
-  /** @param {string} filePath Absolute path of the JSON store */
-  constructor(filePath) {
-    this._filePath = filePath;
-    this._jobs = this._load(); // [{ id, userId, data, updatedAt }]
-  }
+  /** @param {string} dbFile Absolute path of the SQLite database file */
+  constructor(dbFile) {
+    this._db = getDb(dbFile);
 
-  _load() {
-    try {
-      return JSON.parse(fs.readFileSync(this._filePath, 'utf8'));
-    } catch {
-      return [];
-    }
-  }
-
-  _persist() {
-    fs.mkdirSync(path.dirname(this._filePath), { recursive: true });
-    const tmp = `${this._filePath}.tmp`;
-    fs.writeFileSync(tmp, JSON.stringify(this._jobs), { mode: 0o600 });
-    fs.renameSync(tmp, this._filePath);
+    this._byUser = this._db.prepare(
+      'SELECT id, data, updatedAt FROM jobs WHERE userId = ? ORDER BY updatedAt DESC'
+    );
+    this._byIdOwned = this._db.prepare(
+      'SELECT * FROM jobs WHERE id = ? AND userId = ?'
+    );
+    this._byId = this._db.prepare('SELECT * FROM jobs WHERE id = ?');
+    this._insert = this._db.prepare(
+      'INSERT INTO jobs (id, userId, data, updatedAt) VALUES (@id, @userId, @data, @updatedAt)'
+    );
+    this._updateData = this._db.prepare(
+      'UPDATE jobs SET data = @data, updatedAt = @updatedAt WHERE id = @id'
+    );
+    this._delete = this._db.prepare(
+      'DELETE FROM jobs WHERE id = ? AND userId = ?'
+    );
   }
 
   /**
@@ -35,50 +39,59 @@ class JobRepository {
    * @returns {object[]} newest first
    */
   listByUser(userId) {
-    return this._jobs
-      .filter((j) => j.userId === userId)
-      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-      .map((j) => ({
-        id: j.id,
-        quoteNumber: j.data.quoteNumber,
-        clientName: j.data.clientName,
-        siteAddress: j.data.siteAddress,
-        outcome: j.data.outcome,
-        grandTotal: j.data.grandTotal,
-        photoCount: Array.isArray(j.data.photos) ? j.data.photos.length : 0,
-        updatedAt: j.updatedAt,
-      }));
+    const rows = this._byUser.all(userId);
+    return rows.map((row) => {
+      const data = JSON.parse(row.data);
+      return {
+        id: row.id,
+        quoteNumber: data.quoteNumber,
+        clientName: data.clientName,
+        siteAddress: data.siteAddress,
+        outcome: data.outcome,
+        grandTotal: data.grandTotal,
+        photoCount: Array.isArray(data.photos) ? data.photos.length : 0,
+        updatedAt: row.updatedAt,
+      };
+    });
   }
 
   /** @returns {object|null} full record, only if owned by userId */
   findByIdForUser(id, userId) {
-    const job = this._jobs.find((j) => j.id === id && j.userId === userId);
-    return job || null;
+    const row = this._byIdOwned.get(id, userId);
+    if (!row) return null;
+    return {
+      id: row.id,
+      userId: row.userId,
+      data: JSON.parse(row.data),
+      updatedAt: row.updatedAt,
+    };
   }
 
   /** Create or replace a job owned by userId. @returns {object} */
   upsert(id, userId, data) {
-    const existing = this._jobs.find((j) => j.id === id);
+    const existing = this._byId.get(id);
     if (existing && existing.userId !== userId) {
       const err = new Error('Job belongs to another user');
       err.code = 'FORBIDDEN';
       throw err;
     }
-    const record = existing || { id, userId };
-    record.data = data;
-    record.updatedAt = new Date().toISOString();
-    if (!existing) this._jobs.push(record);
-    this._persist();
-    return record;
+
+    const updatedAt = new Date().toISOString();
+    const serialized = JSON.stringify(data);
+
+    if (existing) {
+      this._updateData.run({ id, data: serialized, updatedAt });
+    } else {
+      this._insert.run({ id, userId, data: serialized, updatedAt });
+    }
+
+    return { id, userId, data, updatedAt };
   }
 
   /** @returns {boolean} true if a job was removed */
   removeForUser(id, userId) {
-    const before = this._jobs.length;
-    this._jobs = this._jobs.filter((j) => !(j.id === id && j.userId === userId));
-    const removed = this._jobs.length !== before;
-    if (removed) this._persist();
-    return removed;
+    const info = this._delete.run(id, userId);
+    return info.changes > 0;
   }
 }
 

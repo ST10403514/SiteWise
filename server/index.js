@@ -3,6 +3,8 @@
 const createApp = require('./app');
 const config = require('./config');
 
-createApp().listen(config.port, () => {
-  console.log(`SiteWise running at http://localhost:${config.port}`);
+// Bind to 0.0.0.0 so the app is reachable on hosting platforms (Render, etc.)
+// and on your LAN for phone testing. Locally this still serves localhost too.
+createApp().listen(config.port, '0.0.0.0', () => {
+  console.log(`SiteWise running on port ${config.port}`);
 });
