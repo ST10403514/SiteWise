@@ -128,10 +128,31 @@ class PDFService {
     doc.setFillColor(...BLUE);
     doc.rect(0, 38, PW, 2, 'F');
 
-    // Logo (if configured)
+    // Logo (if configured) - scaled to fit a 28mm box, preserving aspect ratio
     if (PROFILE.logo) {
       try {
-        doc.addImage(PROFILE.logo, 'JPEG', ML, 5, 28, 28);
+        const box = 28;            // the logo slot is 28mm x 28mm
+        const boxY = 5;            // top offset, unchanged
+        let drawW = box, drawH = box;
+
+        // Read the image's real dimensions so we can keep its shape.
+        const props = doc.getImageProperties(PROFILE.logo);
+        if (props && props.width && props.height) {
+          const ratio = props.width / props.height;
+          if (ratio >= 1) {
+            drawW = box;           // wider than tall
+            drawH = box / ratio;
+          } else {
+            drawH = box;           // taller than wide
+            drawW = box * ratio;
+          }
+        }
+
+        // Centre the scaled logo within the 28mm slot.
+        const offX = ML + (box - drawW) / 2;
+        const offY = boxY + (box - drawH) / 2;
+
+        doc.addImage(PROFILE.logo, offX, offY, drawW, drawH);
       } catch (_) {}
     }
 
