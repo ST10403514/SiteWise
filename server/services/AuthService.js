@@ -25,13 +25,13 @@ class AuthService {
     if (!acceptedTerms) {
       throw ApiError.badRequest('You must accept the Terms & Conditions to create an account');
     }
-    if (this._users.findByEmail(email)) {
+    if (await this._users.findByEmail(email)) {
       throw ApiError.conflict('An account with that email already exists');
     }
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = this._users.create({ name, email, passwordHash });
+    const user = await this._users.create({ name, email, passwordHash });
     // Record proof of consent (the moment they accepted).
-    this._users.update(user.id, { acceptedTermsAt: new Date().toISOString() });
+    await this._users.update(user.id, { acceptedTermsAt: new Date().toISOString() });
     return this._users.findById(user.id);
   }
 
@@ -40,7 +40,7 @@ class AuthService {
    * @returns {Promise<object>} the authenticated user
    */
   async login({ email, password }) {
-    const user = this._users.findByEmail(email);
+    const user = await this._users.findByEmail(email);
     // Always run a hash comparison so response timing does not reveal
     // whether the email exists.
     const hash = user ? user.passwordHash : '$2a$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvali';

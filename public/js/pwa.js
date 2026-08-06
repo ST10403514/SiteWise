@@ -74,7 +74,7 @@
         '</div>' +
         '<div class="pwa-ios-text">' +
           '<strong>Add SiteWise to your home screen</strong>' +
-          '<span>Tap <span class="pwa-ios-share" aria-hidden="true"></span> Share, then <b>Add to Home Screen</b>.</span>' +
+          '<span>Tap the <span class="pwa-ios-nowrap"><svg class="pwa-ios-share" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l4 4M12 3L8 7M12 3v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12H5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;<b>Share</b></span> button, then <b>Add&nbsp;to&nbsp;Home&nbsp;Screen</b></span>' +
         '</div>' +
         '<button class="pwa-ios-close" type="button" aria-label="Dismiss">&times;</button>' +
       '</div>' +

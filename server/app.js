@@ -20,10 +20,14 @@ const jobRoutes = require('./routes/jobRoutes');
 /**
  * Application factory - wires dependencies together (composition root)
  * and returns a configured Express app.
+ *
+ * Repositories now take the libSQL/Turso connection config (config.db)
+ * instead of a file path. The schema is created once at startup in index.js
+ * via initSchema before this app handles any request.
  */
 function createApp() {
-  const userRepository = new UserRepository(config.dbFile);
-  const jobRepository = new JobRepository(config.dbFile);
+  const userRepository = new UserRepository(config.db);
+  const jobRepository = new JobRepository(config.db);
   const tokenService = new TokenService(config.jwtSecret, config.tokenTtl);
   const authService = new AuthService(userRepository);
 

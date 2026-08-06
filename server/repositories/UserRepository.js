@@ -1,29 +1,22 @@
 'use strict';
 
 const crypto = require('crypto');
-const { getDb } = require('./db');
+const { getClient } = require('./db');
 
 /**
- * SQLite-backed user store.
+ * libSQL/Turso-backed user store.
  *
- * Public interface is unchanged from the previous JSON implementation, so
- * the service layer needs no edits: findByEmail, findById, create, update.
+ * Public method NAMES are unchanged (findByEmail, findById, create, update),
+ * but every method is now ASYNC and returns a Promise. Callers must await.
  *
  * The `profile` field is stored as JSON text and transparently parsed back
- * into an object on the way out, so callers still see the same shape they
- * always did ({ id, name, email, passwordHash, onboarded, profile, createdAt }).
+ * into an object on the way out, so callers still see the same shape:
+ * { id, name, email, passwordHash, onboarded, profile, createdAt }.
  */
 class UserRepository {
-  /** @param {string} dbFile Absolute path of the SQLite database file */
-  constructor(dbFile) {
-    this._db = getDb(dbFile);
-
-    this._insert = this._db.prepare(`
-      INSERT INTO users (id, name, email, passwordHash, onboarded, profile, createdAt)
-      VALUES (@id, @name, @email, @passwordHash, @onboarded, @profile, @createdAt)
-    `);
-    this._byEmail = this._db.prepare('SELECT * FROM users WHERE email = ?');
-    this._byId = this._db.prepare('SELECT * FROM users WHERE id = ?');
+  /** @param {{url: string, authToken?: string}} config libSQL/Turso connection */
+  constructor(config) {
+    this._db = getClient(config);
   }
 
   /** Convert a DB row into the object shape the app expects. */
@@ -40,21 +33,29 @@ class UserRepository {
     };
   }
 
-  /** @returns {object|null} */
-  findByEmail(email) {
-    return this._hydrate(this._byEmail.get(email));
+  /** @returns {Promise<object|null>} */
+  async findByEmail(email) {
+    const rs = await this._db.execute({
+      sql: 'SELECT * FROM users WHERE email = ?',
+      args: [email],
+    });
+    return this._hydrate(rs.rows[0]);
   }
 
-  /** @returns {object|null} */
-  findById(id) {
-    return this._hydrate(this._byId.get(id));
+  /** @returns {Promise<object|null>} */
+  async findById(id) {
+    const rs = await this._db.execute({
+      sql: 'SELECT * FROM users WHERE id = ?',
+      args: [id],
+    });
+    return this._hydrate(rs.rows[0]);
   }
 
   /**
    * @param {{name: string, email: string, passwordHash: string}} data
-   * @returns {object} the created user record
+   * @returns {Promise<object>} the created user record
    */
-  create({ name, email, passwordHash }) {
+  async create({ name, email, passwordHash }) {
     const user = {
       id: crypto.randomUUID(),
       name,
@@ -64,14 +65,18 @@ class UserRepository {
       profile: null,
       createdAt: new Date().toISOString(),
     };
-    this._insert.run({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      passwordHash: user.passwordHash,
-      onboarded: 0,
-      profile: null,
-      createdAt: user.createdAt,
+    await this._db.execute({
+      sql: `INSERT INTO users (id, name, email, passwordHash, onboarded, profile, createdAt)
+            VALUES (:id, :name, :email, :passwordHash, :onboarded, :profile, :createdAt)`,
+      args: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        passwordHash: user.passwordHash,
+        onboarded: 0,
+        profile: null,
+        createdAt: user.createdAt,
+      },
     });
     return user;
   }
@@ -79,29 +84,30 @@ class UserRepository {
   /**
    * Shallow-merge changes into an existing user.
    * Mirrors the old Object.assign semantics: only provided keys change.
-   * @returns {object} the updated user record
+   * @returns {Promise<object>} the updated user record
    */
-  update(id, changes) {
-    const current = this.findById(id);
+  async update(id, changes) {
+    const current = await this.findById(id);
     if (!current) throw new Error(`User ${id} not found`);
 
     const merged = { ...current, ...changes };
 
-    this._db.prepare(`
-      UPDATE users
-      SET name = @name,
-          email = @email,
-          passwordHash = @passwordHash,
-          onboarded = @onboarded,
-          profile = @profile
-      WHERE id = @id
-    `).run({
-      id,
-      name: merged.name,
-      email: merged.email,
-      passwordHash: merged.passwordHash,
-      onboarded: merged.onboarded ? 1 : 0,
-      profile: merged.profile ? JSON.stringify(merged.profile) : null,
+    await this._db.execute({
+      sql: `UPDATE users
+            SET name = :name,
+                email = :email,
+                passwordHash = :passwordHash,
+                onboarded = :onboarded,
+                profile = :profile
+            WHERE id = :id`,
+      args: {
+        id,
+        name: merged.name,
+        email: merged.email,
+        passwordHash: merged.passwordHash,
+        onboarded: merged.onboarded ? 1 : 0,
+        profile: merged.profile ? JSON.stringify(merged.profile) : null,
+      },
     });
 
     return merged;

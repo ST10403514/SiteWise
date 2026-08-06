@@ -18,19 +18,21 @@ class JobController {
     return raw;
   }
 
-  list = (req, res) => {
-    res.json({ jobs: this._jobs.listByUser(req.user.id) });
+  list = async (req, res, next) => {
+    try {
+      res.json({ jobs: await this._jobs.listByUser(req.user.id) });
+    } catch (err) { next(err); }
   };
 
-  get = (req, res, next) => {
+  get = async (req, res, next) => {
     try {
-      const job = this._jobs.findByIdForUser(this._id(req.params.id), req.user.id);
+      const job = await this._jobs.findByIdForUser(this._id(req.params.id), req.user.id);
       if (!job) throw new ApiError(404, 'Job not found');
       res.json({ job: { id: job.id, updatedAt: job.updatedAt, data: job.data } });
     } catch (err) { next(err); }
   };
 
-  save = (req, res, next) => {
+  save = async (req, res, next) => {
     try {
       const id = this._id(req.params.id);
       const data = req.body?.data;
@@ -38,7 +40,7 @@ class JobController {
         throw ApiError.badRequest('Job data is required');
       }
       v.requireString(data.quoteNumber, 'Quote number', { max: 60 });
-      const record = this._jobs.upsert(id, req.user.id, data);
+      const record = await this._jobs.upsert(id, req.user.id, data);
       res.json({ job: { id: record.id, updatedAt: record.updatedAt } });
     } catch (err) {
       if (err.code === 'FORBIDDEN') return next(new ApiError(403, 'Not your job'));
@@ -46,9 +48,9 @@ class JobController {
     }
   };
 
-  remove = (req, res, next) => {
+  remove = async (req, res, next) => {
     try {
-      const removed = this._jobs.removeForUser(this._id(req.params.id), req.user.id);
+      const removed = await this._jobs.removeForUser(this._id(req.params.id), req.user.id);
       if (!removed) throw new ApiError(404, 'Job not found');
       res.json({ ok: true });
     } catch (err) { next(err); }

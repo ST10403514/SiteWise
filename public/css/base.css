@@ -137,3 +137,46 @@ a { color: var(--blue-ink); }
   margin: -8px auto 0; border-right: 1px solid rgba(255,255,255,.12);
   border-bottom: 1px solid rgba(255,255,255,.12); border-radius: 0 0 3px 0;
 }
+
+/* == PWA iOS "Add to Home Screen" hint (add to public/css/base.css) == */
+.pwa-ios-hint {
+  position: fixed; left: 12px; right: 12px; bottom: 14px; z-index: 9999;
+  opacity: 0; transform: translateY(20px); transition: opacity .25s ease, transform .25s ease;
+  pointer-events: none;
+}
+.pwa-ios-hint.show { opacity: 1; transform: none; pointer-events: auto; }
+.pwa-ios-inner {
+  display: flex; align-items: center; gap: 14px;
+  background: #233154; color: #fff;
+  border: 1px solid rgba(255,255,255,.12); border-radius: 16px;
+  padding: 14px 16px; box-shadow: 0 14px 38px rgba(8,15,35,.5);
+  max-width: 460px; margin: 0 auto;
+}
+.pwa-ios-icon { flex-shrink: 0; }
+.pwa-ios-icon img { display: block; width: 44px; height: 44px; border-radius: 10px; }
+.pwa-ios-text { flex: 1; min-width: 0; line-height: 1.45; }
+.pwa-ios-text strong {
+  display: block; font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .4px; font-size: 16px;
+  margin-bottom: 3px;
+}
+.pwa-ios-text span { display: block; font-size: 13px; color: #c3cfe3; }
+.pwa-ios-text b { color: #fff; font-weight: 600; }
+/* iOS share glyph as inline SVG - flows cleanly with the text */
+.pwa-ios-share {
+  display: inline-block; width: 15px; height: 15px; vertical-align: -3px;
+  color: #7dd3fc;
+}
+.pwa-ios-close {
+  flex-shrink: 0; background: none; border: none; color: #9db9f2;
+  font-size: 24px; line-height: 1; cursor: pointer; padding: 0 2px; align-self: flex-start;
+  margin-top: -2px;
+}
+.pwa-ios-close:hover { color: #fff; }
+/* pointer toward the Safari share button at the bottom */
+.pwa-ios-arrow {
+  width: 18px; height: 18px; background: #233154; transform: rotate(45deg);
+  margin: -9px auto 0; border-right: 1px solid rgba(255,255,255,.12);
+  border-bottom: 1px solid rgba(255,255,255,.12); border-radius: 0 0 4px 0;
+}
+.pwa-ios-nowrap { white-space: nowrap; }

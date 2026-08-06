@@ -60,7 +60,7 @@ class ProfileController {
     return out;
   }
 
-  update = (req, res, next) => {
+  update = async (req, res, next) => {
     try {
       const b = req.body || {};
       const existing = req.user.profile || {};
@@ -92,7 +92,7 @@ class ProfileController {
         customMethods: ProfileController._presetList(
           b.customMethods ?? existing.customMethods, 'Custom methods'),
       };
-      const user = this._users.update(req.user.id, { profile, onboarded: true });
+      const user = await this._users.update(req.user.id, { profile, onboarded: true });
       res.json({ user: AuthService.toPublic(user) });
     } catch (err) { next(err); }
   };
@@ -102,7 +102,7 @@ class ProfileController {
    * profile untouched. Used when someone adds their own job type or method
    * from inside the job card.
    */
-  updatePresets = (req, res, next) => {
+  updatePresets = async (req, res, next) => {
     try {
       const existing = req.user.profile;
       if (!existing) throw ApiError.badRequest('Finish setting up your business first');
@@ -114,7 +114,7 @@ class ProfileController {
         customMethods: ProfileController._presetList(
           b.customMethods ?? existing.customMethods, 'Custom methods'),
       };
-      const user = this._users.update(req.user.id, { profile });
+      const user = await this._users.update(req.user.id, { profile });
       res.json({ user: AuthService.toPublic(user) });
     } catch (err) { next(err); }
   };

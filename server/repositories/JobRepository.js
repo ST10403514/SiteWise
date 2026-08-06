@@ -1,46 +1,33 @@
 'use strict';
 
-const { getDb } = require('./db');
+const { getClient } = require('./db');
 
 /**
- * SQLite-backed job store, scoped per user.
+ * libSQL/Turso-backed job store, scoped per user.
  *
- * Public interface is unchanged from the previous JSON implementation:
- * listByUser, findByIdForUser, upsert, removeForUser. Controllers untouched.
+ * Public method NAMES are unchanged (listByUser, findByIdForUser, upsert,
+ * removeForUser), but every method is now ASYNC and returns a Promise.
+ * Callers must await.
  *
  * The full job payload (client, photos, line items, totals, etc.) is kept
- * as JSON text in the `data` column, exactly as it was in the JSON store.
+ * as JSON text in the `data` column, exactly as before.
  */
 class JobRepository {
-  /** @param {string} dbFile Absolute path of the SQLite database file */
-  constructor(dbFile) {
-    this._db = getDb(dbFile);
-
-    this._byUser = this._db.prepare(
-      'SELECT id, data, updatedAt FROM jobs WHERE userId = ? ORDER BY updatedAt DESC'
-    );
-    this._byIdOwned = this._db.prepare(
-      'SELECT * FROM jobs WHERE id = ? AND userId = ?'
-    );
-    this._byId = this._db.prepare('SELECT * FROM jobs WHERE id = ?');
-    this._insert = this._db.prepare(
-      'INSERT INTO jobs (id, userId, data, updatedAt) VALUES (@id, @userId, @data, @updatedAt)'
-    );
-    this._updateData = this._db.prepare(
-      'UPDATE jobs SET data = @data, updatedAt = @updatedAt WHERE id = @id'
-    );
-    this._delete = this._db.prepare(
-      'DELETE FROM jobs WHERE id = ? AND userId = ?'
-    );
+  /** @param {{url: string, authToken?: string}} config libSQL/Turso connection */
+  constructor(config) {
+    this._db = getClient(config);
   }
 
   /**
    * Lightweight summaries for the dashboard (no photo payloads).
-   * @returns {object[]} newest first
+   * @returns {Promise<object[]>} newest first
    */
-  listByUser(userId) {
-    const rows = this._byUser.all(userId);
-    return rows.map((row) => {
+  async listByUser(userId) {
+    const rs = await this._db.execute({
+      sql: 'SELECT id, data, updatedAt FROM jobs WHERE userId = ? ORDER BY updatedAt DESC',
+      args: [userId],
+    });
+    return rs.rows.map((row) => {
       const data = JSON.parse(row.data);
       return {
         id: row.id,
@@ -55,9 +42,13 @@ class JobRepository {
     });
   }
 
-  /** @returns {object|null} full record, only if owned by userId */
-  findByIdForUser(id, userId) {
-    const row = this._byIdOwned.get(id, userId);
+  /** @returns {Promise<object|null>} full record, only if owned by userId */
+  async findByIdForUser(id, userId) {
+    const rs = await this._db.execute({
+      sql: 'SELECT * FROM jobs WHERE id = ? AND userId = ?',
+      args: [id, userId],
+    });
+    const row = rs.rows[0];
     if (!row) return null;
     return {
       id: row.id,
@@ -67,9 +58,14 @@ class JobRepository {
     };
   }
 
-  /** Create or replace a job owned by userId. @returns {object} */
-  upsert(id, userId, data) {
-    const existing = this._byId.get(id);
+  /** Create or replace a job owned by userId. @returns {Promise<object>} */
+  async upsert(id, userId, data) {
+    const existingRs = await this._db.execute({
+      sql: 'SELECT userId FROM jobs WHERE id = ?',
+      args: [id],
+    });
+    const existing = existingRs.rows[0];
+
     if (existing && existing.userId !== userId) {
       const err = new Error('Job belongs to another user');
       err.code = 'FORBIDDEN';
@@ -80,18 +76,27 @@ class JobRepository {
     const serialized = JSON.stringify(data);
 
     if (existing) {
-      this._updateData.run({ id, data: serialized, updatedAt });
+      await this._db.execute({
+        sql: 'UPDATE jobs SET data = :data, updatedAt = :updatedAt WHERE id = :id',
+        args: { id, data: serialized, updatedAt },
+      });
     } else {
-      this._insert.run({ id, userId, data: serialized, updatedAt });
+      await this._db.execute({
+        sql: 'INSERT INTO jobs (id, userId, data, updatedAt) VALUES (:id, :userId, :data, :updatedAt)',
+        args: { id, userId, data: serialized, updatedAt },
+      });
     }
 
     return { id, userId, data, updatedAt };
   }
 
-  /** @returns {boolean} true if a job was removed */
-  removeForUser(id, userId) {
-    const info = this._delete.run(id, userId);
-    return info.changes > 0;
+  /** @returns {Promise<boolean>} true if a job was removed */
+  async removeForUser(id, userId) {
+    const rs = await this._db.execute({
+      sql: 'DELETE FROM jobs WHERE id = ? AND userId = ?',
+      args: [id, userId],
+    });
+    return rs.rowsAffected > 0;
   }
 }
 
