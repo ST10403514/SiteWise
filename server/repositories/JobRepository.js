@@ -6,11 +6,16 @@ const { getClient } = require('./db');
  * libSQL/Turso-backed job store, scoped per user.
  *
  * Public method NAMES are unchanged (listByUser, findByIdForUser, upsert,
- * removeForUser), but every method is now ASYNC and returns a Promise.
- * Callers must await.
+ * removeForUser), and every method is async (returns a Promise).
  *
  * The full job payload (client, photos, line items, totals, etc.) is kept
- * as JSON text in the `data` column, exactly as before.
+ * as JSON text in the `data` column.
+ *
+ * PERFORMANCE NOTE: photos are stored as base64 inside `data`, so a single
+ * job row can be hundreds of KB. listByUser therefore extracts only the
+ * small summary fields server-side with json_extract, so the dashboard never
+ * pulls the heavy photo payloads across the network. Selecting the whole
+ * `data` blob here would ship every job's photos on every dashboard load.
  */
 class JobRepository {
   /** @param {{url: string, authToken?: string}} config libSQL/Turso connection */
@@ -20,26 +25,36 @@ class JobRepository {
 
   /**
    * Lightweight summaries for the dashboard (no photo payloads).
+   * The summary fields are pulled out of the JSON server-side, so only a
+   * few hundred bytes per job cross the wire instead of the full blob.
    * @returns {Promise<object[]>} newest first
    */
   async listByUser(userId) {
     const rs = await this._db.execute({
-      sql: 'SELECT id, data, updatedAt FROM jobs WHERE userId = ? ORDER BY updatedAt DESC',
+      sql: `SELECT id,
+                   json_extract(data, '$.quoteNumber')  AS quoteNumber,
+                   json_extract(data, '$.clientName')   AS clientName,
+                   json_extract(data, '$.siteAddress')  AS siteAddress,
+                   json_extract(data, '$.outcome')      AS outcome,
+                   json_extract(data, '$.grandTotal')   AS grandTotal,
+                   COALESCE(json_array_length(data, '$.photos'), 0) AS photoCount,
+                   updatedAt
+            FROM jobs
+            WHERE userId = ?
+            ORDER BY updatedAt DESC`,
       args: [userId],
     });
-    return rs.rows.map((row) => {
-      const data = JSON.parse(row.data);
-      return {
-        id: row.id,
-        quoteNumber: data.quoteNumber,
-        clientName: data.clientName,
-        siteAddress: data.siteAddress,
-        outcome: data.outcome,
-        grandTotal: data.grandTotal,
-        photoCount: Array.isArray(data.photos) ? data.photos.length : 0,
-        updatedAt: row.updatedAt,
-      };
-    });
+    // Rows already have the exact summary shape the dashboard expects.
+    return rs.rows.map((row) => ({
+      id: row.id,
+      quoteNumber: row.quoteNumber,
+      clientName: row.clientName,
+      siteAddress: row.siteAddress,
+      outcome: row.outcome,
+      grandTotal: row.grandTotal,
+      photoCount: row.photoCount,
+      updatedAt: row.updatedAt,
+    }));
   }
 
   /** @returns {Promise<object|null>} full record, only if owned by userId */
