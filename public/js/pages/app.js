@@ -387,17 +387,31 @@ class AppPage {
     this._$('photoInput').addEventListener('change', async (e) => {
       const files = [...e.target.files];
       e.target.value = '';
+      if (!files.length) return;
+
+      this._toast(`Uploading ${files.length} photo${files.length > 1 ? 's' : ''}\u2026`);
+      let added = 0;
       for (const file of files) {
         try {
           const dataUrl = await ImageTools.compress(file, 1000, 0.8);
-          this._job.photos.push({ dataUrl, caption: '', mediaType: 'image' });
+          try {
+            // Upload to R2 and store only the URL, so jobs stay small and load fast.
+            const { url } = await this._api.uploadPhoto(dataUrl);
+            this._job.photos.push({ url, caption: '', mediaType: 'image' });
+          } catch (uploadErr) {
+            // Upload failed (e.g. no signal on site). Keep the photo locally so
+            // it isn't lost - it still displays, and the migration/next save can
+            // push it up later. Falls back to the inline data URL.
+            this._job.photos.push({ dataUrl, caption: '', mediaType: 'image' });
+          }
+          added += 1;
+          this._renderPhotos();
+          this._changed();
         } catch (err) {
-          this._toast(err.message);
+          this._toast(err.message || 'Could not add that photo');
         }
       }
-      this._renderPhotos();
-      this._changed();
-      if (files.length) this._toast(`${files.length} photo${files.length > 1 ? 's' : ''} added`);
+      if (added) this._toast(`${added} photo${added > 1 ? 's' : ''} added`);
     });
   }
 
@@ -409,7 +423,7 @@ class AppPage {
       cell.className = 'photo-cell';
 
       const img = document.createElement('img');
-      img.src = photo.dataUrl;
+      img.src = photo.url || photo.dataUrl;
       img.alt = photo.caption || `Site photo ${i + 1}`;
 
       const caption = document.createElement('input');

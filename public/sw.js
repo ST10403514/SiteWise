@@ -8,7 +8,7 @@
  * a cache fallback so the app still opens if the connection drops.
  */
 
-const CACHE = 'sitewise-shell-v1';
+const CACHE = 'sitewise-shell-v2';
 
 const SHELL = [
   '/app',
@@ -44,6 +44,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+
+  // Only handle same-origin GETs. Cross-origin requests (R2 images, fonts)
+  // must go straight to the network so their CORS settings are preserved -
+  // intercepting them breaks canvas/PDF image loading with opaque responses.
+  if (new URL(request.url).origin !== self.location.origin) return;
 
   // Never touch API calls or non-GET requests - always go to network.
   if (request.method !== 'GET' || request.url.includes('/api/')) return;

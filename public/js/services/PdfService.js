@@ -62,7 +62,14 @@ class PDFService {
    */
   static configure(profile) {
     if (!profile) return;
-    PDFService.PROFILE = { ...PDFService.PROFILE, ...profile };
+    // Drop undefined/null fields so they can't overwrite the safe defaults
+    // above (a missing companyName would otherwise reach doc.text as undefined
+    // and crash jsPDF with "Invalid arguments").
+    const clean = {};
+    for (const [k, v] of Object.entries(profile)) {
+      if (v !== undefined && v !== null) clean[k] = v;
+    }
+    PDFService.PROFILE = { ...PDFService.PROFILE, ...clean };
     const scheme = IndustryPresets.scheme(PDFService.PROFILE.scheme);
     PDFService.NAVY      = Theme.rgb(scheme.primary);
     PDFService.BLUE      = Theme.rgb(scheme.accent);
@@ -75,7 +82,10 @@ class PDFService {
    * Generate and download a full PDF (report + quote).
    * @param {Job} job
    */
-  static downloadFull(job) {
+  static async downloadFull(job) {
+    // Photos are stored as R2 URLs; pull them into inline data URLs first so
+    // the synchronous jsPDF drawing below has image data to work with.
+    job = await PDFService._withResolvedPhotos(job);
     const doc = PDFService._createDoc();
     let y = PDFService._addHeader(doc, job, 'REPORT & QUOTATION');
     y = PDFService._addReportSection(doc, job, y);
@@ -97,7 +107,8 @@ class PDFService {
   }
 
   /** Generate and download a report-only PDF. @param {Job} job */
-  static downloadReport(job) {
+  static async downloadReport(job) {
+    job = await PDFService._withResolvedPhotos(job);
     const doc = PDFService._createDoc();
     let y = PDFService._addHeader(doc, job, 'SITE INSPECTION REPORT');
     y = PDFService._addReportSection(doc, job, y);
@@ -188,8 +199,8 @@ class PDFService {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(180, 195, 220);
-    doc.text(job.quoteNumber, badgeX, 23, { align: 'right' });
-    doc.text(job.formattedDate, badgeX, 29, { align: 'right' });
+    doc.text(String(job.quoteNumber || ''), badgeX, 23, { align: 'right' });
+    doc.text(String(job.formattedDate || ''), badgeX, 29, { align: 'right' });
 
     let y = 50;
 
@@ -449,6 +460,66 @@ class PDFService {
     });
 
     return y + cellH + 8;
+  }
+
+  /**
+   * Return a copy of the job whose photos all carry an inline `dataUrl`.
+   * New photos are stored as R2 URLs; older ones may still have `dataUrl`.
+   * Each URL photo is fetched and converted to a JPEG data URL (jsPDF draws
+   * data URLs, not remote URLs). Photos that fail to load are left as-is, so
+   * _addPhotos simply draws their empty frame + caption rather than crashing.
+   * @param {Job} job
+   * @returns {Promise<object>} job-like object with resolved photos
+   */
+  static async _withResolvedPhotos(job) {
+    const photos = job.photos || [];
+    const resolved = await Promise.all(photos.map(async (p) => {
+      if (p.mediaType === 'video') return p; // filtered out later anyway
+      if (p.dataUrl) return p;               // already inline
+      if (!p.url) return p;                  // nothing to load
+      try {
+        const dataUrl = await PDFService._urlToJpegDataUrl(p.url);
+        return { ...p, dataUrl };
+      } catch (_) {
+        return p; // leave without dataUrl; frame + caption still render
+      }
+    }));
+    // Preserve the Job instance's prototype so its computed getters
+    // (subtotal, vatAmount, grandTotal, formattedDate, ...) still work.
+    // A plain { ...job } spread would drop those getters and zero the totals.
+    const clone = Object.assign(Object.create(Object.getPrototypeOf(job)), job);
+    clone.photos = resolved;
+    return clone;
+  }
+
+  /**
+   * Load an image URL (CORS-enabled) and re-encode it to a JPEG data URL via
+   * canvas, so jsPDF can embed it. Requires the R2 bucket's CORS policy to
+   * allow GET from this origin.
+   * @param {string} url
+   * @returns {Promise<string>} JPEG data URL
+   */
+  static _urlToJpegDataUrl(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      // Load through our own same-origin proxy so the canvas is not tainted and
+      // no cross-origin CORS request is made (r2.dev doesn't serve CORS headers).
+      const src = '/api/uploads/proxy?url=' + encodeURIComponent(url);
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/jpeg', 0.9));
+        } catch (err) {
+          reject(err);
+        }
+      };
+      img.onerror = () => reject(new Error('Could not load image ' + url));
+      img.src = src;
+    });
   }
 
   /** Draw the quotation line items and totals. */

@@ -8,28 +8,28 @@ const UserRepository = require('./repositories/UserRepository');
 const JobRepository = require('./repositories/JobRepository');
 const AuthService = require('./services/AuthService');
 const TokenService = require('./services/TokenService');
+const StorageService = require('./services/StorageService');
 const AuthController = require('./controllers/AuthController');
 const ProfileController = require('./controllers/ProfileController');
 const JobController = require('./controllers/JobController');
+const UploadController = require('./controllers/UploadController');
 const requireAuth = require('./middleware/requireAuth');
 const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 /**
  * Application factory - wires dependencies together (composition root)
  * and returns a configured Express app.
- *
- * Repositories now take the libSQL/Turso connection config (config.db)
- * instead of a file path. The schema is created once at startup in index.js
- * via initSchema before this app handles any request.
  */
 function createApp() {
   const userRepository = new UserRepository(config.db);
   const jobRepository = new JobRepository(config.db);
   const tokenService = new TokenService(config.jwtSecret, config.tokenTtl);
   const authService = new AuthService(userRepository);
+  const storageService = new StorageService(config.r2);
 
   const authGuard = requireAuth({
     tokenService,
@@ -40,6 +40,7 @@ function createApp() {
   const authController = new AuthController({ authService, tokenService, config });
   const profileController = new ProfileController({ userRepository });
   const jobController = new JobController({ jobRepository });
+  const uploadController = new UploadController({ storageService });
 
   const app = express();
   app.disable('x-powered-by');
@@ -49,6 +50,7 @@ function createApp() {
   app.use('/api/auth', authRoutes({ authController, authGuard }));
   app.use('/api/profile', profileRoutes({ profileController, authGuard }));
   app.use('/api/jobs', jobRoutes({ jobController, authGuard }));
+  app.use('/api/uploads', uploadRoutes({ uploadController, authGuard }));
 
   app.use(express.static(config.publicDir, { extensions: ['html'] }));
 

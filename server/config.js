@@ -12,14 +12,13 @@ const crypto = require('crypto');
  *     file (file:...), and the JWT secret is auto-generated once.
  *   - Production (Render): the database is Turso, reached via TURSO_URL and
  *     TURSO_AUTH_TOKEN, and JWT_SECRET is provided as an environment variable.
+ *
+ * Photo storage (Cloudflare R2) is read from R2_* environment variables.
  */
 class Config {
   constructor() {
     this.port = Number(process.env.PORT) || 3000;
 
-    // DATA_DIR still hosts local dev artifacts (the dev libSQL file and the
-    // auto-generated JWT secret). In production the database is Turso, so this
-    // directory is only relevant for local development.
     this.dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
 
     this.usersFile = path.join(this.dataDir, 'users.json'); // legacy, retired stores
@@ -34,31 +33,45 @@ class Config {
     this.jwtSecret = process.env.JWT_SECRET || this._loadOrCreateSecret();
 
     // ── Database connection (libSQL / Turso) ───────────────────────────────
-    // Production MUST use Turso. Falling back to a local file on Render's
-    // ephemeral disk is exactly the data-loss bug this migration fixes, so we
-    // fail fast if TURSO_URL is missing in production.
     if (this.isProduction && !process.env.TURSO_URL) {
       throw new Error(
         'TURSO_URL environment variable is required in production. ' +
         'Set TURSO_URL (and TURSO_AUTH_TOKEN) in your host\'s environment settings.'
       );
     }
-
     this.db = {
-      // Dev falls back to a local libSQL file so nothing external is needed.
       url: process.env.TURSO_URL || `file:${this.dbFile}`,
-      authToken: process.env.TURSO_AUTH_TOKEN, // undefined is fine for file: URLs
+      authToken: process.env.TURSO_AUTH_TOKEN,
     };
-
-    // Ensure the local data dir exists when using a file: database in dev.
     if (this.db.url.startsWith('file:')) {
       fs.mkdirSync(this.dataDir, { recursive: true });
     }
+
+    // ── Photo storage (Cloudflare R2) ──────────────────────────────────────
+    this.r2 = {
+      accountId: process.env.R2_ACCOUNT_ID,
+      accessKeyId: process.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+      bucket: process.env.R2_BUCKET,
+      publicUrl: process.env.R2_PUBLIC_URL,
+    };
+    // In production, photo uploads must have somewhere to go. Fail fast if the
+    // R2 settings are incomplete rather than erroring on the first upload.
+    if (this.isProduction) {
+      const missing = Object.entries(this.r2)
+        .filter(([, v]) => !v)
+        .map(([k]) => k);
+      if (missing.length) {
+        throw new Error(
+          'Missing R2 configuration in production: ' + missing.join(', ') + '. ' +
+          'Set the R2_* environment variables in your host\'s settings.'
+        );
+      }
+    }
+    this.r2Configured = Object.values(this.r2).every(Boolean);
   }
 
   _loadOrCreateSecret() {
-    // In production a stable JWT_SECRET must be provided via the environment,
-    // otherwise every restart/redeploy would invalidate all sessions.
     if (this.isProduction) {
       throw new Error(
         'JWT_SECRET environment variable is required in production. ' +

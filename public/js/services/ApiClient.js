@@ -36,6 +36,13 @@ class ApiClient {
   getJob(id)          { return this._request('GET', `/jobs/${id}`); }
   saveJob(id, data)   { return this._request('PUT', `/jobs/${id}`, { data }); }
   deleteJob(id)       { return this._request('DELETE', `/jobs/${id}`); }
+
+  /**
+   * Upload a compressed base64 image to R2 and get back its public URL.
+   * @param {string} dataUrl
+   * @returns {Promise<{url: string}>}
+   */
+  uploadPhoto(dataUrl) { return this._request('POST', '/uploads', { dataUrl }); }
 }
 
 window.ApiClient = ApiClient;
