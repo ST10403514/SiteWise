@@ -16,8 +16,10 @@
     "@libsql/client": "^0.17.4",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^17.4.2",
     "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "resend": "^6.18.1"
   },
   "license": "UNLICENSED"
 }

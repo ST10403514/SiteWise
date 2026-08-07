@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 const createApp = require('./app');
 const config = require('./config');
 const { initSchema } = require('./repositories/db');

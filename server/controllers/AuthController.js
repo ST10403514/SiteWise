@@ -3,7 +3,6 @@
 const AuthService = require('../services/AuthService');
 const v = require('../utils/validators');
 
-/** Translates HTTP requests into AuthService calls and session cookies. */
 class AuthController {
   constructor({ authService, tokenService, config }) {
     this._auth = authService;
@@ -53,6 +52,25 @@ class AuthController {
 
   me = (req, res) => {
     res.json({ user: AuthService.toPublic(req.user) });
+  };
+
+  // Always returns a generic success, even if the email doesn't exist, so the
+  // endpoint can't be used to discover which emails have accounts.
+  forgotPassword = async (req, res, next) => {
+    try {
+      const email = v.requireEmail(req.body?.email);
+      await this._auth.requestPasswordReset({ email });
+      res.json({ ok: true, message: 'If an account exists for that email, a reset link is on its way.' });
+    } catch (err) { next(err); }
+  };
+
+  resetPassword = async (req, res, next) => {
+    try {
+      const token = v.requireString(req.body?.token, 'Token', { max: 200 });
+      const password = v.requirePassword(req.body?.password);
+      await this._auth.resetPassword({ token, password });
+      res.json({ ok: true, message: 'Your password has been reset. You can now sign in.' });
+    } catch (err) { next(err); }
   };
 }
 

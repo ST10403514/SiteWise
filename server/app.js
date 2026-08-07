@@ -9,6 +9,7 @@ const JobRepository = require('./repositories/JobRepository');
 const AuthService = require('./services/AuthService');
 const TokenService = require('./services/TokenService');
 const StorageService = require('./services/StorageService');
+const EmailService = require('./services/EmailService');
 const AuthController = require('./controllers/AuthController');
 const ProfileController = require('./controllers/ProfileController');
 const JobController = require('./controllers/JobController');
@@ -20,16 +21,20 @@ const profileRoutes = require('./routes/profileRoutes');
 const jobRoutes = require('./routes/jobRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
-/**
- * Application factory - wires dependencies together (composition root)
- * and returns a configured Express app.
- */
 function createApp() {
   const userRepository = new UserRepository(config.db);
   const jobRepository = new JobRepository(config.db);
   const tokenService = new TokenService(config.jwtSecret, config.tokenTtl);
-  const authService = new AuthService(userRepository);
   const storageService = new StorageService(config.r2);
+  const emailService = new EmailService({
+    apiKey: config.resend.apiKey,
+    from: config.resend.from,
+    appName: 'SiteWise',
+  });
+  const authService = new AuthService(userRepository, {
+    emailService,
+    appBaseUrl: config.appBaseUrl,
+  });
 
   const authGuard = requireAuth({
     tokenService,
@@ -44,7 +49,7 @@ function createApp() {
 
   const app = express();
   app.disable('x-powered-by');
-  app.use(express.json({ limit: '25mb' })); // jobs carry compressed photo data URLs
+  app.use(express.json({ limit: '25mb' }));
   app.use(cookieParser());
 
   app.use('/api/auth', authRoutes({ authController, authGuard }));

@@ -7,10 +7,12 @@ const { getClient } = require('./db');
  * libSQL/Turso-backed user store.
  *
  * Shape returned to callers:
- * { id, name, email, passwordHash, onboarded, profile, acceptedTermsAt, createdAt }
+ * { id, name, email, passwordHash, onboarded, profile, acceptedTermsAt,
+ *   resetTokenHash, resetTokenExpires, createdAt }
  *
- * acceptedTermsAt is the POPIA proof-of-consent timestamp. It is set during
- * signup (AuthService calls update with it) and preserved across later updates.
+ * resetTokenHash / resetTokenExpires support password reset. We store only a
+ * SHA-256 HASH of the reset token (never the raw token) plus an expiry (ms
+ * since epoch as text). findByResetTokenHash looks a user up by that hash.
  */
 class UserRepository {
   constructor(config) {
@@ -27,6 +29,8 @@ class UserRepository {
       onboarded: !!row.onboarded,
       profile: row.profile ? JSON.parse(row.profile) : null,
       acceptedTermsAt: row.acceptedTermsAt || null,
+      resetTokenHash: row.resetTokenHash || null,
+      resetTokenExpires: row.resetTokenExpires ? Number(row.resetTokenExpires) : null,
       createdAt: row.createdAt,
     };
   }
@@ -47,6 +51,15 @@ class UserRepository {
     return this._hydrate(rs.rows[0]);
   }
 
+  /** Look a user up by the stored SHA-256 hash of their reset token. */
+  async findByResetTokenHash(resetTokenHash) {
+    const rs = await this._db.execute({
+      sql: 'SELECT * FROM users WHERE resetTokenHash = ?',
+      args: [resetTokenHash],
+    });
+    return this._hydrate(rs.rows[0]);
+  }
+
   async create({ name, email, passwordHash }) {
     const user = {
       id: crypto.randomUUID(),
@@ -56,11 +69,17 @@ class UserRepository {
       onboarded: false,
       profile: null,
       acceptedTermsAt: null,
+      resetTokenHash: null,
+      resetTokenExpires: null,
       createdAt: new Date().toISOString(),
     };
     await this._db.execute({
-      sql: `INSERT INTO users (id, name, email, passwordHash, onboarded, profile, acceptedTermsAt, createdAt)
-            VALUES (:id, :name, :email, :passwordHash, :onboarded, :profile, :acceptedTermsAt, :createdAt)`,
+      sql: `INSERT INTO users
+              (id, name, email, passwordHash, onboarded, profile, acceptedTermsAt,
+               resetTokenHash, resetTokenExpires, createdAt)
+            VALUES
+              (:id, :name, :email, :passwordHash, :onboarded, :profile, :acceptedTermsAt,
+               :resetTokenHash, :resetTokenExpires, :createdAt)`,
       args: {
         id: user.id,
         name: user.name,
@@ -69,6 +88,8 @@ class UserRepository {
         onboarded: 0,
         profile: null,
         acceptedTermsAt: null,
+        resetTokenHash: null,
+        resetTokenExpires: null,
         createdAt: user.createdAt,
       },
     });
@@ -88,7 +109,9 @@ class UserRepository {
                 passwordHash = :passwordHash,
                 onboarded = :onboarded,
                 profile = :profile,
-                acceptedTermsAt = :acceptedTermsAt
+                acceptedTermsAt = :acceptedTermsAt,
+                resetTokenHash = :resetTokenHash,
+                resetTokenExpires = :resetTokenExpires
             WHERE id = :id`,
       args: {
         id,
@@ -98,6 +121,8 @@ class UserRepository {
         onboarded: merged.onboarded ? 1 : 0,
         profile: merged.profile ? JSON.stringify(merged.profile) : null,
         acceptedTermsAt: merged.acceptedTermsAt || null,
+        resetTokenHash: merged.resetTokenHash || null,
+        resetTokenExpires: merged.resetTokenExpires != null ? String(merged.resetTokenExpires) : null,
       },
     });
 

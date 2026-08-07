@@ -52,6 +52,9 @@
       <div class="field">
         <label for="password">Password</label>
         <input id="password" name="password" type="password" autocomplete="current-password" placeholder="At least 8 characters" required />
+        <p class="forgot-row" id="forgotRow" style="margin:8px 0 0;text-align:right;font-size:13px;">
+          <a href="/forgot-password" style="color:#2563eb;text-decoration:none;">Forgot password?</a>
+        </p>
       </div>
       <div class="field field-check" id="termsField" hidden>
         <label class="check">
@@ -70,5 +73,16 @@
 <script src="/js/services/SessionGuard.js"></script>
 <script src="/js/pages/auth.js" defer></script>
 <script src="/js/pwa.js" defer></script>
+<script>
+  // "Forgot password?" only makes sense on the Sign in tab, not Create account.
+  (function () {
+    var forgot = document.getElementById('forgotRow');
+    var tabLogin = document.getElementById('tabLogin');
+    var tabSignup = document.getElementById('tabSignup');
+    if (!forgot || !tabLogin || !tabSignup) return;
+    tabLogin.addEventListener('click', function () { forgot.hidden = false; });
+    tabSignup.addEventListener('click', function () { forgot.hidden = true; });
+  })();
+</script>
 </body>
 </html>
