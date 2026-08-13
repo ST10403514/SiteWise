@@ -223,6 +223,11 @@ section.card { background: var(--card); border: 1px solid var(--line); border-ra
 /* Small hint by the phone field pointing to the bar button */
 .field-note { display: block; font-size: 11.5px; color: #16a34a; margin-top: 6px; font-weight: 600; }
 
+/* "Quote accepted -> start project" handoff to Project Manager */
+.btn-convert { color: #fff; background: var(--blue); border: none; }
+.btn-convert:hover { background: var(--blue-ink); }
+@media (max-width: 640px) { .action-bar .bar-actions .btn-convert { grid-column: 1 / -1; order: -1; } }
+
 /* ============================================================
    PWA "Install SiteWise" button
    PASTE THIS AT THE BOTTOM OF:  public/css/app.css

@@ -25,6 +25,37 @@ class Job {
     this.discount = 0;            // overall %
     this.vatRate = 15;
     this.paymentTerms = '50% deposit, balance on completion';
+    this.project = null;          // set once the quote is accepted - see Job.newProject()
+  }
+
+  static PROJECT_STATUSES = { planned: 'Planned', in_progress: 'In Progress', completed: 'Completed' };
+
+  /**
+   * Default shape for the execution-phase tracking that starts once a
+   * client accepts this job's quote. `value` defaults to the quote's
+   * grandTotal but stays editable, since the accepted amount can differ.
+   * @param {number} [value]
+   */
+  static newProject(value = 0) {
+    return {
+      status: 'planned',
+      startDate: null,
+      plannedCompletion: null,
+      actualCompletion: null,
+      staffAtStart: 0,
+      value: Number(value) || 0,
+      depositAmount: 0,
+      depositPaidDate: null,
+      budgetMode: 'total',  // 'total' | 'split' - which budget fields are in play
+      openingBudget: 0,
+      materialBudget: 0,
+      labourBudget: 0,
+      notes: '',
+      expenses: [],    // { id, date, description, amount, photoUrl }
+      staffWages: [],  // { id, date, name, role, amount, photoUrl }
+      slips: [],       // { id, date, caption, amount, photoUrl }
+      sitePhotos: [],  // { id, url, caption }
+    };
   }
 
   /**
@@ -161,6 +192,34 @@ class Job {
   get vatAmount()      { return this.afterDiscount * (this.vatRate / 100); }
   get grandTotal()     { return this.afterDiscount + this.vatAmount; }
 
+  // ── Project (post-acceptance execution tracking) ───────────────
+
+  get materialTotal() {
+    return (this.project?.expenses || []).reduce((s, e) => s + (Number(e.amount) || 0), 0);
+  }
+  get wagesTotal() {
+    return (this.project?.staffWages || []).reduce((s, w) => s + (Number(w.amount) || 0), 0);
+  }
+  get totalSpend() { return this.materialTotal + this.wagesTotal; }
+  get costPerStaff() {
+    const staff = Number(this.project?.staffAtStart) || 0;
+    return staff > 0 ? this.totalSpend / staff : 0;
+  }
+  /** Whichever budget figure is authoritative for the chosen budgetMode. */
+  get effectiveBudget() {
+    if (this.project?.budgetMode === 'split') {
+      return (Number(this.project?.materialBudget) || 0) + (Number(this.project?.labourBudget) || 0);
+    }
+    return Number(this.project?.openingBudget) || 0;
+  }
+  get budgetRemaining() { return this.effectiveBudget - this.totalSpend; }
+  get materialBudgetRemaining() {
+    return (Number(this.project?.materialBudget) || 0) - this.materialTotal;
+  }
+  get labourBudgetRemaining() {
+    return (Number(this.project?.labourBudget) || 0) - this.wagesTotal;
+  }
+
   /** Plain-object form for the API. */
   toJSON() {
     return {
@@ -182,6 +241,7 @@ class Job {
       vatRate: this.vatRate,
       paymentTerms: this.paymentTerms,
       grandTotal: this.grandTotal, // denormalised for dashboard summaries
+      project: this.project,
     };
   }
 
@@ -208,6 +268,7 @@ class Job {
     });
     job.date = data.date ? new Date(data.date) : new Date();
     job.methods = new Set(Array.isArray(data.methods) ? data.methods : []);
+    job.project = data.project || null;
     return job;
   }
 

@@ -57,7 +57,17 @@ function createApp() {
   app.use('/api/jobs', jobRoutes({ jobController, authGuard }));
   app.use('/api/uploads', uploadRoutes({ uploadController, authGuard }));
 
-  app.use(express.static(config.publicDir, { extensions: ['html'] }));
+  // JS/CSS are cached for a short while so navigating between pages doesn't
+  // re-validate ~10 files with the server every time. HTML pages are left
+  // out so markup/route changes still show up immediately on next load.
+  app.use(express.static(config.publicDir, {
+    extensions: ['html'],
+    setHeaders(res, filePath) {
+      if (/\.(?:css|js)$/.test(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=600');
+      }
+    },
+  }));
 
   app.use(errorHandler);
   return app;

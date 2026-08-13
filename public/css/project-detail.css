@@ -1,0 +1,56 @@
+/* ── Project detail page ────────────────────────────────────── */
+
+/* Read-only value display, styled like a field but not editable */
+.ro { font-size: 14.5px; color: var(--ink); padding: 10px 0 2px; }
+
+.link-nav { display: inline-block; margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--blue-ink); text-decoration: none; }
+.link-nav:hover { text-decoration: underline; }
+
+/* Status badge in the header (badge colour variants come from project-manager.css) */
+.status-badge { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 5px 12px; }
+
+/* Status picker (reuses .outcome sizing but 3-across, no colour until picked) */
+.status-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 640px) { .status-group { grid-template-columns: 1fr; } }
+.status-group .outcome[data-k="planned"][aria-pressed="true"]     { background: #f0f9ff; border-color: #bae6fd; }
+.status-group .outcome[data-k="planned"][aria-pressed="true"] strong     { color: var(--sky); }
+.status-group .outcome[data-k="in_progress"][aria-pressed="true"] { background: #fffbeb; border-color: #fde68a; }
+.status-group .outcome[data-k="in_progress"][aria-pressed="true"] strong { color: var(--amber); }
+.status-group .outcome[data-k="completed"][aria-pressed="true"]   { background: #f0fdf4; border-color: #bbf7d0; }
+.status-group .outcome[data-k="completed"][aria-pressed="true"] strong   { color: var(--green); }
+
+.quote-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+
+.danger-zone { border-color: #fecaca; }
+.danger-zone .btn.danger { color: var(--danger); border-color: #fecaca; }
+.danger-zone .btn.danger:hover:not(:disabled) { background: #fef2f2; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin: 22px 0 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tab {
+  font: inherit; font-size: 13.5px; font-weight: 600; color: var(--muted);
+  background: none; border: none; border-bottom: 2px solid transparent;
+  padding: 10px 14px; cursor: pointer; white-space: nowrap;
+}
+.tab:hover { color: var(--blue-ink); }
+.tab[aria-selected="true"] { color: var(--navy); border-bottom-color: var(--blue); }
+.tab-panel { padding-bottom: 40px; }
+
+/* Ledger rows (Expenses, Staff & Wages) */
+.ledger-total { font-family: var(--font-display); font-weight: 700; font-size: 26px; color: var(--navy); }
+.ledger-list { display: grid; gap: 8px; margin-top: 4px; }
+.ledger-row {
+  display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px;
+  border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px;
+}
+.ledger-thumb { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; }
+.ledger-info { display: flex; flex-direction: column; }
+.ledger-info strong { font-size: 14px; color: var(--ink); }
+.ledger-info span { font-size: 12px; color: var(--muted); }
+.ledger-amount { font-weight: 600; font-size: 14px; color: var(--navy); white-space: nowrap; }
+.ledger-remove { border: none; background: none; color: #cbd5e1; font-size: 14px; cursor: pointer; padding: 4px; }
+.ledger-remove:hover { color: var(--danger); }
+.empty-hint { color: var(--muted); font-size: 13.5px; text-align: center; padding: 18px 0; }
+
+/* Slip / site photo captions (photo-grid cells reused from app.css) */
+.photo-caption { font-size: 12px; color: var(--muted); padding: 7px 9px; border-top: 1px solid var(--line); }

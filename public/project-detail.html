@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project - SiteWise</title>
+
+  <!-- Favicons & PWA -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#233154">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SiteWise">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var t = JSON.parse(localStorage.getItem('sitewise_theme') || 'null');
+        if (t) {
+          var r = document.documentElement.style;
+          for (var k in t) r.setProperty(k, t[k]);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/project-manager.css">
+  <link rel="stylesheet" href="/css/project-detail.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<header class="app-band">
+  <div class="wrap">
+    <div class="app-logo" id="companyLogo">S</div>
+    <div>
+      <div class="app-title" id="clientHeading">Project</div>
+      <div class="app-sub" id="addressHeading">&nbsp;</div>
+    </div>
+    <div class="app-meta">
+      <span class="save-state" id="saveState" role="status"></span>
+      <span class="badge status-badge" id="statusBadge"></span>
+      <div class="acct" id="acct">
+        <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="acct-avatar" id="acctAvatar">S</span>
+          <span class="acct-name" id="acctName">Your business</span>
+          <span class="acct-caret">&#9662;</span>
+        </button>
+        <div class="acct-menu" role="menu">
+          <div class="acct-head">
+            <div class="nm" id="acctHeadName">Your business</div>
+            <div class="em" id="acctHeadEmail"></div>
+          </div>
+          <a class="acct-item" href="/project-manager" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            Project manager
+          </a>
+          <a class="acct-item" href="/jobs" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            My job cards
+          </a>
+          <button class="acct-item" id="editProfile" type="button" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+            Company details
+          </button>
+          <div class="acct-sep"></div>
+          <button class="acct-item danger" id="logout" type="button" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Project sections">
+    <button class="tab" data-tab="overview" role="tab" aria-selected="true" type="button">Overview</button>
+    <button class="tab" data-tab="expenses" role="tab" aria-selected="false" type="button">Expenses</button>
+    <button class="tab" data-tab="wages" role="tab" aria-selected="false" type="button">Staff &amp; Wages</button>
+    <button class="tab" data-tab="slips" role="tab" aria-selected="false" type="button">Slips</button>
+    <button class="tab" data-tab="photos" role="tab" aria-selected="false" type="button">Site Photos</button>
+  </nav>
+
+  <!-- ── Overview ─────────────────────────────────────────────── -->
+  <section class="tab-panel" id="panel-overview">
+
+    <section class="card">
+      <div class="sec-title"><h2>Client &amp; site</h2></div>
+      <div class="grid2">
+        <div class="field"><label>Client</label><div class="ro" id="ovClient">&mdash;</div></div>
+        <div class="field"><label>Client no.</label><div class="ro" id="ovPhone">&mdash;</div></div>
+        <div class="field"><label>Email</label><div class="ro" id="ovEmail">&mdash;</div></div>
+        <div class="field"><label>Site address</label><div class="ro" id="ovAddress">&mdash;</div></div>
+      </div>
+      <a class="link-nav" href="#" id="openJobCard">Edit client &amp; quote details on the job card &rarr;</a>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><h2>Project details</h2></div>
+      <div class="grid2">
+        <div class="field"><label for="pType">Project type</label>
+          <select id="pType"></select></div>
+        <div class="field"><label for="pStaff">Staff allocated at start</label>
+          <input id="pStaff" type="number" min="0" step="1" /></div>
+        <div class="field"><label for="pStart">Start date</label>
+          <input id="pStart" type="date" /></div>
+        <div class="field"><label for="pPlanned">Planned completion</label>
+          <input id="pPlanned" type="date" /></div>
+        <div class="field"><label for="pActual">Actual completion date</label>
+          <input id="pActual" type="date" /></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Status</label></div>
+      <div class="status-group" id="statusGroup"></div>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><h2>Client figures (income)</h2></div>
+      <div class="grid2">
+        <div class="field"><label for="pValue">Project value (R)</label>
+          <input id="pValue" type="number" min="0" step="0.01" /></div>
+        <div class="field"><label for="pDeposit">Deposit amount (R)</label>
+          <input id="pDeposit" type="number" min="0" step="0.01" placeholder="Leave blank if not yet paid" /></div>
+        <div class="field"><label for="pDepositDate">Deposit paid date</label>
+          <input id="pDepositDate" type="date" /></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><h2>Budget</h2></div>
+      <p class="sec-hint">Track one total budget, or split it between material and labour.</p>
+      <div class="chips" id="budgetModeGroup" role="group" aria-label="Budget type">
+        <button class="chip" type="button" data-mode="total">Total budget</button>
+        <button class="chip" type="button" data-mode="split">Split material &amp; labour</button>
+      </div>
+
+      <div class="grid2 budget-fields" id="budgetTotalFields" style="margin-top:14px">
+        <div class="field"><label for="pOpeningBudget">Opening budget (R)</label>
+          <input id="pOpeningBudget" type="number" min="0" step="0.01" /></div>
+      </div>
+
+      <div class="grid2 budget-fields" id="budgetSplitFields" style="margin-top:14px" hidden>
+        <div class="field"><label for="pMaterialBudget">Material budget (R)</label>
+          <input id="pMaterialBudget" type="number" min="0" step="0.01" /></div>
+        <div class="field"><label for="pLabourBudget">Labour budget (R)</label>
+          <input id="pLabourBudget" type="number" min="0" step="0.01" /></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><h2>Spend summary</h2></div>
+      <div class="totals" id="spendSummary"></div>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><h2>Notes</h2></div>
+      <div class="field"><textarea id="pNotes" placeholder="Anything relevant: site access, materials, reminders&hellip;"></textarea></div>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><h2>Quote &amp; invoicing</h2></div>
+      <div class="totals" id="quoteSummary"></div>
+      <div class="quote-actions">
+        <button class="btn btn-light" id="dlOvQuote" type="button">Download quote PDF</button>
+        <button class="btn btn-light" id="dlOvFull" type="button">Download full report + quote</button>
+      </div>
+    </section>
+
+    <section class="card danger-zone">
+      <div class="sec-title"><h2>Danger zone</h2></div>
+      <p class="sec-hint" id="deleteHint">A project can only be deleted once its status is Completed.</p>
+      <button class="btn btn-light danger" id="deleteProject" type="button" disabled>Delete this project</button>
+    </section>
+
+  </section>
+
+  <!-- ── Expenses ─────────────────────────────────────────────── -->
+  <section class="tab-panel" id="panel-expenses" hidden>
+    <section class="card">
+      <div class="sec-title"><h2>Material total</h2></div>
+      <div class="ledger-total" id="materialTotal">R 0.00</div>
+    </section>
+    <section class="card">
+      <div class="sec-title"><h2>Add expense</h2></div>
+      <div class="grid2">
+        <div class="field"><label for="expDesc">Description</label><input id="expDesc" placeholder="e.g. Waterproofing membrane - 20L" /></div>
+        <div class="field"><label for="expAmount">Amount (R)</label><input id="expAmount" type="number" min="0" step="0.01" /></div>
+        <div class="field"><label for="expDate">Date</label><input id="expDate" type="date" /></div>
+        <div class="field"><label for="expPhoto">Receipt photo (optional)</label>
+          <input id="expPhoto" type="file" accept="image/*" /></div>
+      </div>
+      <button class="add-item" id="addExpense" type="button">+ Add expense</button>
+    </section>
+    <section class="card">
+      <div class="sec-title"><h2>Logged expenses</h2></div>
+      <div class="ledger-list" id="expenseList"></div>
+      <p class="empty-hint" id="expensesEmpty">No expenses yet. Log your first material cost for this job.</p>
+    </section>
+  </section>
+
+  <!-- ── Staff & Wages ────────────────────────────────────────── -->
+  <section class="tab-panel" id="panel-wages" hidden>
+    <section class="card">
+      <div class="sec-title"><h2>Wages total</h2></div>
+      <div class="ledger-total" id="wagesTotal">R 0.00</div>
+    </section>
+    <section class="card">
+      <div class="sec-title"><h2>Add staff / wage entry</h2></div>
+      <div class="grid2">
+        <div class="field"><label for="wageName">Staff name</label><input id="wageName" placeholder="e.g. S. Dlamini" /></div>
+        <div class="field"><label for="wageRole">Role (optional)</label><input id="wageRole" placeholder="e.g. Waterproofer" /></div>
+        <div class="field"><label for="wageAmount">Amount paid (R)</label><input id="wageAmount" type="number" min="0" step="0.01" /></div>
+        <div class="field"><label for="wageDate">Date</label><input id="wageDate" type="date" /></div>
+        <div class="field"><label for="wagePhoto">Payment slip photo (optional)</label>
+          <input id="wagePhoto" type="file" accept="image/*" /></div>
+      </div>
+      <button class="add-item" id="addWage" type="button">+ Add entry</button>
+    </section>
+    <section class="card">
+      <div class="sec-title"><h2>Logged wages</h2></div>
+      <div class="ledger-list" id="wageList"></div>
+      <p class="empty-hint" id="wagesEmpty">No staff wages logged yet.</p>
+    </section>
+  </section>
+
+  <!-- ── Slips ────────────────────────────────────────────────── -->
+  <section class="tab-panel" id="panel-slips" hidden>
+    <section class="card">
+      <div class="sec-title"><h2>Add slip</h2></div>
+      <p class="sec-hint">Photograph a delivery note or receipt slip and log it here.</p>
+      <div class="grid2">
+        <div class="field"><label for="slipCaption">Caption</label><input id="slipCaption" placeholder="e.g. Builders Warehouse delivery note" /></div>
+        <div class="field"><label for="slipAmount">Amount (R, optional)</label><input id="slipAmount" type="number" min="0" step="0.01" /></div>
+        <div class="field"><label for="slipDate">Date</label><input id="slipDate" type="date" /></div>
+        <div class="field"><label for="slipPhoto">Photo</label><input id="slipPhoto" type="file" accept="image/*" /></div>
+      </div>
+      <button class="add-item" id="addSlip" type="button">+ Add slip</button>
+    </section>
+    <section class="card">
+      <div class="sec-title"><h2>Slips</h2></div>
+      <div class="photo-grid" id="slipGrid"></div>
+      <p class="empty-hint" id="slipsEmpty">No slips added yet.</p>
+    </section>
+  </section>
+
+  <!-- ── Site Photos ──────────────────────────────────────────── -->
+  <section class="tab-panel" id="panel-photos" hidden>
+    <section class="card">
+      <div class="sec-title"><h2>Site photos</h2></div>
+      <p class="sec-hint">Progress photos taken during the job - separate from the inspection photos on the job card.</p>
+      <div class="photo-grid" id="sitePhotoGrid">
+        <button class="photo-add" id="sitePhotoAdd" type="button">+ Add photos</button>
+      </div>
+      <input type="file" id="sitePhotoInput" accept="image/*" multiple class="visually-hidden" />
+    </section>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="/js/config/IndustryPresets.js"></script>
+<script src="/js/services/Theme.js"></script>
+<script src="/js/services/ApiClient.js"></script>
+<script src="/js/services/SessionGuard.js"></script>
+<script src="/js/services/ImageTools.js"></script>
+<script src="/js/models/Job.js"></script>
+<script src="/js/services/PdfService.js"></script>
+<script src="/js/services/AccountMenu.js"></script>
+<script src="/js/pages/projectDetail.js" defer></script>
+<script src="/js/pwa.js" defer></script>
+</body>
+</html>

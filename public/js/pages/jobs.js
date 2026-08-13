@@ -10,13 +10,20 @@ class JobsPage {
   }
 
   async init() {
+    // Fired alongside the auth check rather than after it - both just need
+    // the session cookie, and waiting for one before starting the other
+    // doubles the round trip to a remote DB for no reason. If the auth
+    // check fails, this result is simply never awaited.
+    const jobsPromise = this._api.listJobs();
+    jobsPromise.catch(() => {});
+
     const user = await this._guard.requireOnboardedUser();
     if (!user) return;
 
     this._applyProfile(user.profile);
     AccountMenu.mount(user);
     this._bindHeader();
-    await this._refresh();
+    await this._refresh(jobsPromise);
   }
 
   _applyProfile(profile) {
@@ -39,8 +46,8 @@ class JobsPage {
     this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
   }
 
-  async _refresh() {
-    const { jobs } = await this._api.listJobs();
+  async _refresh(preloaded) {
+    const { jobs } = await (preloaded || this._api.listJobs());
     const list = this._$('jobList');
     list.innerHTML = '';
     this._$('jobsEmpty').hidden = jobs.length > 0;

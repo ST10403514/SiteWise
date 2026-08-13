@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My jobs - SiteWise</title>
+  <title>Project manager - SiteWise</title>
 
   <!-- Favicons & PWA -->
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
@@ -34,23 +34,19 @@
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/app.css">
   <link rel="stylesheet" href="/css/jobs.css">
+  <link rel="stylesheet" href="/css/project-manager.css">
 </head>
 <body>
-
-<button id="installBtn" class="pwa-install" type="button" hidden>
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-  Install SiteWise
-</button>
 
 <header class="app-band">
   <div class="wrap">
     <div class="app-logo" id="companyLogo">S</div>
     <div>
       <div class="app-title" id="companyName">SiteWise</div>
-      <div class="app-sub" id="companyTagline">Your job cards</div>
+      <div class="app-sub" id="companyTagline">Project manager</div>
     </div>
     <div class="app-meta">
-      <a class="btn btn-primary" href="/app" id="newJob">+ New job card</a>
+      <a class="btn btn-primary" href="/jobs" id="pickJob">+ New project</a>
       <div class="acct" id="acct">
         <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
           <span class="acct-avatar" id="acctAvatar">S</span>
@@ -62,13 +58,9 @@
             <div class="nm" id="acctHeadName">Your business</div>
             <div class="em" id="acctHeadEmail"></div>
           </div>
-          <a class="acct-item" href="/app" role="menuitem">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            New job card
-          </a>
-          <a class="acct-item" href="/project-manager" role="menuitem">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-            Project manager
+          <a class="acct-item" href="/jobs" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            My job cards
           </a>
           <button class="acct-item" id="editProfile" type="button" role="menuitem">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
@@ -87,15 +79,26 @@
 
 <main class="wrap">
   <div class="jobs-head">
-    <div class="sec-title"><h1>Job cards</h1></div>
-    <span class="jobs-count" id="jobsCount"></span>
+    <div class="sec-title"><h1>Projects</h1></div>
+    <span class="jobs-count" id="projectsCount"></span>
   </div>
-  <div id="jobList" class="job-list" aria-live="polite"></div>
-  <div class="jobs-empty" id="jobsEmpty" hidden>
-    <p><strong>No job cards yet.</strong></p>
-    <p>Start your first one - it saves automatically as you work,
-       and you can come back to it any time.</p>
-    <a class="btn btn-primary" href="/app">Start your first job card</a>
+
+  <div class="filter-block">
+    <div class="filter-label">Filter by status</div>
+    <div class="chips" id="statusFilters" role="group" aria-label="Filter by status"></div>
+  </div>
+  <div class="filter-block">
+    <div class="filter-label">Filter by type</div>
+    <div class="chips" id="typeFilters" role="group" aria-label="Filter by type"></div>
+  </div>
+
+  <div id="projectList" class="job-list" aria-live="polite"></div>
+
+  <div class="jobs-empty" id="projectsEmpty" hidden>
+    <p><strong>No projects yet.</strong></p>
+    <p>Once a client accepts a quote, open that job card and use
+       "Quote accepted &rarr; start project" to bring it in here.</p>
+    <a class="btn btn-primary" href="/jobs">Go to job cards</a>
   </div>
 </main>
 
@@ -107,7 +110,7 @@
 <script src="/js/services/SessionGuard.js"></script>
 <script src="/js/models/Job.js"></script>
 <script src="/js/services/AccountMenu.js"></script>
-<script src="/js/pages/jobs.js" defer></script>
+<script src="/js/pages/projectManager.js" defer></script>
 <script src="/js/pwa.js" defer></script>
 </body>
 </html>

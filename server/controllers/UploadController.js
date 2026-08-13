@@ -17,6 +17,11 @@ class UploadController {
 
   static MAX_DATAURL_CHARS = 9_000_000;
 
+  // Where an upload lands, keyed by the caller-supplied `folder`. Keeps every
+  // upload scoped under photos/expenses/wages/slips/site-photos rather than
+  // trusting an arbitrary path from the client.
+  static FOLDERS = new Set(['photos', 'expenses', 'wages', 'slips', 'site-photos']);
+
   create = async (req, res, next) => {
     try {
       const dataUrl = req.body?.dataUrl;
@@ -26,7 +31,8 @@ class UploadController {
       if (dataUrl.length > UploadController.MAX_DATAURL_CHARS) {
         throw ApiError.badRequest('Image is too large');
       }
-      const url = await this._storage.uploadDataUrl(dataUrl, `photos/${req.user.id}`);
+      const folder = UploadController.FOLDERS.has(req.body?.folder) ? req.body.folder : 'photos';
+      const url = await this._storage.uploadDataUrl(dataUrl, `${folder}/${req.user.id}`);
       res.status(201).json({ url });
     } catch (err) {
       if (err.code === 'BAD_IMAGE') return next(ApiError.badRequest('Unsupported image format'));

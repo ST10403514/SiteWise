@@ -20,12 +20,19 @@ class AppPage {
   }
 
   async init() {
+    // Fired alongside the auth check rather than after it - both just need
+    // the session cookie, so there's no reason to wait a full round trip to
+    // a remote DB for one before starting the other.
+    const existingId = new URLSearchParams(location.search).get('id');
+    const jobPromise = existingId ? this._api.getJob(existingId) : null;
+    if (jobPromise) jobPromise.catch(() => {});
+
     const user = await this._guard.requireOnboardedUser();
     if (!user) return;
 
     this._applyProfile(user.profile);
     AccountMenu.mount(user);
-    this._job = await this._loadOrCreateJob(user.profile);
+    this._job = await this._loadOrCreateJob(user.profile, jobPromise);
 
     this._bindHeader();
     this._bindFields();
@@ -34,6 +41,7 @@ class AppPage {
     this._bindPhotos();
     this._bindItems();
     this._bindDownloads();
+    this._bindConvertToProject();
 
     this._hydrate();
     this._startAutosave();
@@ -58,11 +66,11 @@ class AppPage {
     }
   }
 
-  async _loadOrCreateJob(profile) {
+  async _loadOrCreateJob(profile, preloadedPromise) {
     const id = new URLSearchParams(location.search).get('id');
     if (id) {
       try {
-        const { job } = await this._api.getJob(id);
+        const { job } = await (preloadedPromise || this._api.getJob(id));
         return Job.fromJSON(job.id, job.data);
       } catch {
         this._toast('Could not open that job - starting a new one');
@@ -550,6 +558,7 @@ class AppPage {
   _changed() {
     this._dirty = true;
     this._renderTotals();
+    this._refreshConvertButton();
     this._setSaveState('Unsaved changes');
   }
 
@@ -637,6 +646,34 @@ class AppPage {
       PDFService.downloadFull(this._job.forPdf());
       this._toast('Full report + quote downloaded');
     });
+  }
+
+  // ── Convert to project ───────────────────────────────────────
+
+  /**
+   * Once the client has accepted the quote (outcome = "work" and at least
+   * one priced line item), surface a button that hands the job over to the
+   * Project Manager section. Re-checked on every edit via _changed().
+   */
+  _bindConvertToProject() {
+    this._$('convertProject').addEventListener('click', () => {
+      if (!this._job.project) {
+        this._job.project = Job.newProject(this._job.grandTotal);
+      }
+      this._flushSave();
+      location.assign(`/project-detail?id=${this._job.id}`);
+    });
+    this._refreshConvertButton();
+  }
+
+  _refreshConvertButton() {
+    const btn = this._$('convertProject');
+    if (this._job.project) {
+      btn.textContent = 'Open in project manager';
+    } else {
+      btn.textContent = 'Quote accepted → start project';
+    }
+    btn.hidden = this._job.outcome !== 'work' || this._job.grandTotal <= 0;
   }
 
   // ── Toast ─────────────────────────────────────────────────────

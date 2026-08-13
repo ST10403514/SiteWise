@@ -1,0 +1,10 @@
+/* ── Project manager dashboard ──────────────────────────────── */
+.filter-block { margin-bottom: 14px; }
+.filter-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+
+.badge.status-planned     { background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
+.badge.status-in_progress { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.badge.status-completed   { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }

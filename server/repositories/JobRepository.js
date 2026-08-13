@@ -37,6 +37,9 @@ class JobRepository {
                    json_extract(data, '$.siteAddress')  AS siteAddress,
                    json_extract(data, '$.outcome')      AS outcome,
                    json_extract(data, '$.grandTotal')   AS grandTotal,
+                   json_extract(data, '$.jobType')      AS jobType,
+                   json_extract(data, '$.project.status') AS projectStatus,
+                   json_extract(data, '$.project.value')  AS projectValue,
                    COALESCE(json_array_length(data, '$.photos'), 0) AS photoCount,
                    updatedAt
             FROM jobs
@@ -52,6 +55,9 @@ class JobRepository {
       siteAddress: row.siteAddress,
       outcome: row.outcome,
       grandTotal: row.grandTotal,
+      jobType: row.jobType,
+      projectStatus: row.projectStatus,
+      projectValue: row.projectValue,
       photoCount: row.photoCount,
       updatedAt: row.updatedAt,
     }));
