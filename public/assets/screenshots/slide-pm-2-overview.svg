@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="Barlow, Arial, sans-serif">
+  <defs><clipPath id="winpm2"><rect x="40" y="30" width="1120" height="690" rx="14"/></clipPath></defs>
+  <rect x="40" y="30" width="1120" height="690" rx="14" fill="#ffffff" stroke="#dbe2ee"/>
+  <g clip-path="url(#winpm2)">
+    <rect x="40" y="30" width="1120" height="44" fill="#eef2f8"/>
+    <circle cx="72" cy="52" r="6" fill="#f87171"/><circle cx="94" cy="52" r="6" fill="#fbbf24"/><circle cx="116" cy="52" r="6" fill="#34d399"/>
+
+    <!-- header band -->
+    <rect x="40" y="74" width="1120" height="90" fill="#233154"/>
+    <rect x="40" y="164" width="1120" height="4" fill="#2563eb"/>
+    <rect x="76" y="94" width="50" height="50" rx="8" fill="#ffffff" opacity="0.12"/>
+    <text x="101" y="125" text-anchor="middle" font-size="20" fill="#ffffff" font-weight="bold">A</text>
+    <text x="142" y="112" font-size="21" fill="#ffffff" font-weight="bold">J. Naidoo</text>
+    <text x="142" y="134" font-size="13" fill="#b4c3dc">14 Marine Drive, Muizenberg</text>
+    <text x="882" y="122" text-anchor="end" font-size="11" fill="#8fa2c2">Saved 14:32</text>
+    <rect x="900" y="106" width="112" height="28" rx="14" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="956" y="124" text-anchor="middle" font-size="11.5" fill="#d97706" font-weight="bold">In Progress</text>
+    <circle cx="1046" cy="120" r="18" fill="#2563eb"/>
+    <text x="1046" y="125" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="bold">A</text>
+
+    <!-- tabs -->
+    <line x1="80" y1="216" x2="1120" y2="216" stroke="#e2e8f0"/>
+    <text x="80" y="204" font-size="14" fill="#233154" font-weight="bold">Overview</text>
+    <rect x="78" y="212" width="66" height="3" rx="1.5" fill="#2563eb"/>
+    <text x="176" y="204" font-size="14" fill="#64748b">Expenses</text>
+    <text x="270" y="204" font-size="14" fill="#64748b">Staff &amp; Wages</text>
+    <text x="400" y="204" font-size="14" fill="#64748b">Slips</text>
+    <text x="460" y="204" font-size="14" fill="#64748b">Site Photos</text>
+
+    <!-- card: project details -->
+    <rect x="80" y="234" width="1040" height="128" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="256" width="5" height="18" rx="2" fill="#2563eb"/>
+    <text x="120" y="270" font-size="15" fill="#233154" font-weight="bold" letter-spacing="1">PROJECT DETAILS</text>
+    <g font-family="Barlow, Arial, sans-serif">
+      <rect x="104" y="288" width="308" height="40" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="258" y="313" text-anchor="middle" font-size="14" fill="#1e293b">Planned</text>
+      <rect x="428" y="288" width="308" height="40" rx="8" fill="#fffbeb" stroke="#fde68a"/>
+      <text x="582" y="313" text-anchor="middle" font-size="14" fill="#d97706" font-weight="bold">In Progress</text>
+      <rect x="752" y="288" width="308" height="40" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+      <text x="906" y="313" text-anchor="middle" font-size="14" fill="#1e293b">Completed</text>
+    </g>
+    <text x="104" y="350" font-size="12.5" fill="#64748b">Start date: 17 Aug 2026  &#183;  Staff allocated at start: 3</text>
+
+    <!-- card: client figures -->
+    <rect x="80" y="378" width="1040" height="132" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="400" width="5" height="18" rx="2" fill="#2563eb"/>
+    <text x="120" y="414" font-size="15" fill="#233154" font-weight="bold" letter-spacing="1">CLIENT FIGURES (INCOME)</text>
+    <g font-size="13.5">
+      <text x="104" y="446" fill="#64748b">Project value</text>
+      <text x="1096" y="446" text-anchor="end" fill="#1e293b" font-weight="600">R 48 875.00</text>
+      <line x1="104" y1="456" x2="1096" y2="456" stroke="#eef2f8"/>
+      <text x="104" y="476" fill="#64748b">Deposit paid</text>
+      <text x="1096" y="476" text-anchor="end" fill="#1e293b" font-weight="600">R 10 000.00 (12 Aug 2026)</text>
+      <line x1="104" y1="486" x2="1096" y2="486" stroke="#eef2f8"/>
+      <text x="104" y="500" fill="#64748b">Opening budget</text>
+      <text x="1096" y="500" text-anchor="end" fill="#1e293b" font-weight="600">R 30 000.00</text>
+    </g>
+
+    <!-- card: spend summary -->
+    <rect x="80" y="526" width="1040" height="146" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="548" width="5" height="18" rx="2" fill="#2563eb"/>
+    <text x="120" y="562" font-size="15" fill="#233154" font-weight="bold" letter-spacing="1">SPEND SUMMARY</text>
+    <g font-size="13.5" fill="#64748b">
+      <text x="104" y="592">Material total</text><text x="1096" y="592" text-anchor="end" fill="#1e293b">R 6 240.00</text>
+      <text x="104" y="614">Wages total</text><text x="1096" y="614" text-anchor="end" fill="#1e293b">R 4 100.00</text>
+    </g>
+    <rect x="104" y="628" width="992" height="36" rx="7" fill="#233154"/>
+    <text x="118" y="651" font-size="14" fill="#ffffff" font-weight="bold">Total spend</text>
+    <text x="1082" y="651" text-anchor="end" font-size="15" fill="#ffffff" font-weight="bold">R 10 340.00</text>
+  </g>
+</svg>

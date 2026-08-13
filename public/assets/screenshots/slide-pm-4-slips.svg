@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="Barlow, Arial, sans-serif">
+  <defs><clipPath id="winpm4"><rect x="40" y="30" width="1120" height="690" rx="14"/></clipPath></defs>
+  <rect x="40" y="30" width="1120" height="690" rx="14" fill="#ffffff" stroke="#dbe2ee"/>
+  <g clip-path="url(#winpm4)">
+    <rect x="40" y="30" width="1120" height="44" fill="#eef2f8"/>
+    <circle cx="72" cy="52" r="6" fill="#f87171"/><circle cx="94" cy="52" r="6" fill="#fbbf24"/><circle cx="116" cy="52" r="6" fill="#34d399"/>
+
+    <!-- header band -->
+    <rect x="40" y="74" width="1120" height="90" fill="#233154"/>
+    <rect x="40" y="164" width="1120" height="4" fill="#2563eb"/>
+    <rect x="76" y="94" width="50" height="50" rx="8" fill="#ffffff" opacity="0.12"/>
+    <text x="101" y="125" text-anchor="middle" font-size="20" fill="#ffffff" font-weight="bold">A</text>
+    <text x="142" y="112" font-size="21" fill="#ffffff" font-weight="bold">J. Naidoo</text>
+    <text x="142" y="134" font-size="13" fill="#b4c3dc">14 Marine Drive, Muizenberg</text>
+    <rect x="900" y="106" width="112" height="28" rx="14" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="956" y="124" text-anchor="middle" font-size="11.5" fill="#d97706" font-weight="bold">In Progress</text>
+    <circle cx="1046" cy="120" r="18" fill="#2563eb"/>
+    <text x="1046" y="125" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="bold">A</text>
+
+    <!-- card: slips -->
+    <rect x="80" y="184" width="1040" height="220" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="206" width="5" height="18" rx="2" fill="#2563eb"/>
+    <text x="120" y="220" font-size="15" fill="#233154" font-weight="bold" letter-spacing="1">SLIPS</text>
+
+    <!-- slip 1: receipt mockup on a coloured backdrop -->
+    <rect x="104" y="236" width="226" height="100" rx="8" fill="#c7d5e8"/>
+    <rect x="150" y="247" width="140" height="84" rx="4" fill="#1e293b" fill-opacity="0.12"/>
+    <rect x="147" y="244" width="140" height="84" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
+    <path d="M273 244 L287 244 L287 258 Z" fill="#eef2f8" stroke="#e2e8f0"/>
+    <text x="157" y="262" font-size="8.5" font-weight="bold" fill="#475569">BUILDERS WAREHOUSE</text>
+    <text x="157" y="276" font-size="7.5" fill="#94a3b8">Cement 32.5N x10</text>
+    <text x="157" y="288" font-size="7.5" fill="#94a3b8">Trowel &amp; float set</text>
+    <line x1="157" y1="296" x2="277" y2="296" stroke="#cbd5e1" stroke-dasharray="3 3"/>
+    <text x="157" y="312" font-size="8" font-weight="bold" fill="#1e293b">TOTAL</text>
+    <text x="277" y="312" text-anchor="end" font-size="9" font-weight="bold" fill="#233154">R 450.00</text>
+    <rect x="104" y="336" width="226" height="30" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="114" y="356" font-size="11" fill="#64748b">Builders Warehouse &#183; R 450.00</text>
+
+    <!-- slip 2 -->
+    <rect x="346" y="236" width="226" height="100" rx="8" fill="#d5cfc2"/>
+    <rect x="392" y="247" width="140" height="84" rx="4" fill="#1e293b" fill-opacity="0.12"/>
+    <rect x="389" y="244" width="140" height="84" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
+    <path d="M515 244 L529 244 L529 258 Z" fill="#eef2f8" stroke="#e2e8f0"/>
+    <text x="399" y="262" font-size="8.5" font-weight="bold" fill="#475569">PAINT WORLD</text>
+    <text x="399" y="276" font-size="7.5" fill="#94a3b8">Exterior paint 20L</text>
+    <text x="399" y="288" font-size="7.5" fill="#94a3b8">Roller &amp; tray kit</text>
+    <line x1="399" y1="296" x2="519" y2="296" stroke="#cbd5e1" stroke-dasharray="3 3"/>
+    <text x="399" y="312" font-size="8" font-weight="bold" fill="#1e293b">TOTAL</text>
+    <text x="519" y="312" text-anchor="end" font-size="9" font-weight="bold" fill="#233154">R 1 120.00</text>
+    <rect x="346" y="336" width="226" height="30" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="356" y="356" font-size="11" fill="#64748b">Paint supplier delivery &#183; R 1 120.00</text>
+
+    <!-- slip 3 -->
+    <rect x="588" y="236" width="226" height="100" rx="8" fill="#cbd9cd"/>
+    <rect x="634" y="247" width="140" height="84" rx="4" fill="#1e293b" fill-opacity="0.12"/>
+    <rect x="631" y="244" width="140" height="84" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
+    <path d="M757 244 L771 244 L771 258 Z" fill="#eef2f8" stroke="#e2e8f0"/>
+    <text x="641" y="262" font-size="8.5" font-weight="bold" fill="#475569">CASHBUILD</text>
+    <text x="641" y="276" font-size="7.5" fill="#94a3b8">Flashing brackets x8</text>
+    <text x="641" y="288" font-size="7.5" fill="#94a3b8">Silicone sealant x4</text>
+    <line x1="641" y1="296" x2="761" y2="296" stroke="#cbd5e1" stroke-dasharray="3 3"/>
+    <text x="641" y="312" font-size="8" font-weight="bold" fill="#1e293b">TOTAL</text>
+    <text x="761" y="312" text-anchor="end" font-size="9" font-weight="bold" fill="#233154">R 340.00</text>
+    <rect x="588" y="336" width="226" height="30" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="598" y="356" font-size="11" fill="#64748b">Hardware receipt &#183; R 340.00</text>
+
+    <rect x="830" y="236" width="226" height="130" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-dasharray="6 5"/>
+    <text x="943" y="306" text-anchor="middle" font-size="14" fill="#1d4ed8">+ Add slip</text>
+
+    <!-- card: site photos -->
+    <rect x="80" y="424" width="1040" height="220" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="446" width="5" height="18" rx="2" fill="#2563eb"/>
+    <text x="120" y="460" font-size="15" fill="#233154" font-weight="bold" letter-spacing="1">SITE PHOTOS</text>
+
+    <rect x="104" y="476" width="226" height="100" rx="8" fill="#c7d5e8"/>
+    <path d="M104 544 L164 504 L214 540 L258 512 L330 550 L330 576 L104 576 Z" fill="#8aa5c8"/>
+    <rect x="104" y="576" width="226" height="30" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="114" y="596" font-size="11" fill="#64748b">Progress - Day 1</text>
+
+    <rect x="346" y="476" width="226" height="100" rx="8" fill="#d5cfc2"/>
+    <path d="M346 550 L416 514 L466 548 L516 524 L572 556 L572 576 L346 576 Z" fill="#b3a893"/>
+    <rect x="346" y="576" width="226" height="30" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="356" y="596" font-size="11" fill="#64748b">Membrane applied</text>
+
+    <rect x="588" y="476" width="226" height="100" rx="8" fill="#cbd9cd"/>
+    <path d="M588 554 L652 518 L708 552 L762 528 L818 558 L818 576 L588 576 Z" fill="#9fb8a3"/>
+    <rect x="588" y="576" width="226" height="30" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="598" y="596" font-size="11" fill="#64748b">Flashing complete</text>
+
+    <rect x="830" y="476" width="226" height="130" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-dasharray="6 5"/>
+    <text x="943" y="546" text-anchor="middle" font-size="14" fill="#1d4ed8">+ Add photos</text>
+  </g>
+</svg>

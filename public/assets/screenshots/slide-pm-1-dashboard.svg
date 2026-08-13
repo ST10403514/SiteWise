@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="Barlow, Arial, sans-serif">
+  <defs><clipPath id="winpm1"><rect x="40" y="30" width="1120" height="690" rx="14"/></clipPath></defs>
+  <rect x="40" y="30" width="1120" height="690" rx="14" fill="#ffffff" stroke="#dbe2ee"/>
+  <g clip-path="url(#winpm1)">
+    <rect x="40" y="30" width="1120" height="44" fill="#eef2f8"/>
+    <circle cx="72" cy="52" r="6" fill="#f87171"/><circle cx="94" cy="52" r="6" fill="#fbbf24"/><circle cx="116" cy="52" r="6" fill="#34d399"/>
+    <rect x="420" y="41" width="360" height="22" rx="11" fill="#ffffff" stroke="#dbe2ee"/>
+    <text x="600" y="57" text-anchor="middle" font-size="13" fill="#94a3b8">app.sitewise.co.za/project-manager</text>
+
+    <!-- header band -->
+    <rect x="40" y="74" width="1120" height="86" fill="#233154"/>
+    <rect x="40" y="160" width="1120" height="4" fill="#2563eb"/>
+    <rect x="76" y="92" width="50" height="50" rx="8" fill="#ffffff" opacity="0.12"/>
+    <text x="101" y="123" text-anchor="middle" font-size="20" fill="#ffffff" font-weight="bold">A</text>
+    <text x="142" y="112" font-size="21" fill="#ffffff" font-weight="bold">Atlas Painting Co.</text>
+    <text x="142" y="134" font-size="13" fill="#b4c3dc">Project manager</text>
+    <rect x="928" y="96" width="140" height="34" rx="7" fill="#2563eb"/>
+    <text x="998" y="118" text-anchor="middle" font-size="13.5" fill="#ffffff" font-weight="bold">+ New project</text>
+
+    <!-- title row -->
+    <text x="80" y="200" font-size="22" fill="#233154" font-weight="bold" letter-spacing="1">PROJECTS</text>
+    <text x="196" y="200" font-size="13" fill="#64748b">3 jobs on the books, tracked from quote to completion</text>
+
+    <!-- status filters -->
+    <text x="80" y="228" font-size="11" font-weight="bold" letter-spacing="0.6" fill="#64748b">FILTER BY STATUS</text>
+    <rect x="80" y="238" width="76" height="28" rx="14" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="118" y="257" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">All (3)</text>
+    <rect x="164" y="238" width="106" height="28" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="217" y="257" text-anchor="middle" font-size="12" fill="#64748b">Planned (1)</text>
+    <rect x="278" y="238" width="134" height="28" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="345" y="257" text-anchor="middle" font-size="12" fill="#64748b">In Progress (1)</text>
+    <rect x="420" y="238" width="128" height="28" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="484" y="257" text-anchor="middle" font-size="12" fill="#64748b">Completed (1)</text>
+
+    <!-- type filters -->
+    <text x="80" y="292" font-size="11" font-weight="bold" letter-spacing="0.6" fill="#64748b">FILTER BY TYPE</text>
+    <rect x="80" y="302" width="58" height="28" rx="14" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="109" y="321" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">All</text>
+    <rect x="146" y="302" width="150" height="28" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="221" y="321" text-anchor="middle" font-size="12" fill="#64748b">Waterproofing</text>
+    <rect x="304" y="302" width="164" height="28" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="386" y="321" text-anchor="middle" font-size="12" fill="#64748b">Exterior painting</text>
+
+    <!-- project card 1: Planned -->
+    <rect x="80" y="352" width="1040" height="98" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="104" y="382" font-size="16" fill="#1e293b" font-weight="bold">Salt Rock Guest House</text>
+    <rect x="306" y="368" width="112" height="22" rx="11" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="362" y="383" text-anchor="middle" font-size="11" fill="#1d4ed8">Roof painting</text>
+    <text x="104" y="406" font-size="12.5" fill="#64748b">2 Ocean View Drive, Salt Rock &#183; Updated 5 Aug 2026</text>
+    <text x="1096" y="384" text-anchor="end" font-size="17" fill="#1e293b" font-weight="bold">R 27 480.00</text>
+    <rect x="1006" y="392" width="90" height="24" rx="12" fill="#f0f9ff" stroke="#bae6fd"/>
+    <text x="1051" y="408" text-anchor="middle" font-size="11" fill="#0284c7" font-weight="bold">Planned</text>
+
+    <!-- project card 2: In Progress -->
+    <rect x="80" y="466" width="1040" height="98" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="104" y="496" font-size="16" fill="#1e293b" font-weight="bold">J. Naidoo</text>
+    <rect x="182" y="482" width="150" height="22" rx="11" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="257" y="497" text-anchor="middle" font-size="11" fill="#1d4ed8">Exterior painting</text>
+    <text x="104" y="520" font-size="12.5" fill="#64748b">14 Marine Drive, Muizenberg &#183; Updated 14 Aug 2026</text>
+    <text x="1096" y="498" text-anchor="end" font-size="17" fill="#1e293b" font-weight="bold">R 48 875.00</text>
+    <rect x="978" y="506" width="118" height="24" rx="12" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="1037" y="522" text-anchor="middle" font-size="11" fill="#d97706" font-weight="bold">In Progress</text>
+
+    <!-- project card 3: Completed -->
+    <rect x="80" y="580" width="1040" height="98" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="104" y="610" font-size="16" fill="#1e293b" font-weight="bold">Bergview Body Corporate</text>
+    <rect x="316" y="596" width="128" height="22" rx="11" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="380" y="611" text-anchor="middle" font-size="11" fill="#1d4ed8">Waterproofing</text>
+    <text x="104" y="634" font-size="12.5" fill="#64748b">Block C, Bergview Estate, Plumstead &#183; Updated 2 Aug 2026</text>
+    <text x="1096" y="612" text-anchor="end" font-size="17" fill="#1e293b" font-weight="bold">R 112 240.00</text>
+    <rect x="988" y="620" width="108" height="24" rx="12" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="1042" y="636" text-anchor="middle" font-size="11" fill="#16a34a" font-weight="bold">Completed</text>
+  </g>
+</svg>

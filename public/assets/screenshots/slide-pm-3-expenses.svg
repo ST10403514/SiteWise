@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="Barlow, Arial, sans-serif">
+  <defs><clipPath id="winpm3"><rect x="40" y="30" width="1120" height="690" rx="14"/></clipPath></defs>
+  <rect x="40" y="30" width="1120" height="690" rx="14" fill="#ffffff" stroke="#dbe2ee"/>
+  <g clip-path="url(#winpm3)">
+    <rect x="40" y="30" width="1120" height="44" fill="#eef2f8"/>
+    <circle cx="72" cy="52" r="6" fill="#f87171"/><circle cx="94" cy="52" r="6" fill="#fbbf24"/><circle cx="116" cy="52" r="6" fill="#34d399"/>
+
+    <!-- header band -->
+    <rect x="40" y="74" width="1120" height="90" fill="#233154"/>
+    <rect x="40" y="164" width="1120" height="4" fill="#2563eb"/>
+    <rect x="76" y="94" width="50" height="50" rx="8" fill="#ffffff" opacity="0.12"/>
+    <text x="101" y="125" text-anchor="middle" font-size="20" fill="#ffffff" font-weight="bold">A</text>
+    <text x="142" y="112" font-size="21" fill="#ffffff" font-weight="bold">J. Naidoo</text>
+    <text x="142" y="134" font-size="13" fill="#b4c3dc">14 Marine Drive, Muizenberg</text>
+    <rect x="900" y="106" width="112" height="28" rx="14" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="956" y="124" text-anchor="middle" font-size="11.5" fill="#d97706" font-weight="bold">In Progress</text>
+    <circle cx="1046" cy="120" r="18" fill="#2563eb"/>
+    <text x="1046" y="125" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="bold">A</text>
+
+    <!-- left card: expenses -->
+    <rect x="80" y="184" width="504" height="472" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="104" y="206" width="5" height="18" rx="2" fill="#2563eb"/>
+    <text x="120" y="220" font-size="15" fill="#233154" font-weight="bold" letter-spacing="1">MATERIAL EXPENSES</text>
+    <text x="104" y="248" font-size="11" font-weight="bold" letter-spacing="1" fill="#64748b">MATERIAL TOTAL</text>
+    <text x="104" y="284" font-size="32" fill="#233154" font-weight="bold">R 6 240.00</text>
+
+    <g font-family="Barlow, Arial, sans-serif">
+      <rect x="104" y="308" width="456" height="56" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+      <rect x="114" y="318" width="36" height="36" rx="6" fill="#c7d5e8"/>
+      <rect x="121" y="323" width="22" height="26" rx="2" fill="#ffffff" stroke="#e2e8f0"/>
+      <path d="M139 323 L143 323 L143 327 Z" fill="#eef2f8" stroke="#e2e8f0"/>
+      <rect x="124" y="331" width="14" height="2" rx="1" fill="#cbd5e1"/>
+      <rect x="124" y="336" width="10" height="2" rx="1" fill="#cbd5e1"/>
+      <rect x="124" y="342" width="12" height="2" rx="1" fill="#94a3b8"/>
+      <text x="160" y="333" font-size="13" font-weight="bold" fill="#1e293b">Waterproofing membrane - 20L</text>
+      <text x="160" y="351" font-size="11" fill="#64748b">15 Aug 2026</text>
+      <text x="548" y="341" text-anchor="end" font-size="14" font-weight="bold" fill="#233154">R 1 450.00</text>
+
+      <rect x="104" y="374" width="456" height="56" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+      <rect x="114" y="384" width="36" height="36" rx="6" fill="#d5cfc2"/>
+      <rect x="121" y="389" width="22" height="26" rx="2" fill="#ffffff" stroke="#e2e8f0"/>
+      <path d="M139 389 L143 389 L143 393 Z" fill="#eef2f8" stroke="#e2e8f0"/>
+      <rect x="124" y="397" width="14" height="2" rx="1" fill="#cbd5e1"/>
+      <rect x="124" y="402" width="10" height="2" rx="1" fill="#cbd5e1"/>
+      <rect x="124" y="408" width="12" height="2" rx="1" fill="#94a3b8"/>
+      <text x="160" y="399" font-size="13" font-weight="bold" fill="#1e293b">Primer &amp; sealant, 4 x 5L</text>
+      <text x="160" y="417" font-size="11" fill="#64748b">17 Aug 2026</text>
+      <text x="548" y="407" text-anchor="end" font-size="14" font-weight="bold" fill="#233154">R 2 190.00</text>
+
+      <rect x="104" y="440" width="456" height="56" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+      <rect x="114" y="450" width="36" height="36" rx="6" fill="#cbd9cd"/>
+      <rect x="121" y="455" width="22" height="26" rx="2" fill="#ffffff" stroke="#e2e8f0"/>
+      <path d="M139 455 L143 455 L143 459 Z" fill="#eef2f8" stroke="#e2e8f0"/>
+      <rect x="124" y="463" width="14" height="2" rx="1" fill="#cbd5e1"/>
+      <rect x="124" y="468" width="10" height="2" rx="1" fill="#cbd5e1"/>
+      <rect x="124" y="474" width="12" height="2" rx="1" fill="#94a3b8"/>
+      <text x="160" y="465" font-size="13" font-weight="bold" fill="#1e293b">Flashing &amp; fixings</text>
+      <text x="160" y="483" font-size="11" fill="#64748b">18 Aug 2026</text>
+      <text x="548" y="473" text-anchor="end" font-size="14" font-weight="bold" fill="#233154">R 2 600.00</text>
+    </g>
+    <rect x="104" y="512" width="150" height="32" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="179" y="533" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">+ Add expense</text>
+
+    <!-- right card: staff & wages -->
+    <rect x="616" y="184" width="504" height="472" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect x="640" y="206" width="5" height="18" rx="2" fill="#2563eb"/>
+    <text x="656" y="220" font-size="15" fill="#233154" font-weight="bold" letter-spacing="1">STAFF &amp; WAGES</text>
+    <text x="640" y="248" font-size="11" font-weight="bold" letter-spacing="1" fill="#64748b">WAGES TOTAL</text>
+    <text x="640" y="284" font-size="32" fill="#233154" font-weight="bold">R 4 100.00</text>
+
+    <g font-family="Barlow, Arial, sans-serif">
+      <rect x="640" y="308" width="456" height="56" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="668" cy="336" r="18" fill="#233154"/>
+      <text x="668" y="341" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">S</text>
+      <text x="696" y="333" font-size="13" font-weight="bold" fill="#1e293b">S. Dlamini - Waterproofer</text>
+      <text x="696" y="351" font-size="11" fill="#64748b">15 Aug 2026</text>
+      <text x="1084" y="341" text-anchor="end" font-size="14" font-weight="bold" fill="#233154">R 1 800.00</text>
+
+      <rect x="640" y="374" width="456" height="56" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="668" cy="402" r="18" fill="#233154"/>
+      <text x="668" y="407" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">T</text>
+      <text x="696" y="399" font-size="13" font-weight="bold" fill="#1e293b">T. Khumalo - Assistant</text>
+      <text x="696" y="417" font-size="11" fill="#64748b">15 Aug 2026</text>
+      <text x="1084" y="407" text-anchor="end" font-size="14" font-weight="bold" fill="#233154">R 1 200.00</text>
+
+      <rect x="640" y="440" width="456" height="56" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+      <circle cx="668" cy="468" r="18" fill="#233154"/>
+      <text x="668" y="473" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">S</text>
+      <text x="696" y="465" font-size="13" font-weight="bold" fill="#1e293b">S. Dlamini - Waterproofer</text>
+      <text x="696" y="483" font-size="11" fill="#64748b">18 Aug 2026</text>
+      <text x="1084" y="473" text-anchor="end" font-size="14" font-weight="bold" fill="#233154">R 1 100.00</text>
+    </g>
+    <rect x="640" y="512" width="130" height="32" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="705" y="533" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">+ Add entry</text>
+  </g>
+</svg>
