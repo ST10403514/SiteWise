@@ -65,7 +65,13 @@ function createApp() {
         scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-        imgSrc: ["'self'", 'data:', ...(config.r2.publicUrl ? [config.r2.publicUrl] : [])],
+        // Photos load from two R2 URL forms: the canonical public-looking
+        // one (kept as the stored reference format) and the raw signed
+        // S3-endpoint one getSignedUrl() actually returns for display -
+        // both need to be allowed or the browser silently blocks the <img>.
+        imgSrc: ["'self'", 'data:',
+          ...(config.r2.publicUrl ? [config.r2.publicUrl] : []),
+          ...(config.r2.accountId ? [`https://${config.r2.bucket}.${config.r2.accountId}.r2.cloudflarestorage.com`] : [])],
         connectSrc: ["'self'"],
         objectSrc: ["'none'"],
         frameAncestors: ["'self'"],
