@@ -19,6 +19,7 @@ const MAX_AMOUNT = 100_000_000; // sane ceiling for any single rand figure
 const STATUSES = new Set(['planned', 'in_progress', 'completed']);
 const BUDGET_MODES = new Set(['total', 'split']);
 const OUTCOMES = new Set(['pass', 'work', 'monitor']);
+const TIME_UNITS = new Set(['hours', 'days']);
 
 function str(value, field, max, { required = false } = {}) {
   if (value === undefined || value === null || value === '') {
@@ -79,6 +80,18 @@ function validateLedgerEntries(entries, field, storage, { nameField } = {}) {
   });
 }
 
+function validateTimeEntries(entries, field) {
+  return arr(entries, field, 2000).map((e, i) => {
+    if (!e || typeof e !== 'object') throw ApiError.badRequest(`${field}[${i}] is invalid`);
+    return {
+      id: str(e.id, `${field}[${i}].id`, SHORT),
+      date: str(e.date, `${field}[${i}].date`, SHORT),
+      hours: num(e.hours, `${field}[${i}].hours`, { max: 10_000 }),
+      note: str(e.note, `${field}[${i}].note`, MEDIUM),
+    };
+  });
+}
+
 function validateProject(project, storage) {
   if (project === null || project === undefined) return null;
   if (typeof project !== 'object' || Array.isArray(project)) {
@@ -101,9 +114,16 @@ function validateProject(project, storage) {
   num(project.materialBudget, 'project.materialBudget');
   num(project.labourBudget, 'project.labourBudget');
   str(project.notes, 'project.notes', LONG);
+  num(project.hourlyRate, 'project.hourlyRate');
+  num(project.estimatedTime, 'project.estimatedTime', { max: 100_000 });
+  if (project.estimatedTimeUnit !== undefined && project.estimatedTimeUnit !== null
+      && !TIME_UNITS.has(project.estimatedTimeUnit)) {
+    throw ApiError.badRequest('project.estimatedTimeUnit is invalid');
+  }
 
   project.expenses = validateLedgerEntries(project.expenses, 'project.expenses', storage);
   project.staffWages = validateLedgerEntries(project.staffWages, 'project.staffWages', storage, { nameField: true });
+  project.timeEntries = validateTimeEntries(project.timeEntries, 'project.timeEntries');
   project.slips = validateLedgerEntries(project.slips, 'project.slips', storage);
   project.sitePhotos = arr(project.sitePhotos, 'project.sitePhotos', 300).map((p, i) => {
     if (!p || typeof p !== 'object') throw ApiError.badRequest(`project.sitePhotos[${i}] is invalid`);

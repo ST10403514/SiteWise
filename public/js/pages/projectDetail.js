@@ -41,6 +41,7 @@ class ProjectDetailPage {
     this._bindOverview();
     this._bindExpenses();
     this._bindWages();
+    this._bindTime();
     this._bindSlips();
     this._bindSitePhotos();
 
@@ -220,6 +221,13 @@ class ProjectDetailPage {
     this._$('budgetSplitFields').hidden = mode !== 'split';
   }
 
+  _syncTimeUnit() {
+    const unit = this._job.project.estimatedTimeUnit === 'days' ? 'days' : 'hours';
+    this._$('timeUnitGroup').querySelectorAll('.chip').forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.unit === unit));
+    });
+  }
+
   _renderSpendSummary() {
     const job = this._job;
     const mode = job.project.budgetMode === 'split' ? 'split' : 'total';
@@ -347,9 +355,74 @@ class ProjectDetailPage {
     this._$('wagesTotal').textContent = Job.formatCurrency(this._job.wagesTotal);
   }
 
+  // ── Time (rate + logged hours vs. estimate) ─────────────────────
+
+  _bindTime() {
+    const bindNumber = (id, prop) => {
+      this._$(id).addEventListener('input', (e) => {
+        this._job.project[prop] = Number(e.target.value) || 0;
+        this._changed();
+      });
+    };
+    bindNumber('pHourlyRate', 'hourlyRate');
+    bindNumber('pEstimatedTime', 'estimatedTime');
+
+    this._$('timeUnitGroup').querySelectorAll('.chip').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this._job.project.estimatedTimeUnit = btn.dataset.unit;
+        this._syncTimeUnit();
+        this._changed();
+      });
+    });
+
+    this._$('timeDate').value = this._today();
+    this._$('addTime').addEventListener('click', () => {
+      const hours = Number(this._$('timeHours').value) || 0;
+      const date = this._$('timeDate').value || this._today();
+      const note = this._$('timeNote').value.trim();
+      if (hours <= 0) {
+        this._toast('Add how many hours were worked first');
+        return;
+      }
+      this._job.project.timeEntries.push({ id: this._uid(), date, hours, note });
+      this._$('timeHours').value = '';
+      this._$('timeNote').value = '';
+      this._renderTimeEntries();
+      this._changed();
+      this._toast('Time logged');
+    });
+  }
+
+  _renderTimeEntries() {
+    const list = this._$('timeList');
+    list.innerHTML = '';
+    const entries = this._job.project.timeEntries;
+    this._$('timeEmpty').hidden = entries.length > 0;
+    entries.forEach((entry) => list.appendChild(this._buildLedgerRow(
+      entry, entry.note || 'Time logged', () => {
+        this._job.project.timeEntries = this._job.project.timeEntries.filter((e) => e.id !== entry.id);
+        this._renderTimeEntries();
+        this._changed();
+      },
+      `${entry.hours}h`,
+    )));
+
+    const job = this._job;
+    const rows = [
+      ['Hours logged', `${job.timeLoggedHours}h`],
+      ['Amount earned', Job.formatCurrency(job.timeEarned)],
+    ];
+    let html = rows.map(([label, value]) => `<div class="row"><span>${label}</span><span>${value}</span></div>`).join('');
+    if (job.project.estimatedTime > 0) {
+      html += `<div class="row"><span>Estimated</span><span>${job.estimatedHoursTotal}h</span></div>`
+        + `<div class="row grand"><span>Hours remaining</span><span>${job.timeRemainingHours}h</span></div>`;
+    }
+    this._$('timeSummary').innerHTML = html;
+  }
+
   // ── Shared ledger row builder (Expenses + Staff & Wages) ───────
 
-  _buildLedgerRow(entry, title, onRemove) {
+  _buildLedgerRow(entry, title, onRemove, amountText) {
     const row = document.createElement('div');
     row.className = 'ledger-row';
 
@@ -368,7 +441,7 @@ class ProjectDetailPage {
 
     const amount = document.createElement('div');
     amount.className = 'ledger-amount';
-    amount.textContent = Job.formatCurrency(entry.amount);
+    amount.textContent = amountText !== undefined ? amountText : Job.formatCurrency(entry.amount);
     row.appendChild(amount);
 
     const remove = document.createElement('button');
@@ -517,14 +590,18 @@ class ProjectDetailPage {
     this._$('pDepositDate').value = p.depositPaidDate || '';
     this._$('pMaterialBudget').value = p.materialBudget || 0;
     this._$('pLabourBudget').value = p.labourBudget || 0;
+    this._$('pHourlyRate').value = p.hourlyRate || 0;
+    this._$('pEstimatedTime').value = p.estimatedTime || '';
     this._$('pNotes').value = p.notes || '';
 
     this._syncStatus();
     this._syncBudgetMode();
+    this._syncTimeUnit();
     this._renderSpendSummary();
     this._renderQuoteSummary();
     this._renderExpenses();
     this._renderWages();
+    this._renderTimeEntries();
     this._renderSlips();
     this._renderSitePhotos();
   }

@@ -51,12 +51,18 @@ class Job {
       materialBudget: 0,
       labourBudget: 0,
       notes: '',
+      hourlyRate: 0,
+      estimatedTime: 0,
+      estimatedTimeUnit: 'hours', // 'hours' | 'days' (a day = 8 hours)
       expenses: [],    // { id, date, description, amount, photoUrl }
       staffWages: [],  // { id, date, name, role, amount, photoUrl }
+      timeEntries: [], // { id, date, hours, note }
       slips: [],       // { id, date, caption, amount, photoUrl }
       sitePhotos: [],  // { id, url, caption }
     };
   }
+
+  static HOURS_PER_DAY = 8;
 
   /**
    * Chip presets - populated from the tenant's industry at app start
@@ -229,6 +235,19 @@ class Job {
   get labourBudgetRemaining() {
     return (Number(this.project?.labourBudget) || 0) - this.wagesTotal;
   }
+
+  // ── Time tracking (rate + logged hours vs. the estimate) ────────
+
+  get timeLoggedHours() {
+    return (this.project?.timeEntries || []).reduce((s, t) => s + (Number(t.hours) || 0), 0);
+  }
+  /** The estimate, normalised to hours regardless of which unit it was entered in. */
+  get estimatedHoursTotal() {
+    const value = Number(this.project?.estimatedTime) || 0;
+    return this.project?.estimatedTimeUnit === 'days' ? value * Job.HOURS_PER_DAY : value;
+  }
+  get timeRemainingHours() { return this.estimatedHoursTotal - this.timeLoggedHours; }
+  get timeEarned() { return this.timeLoggedHours * (Number(this.project?.hourlyRate) || 0); }
 
   /** Plain-object form for the API. */
   toJSON() {
