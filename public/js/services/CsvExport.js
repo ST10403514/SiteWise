@@ -19,10 +19,15 @@ class CsvExport {
     };
     const header = columns.map((c) => escape(c.label)).join(',');
     const lines = rows.map((row) => columns.map((c) => escape(row[c.key])).join(','));
+    // "sep=," as the literal first line tells Excel to use a comma for THIS
+    // file specifically, overriding Windows' Regional Settings "list
+    // separator" - which is what Excel actually uses when a .csv is opened
+    // by double-clicking, and is comma only on some locales. Without this,
+    // a semicolon-locale Windows install dumps every field into one column.
     // No leading BOM: it was meant to help Excel detect UTF-8, but it can
     // confuse other apps' delimiter auto-detection into treating the whole
     // line as one field instead of splitting on commas.
-    const csv = [header, ...lines].join('\r\n');
+    const csv = ['sep=,', header, ...lines].join('\r\n');
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
