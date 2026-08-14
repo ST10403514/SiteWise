@@ -363,7 +363,7 @@ class ProjectDetailPage {
 
     const info = document.createElement('div');
     info.className = 'ledger-info';
-    info.innerHTML = `<strong>${this._escape(title)}</strong><span>${entry.date || ''}</span>`;
+    info.innerHTML = `<strong>${this._escape(title)}</strong><span>${this._escape(entry.date)}</span>`;
     row.appendChild(info);
 
     const amount = document.createElement('div');

@@ -47,7 +47,10 @@ class UploadController {
       if (!this._storage.isOwnPublicUrl(url)) {
         throw ApiError.badRequest('Invalid image URL');
       }
-      const upstream = await fetch(url);
+      // Fetch via a signed URL rather than the raw one - required once the
+      // bucket is private, and harmless (a no-op re-sign) while it's public.
+      const signedUrl = await this._storage.getSignedUrl(url);
+      const upstream = await fetch(signedUrl);
       if (!upstream.ok) {
         throw new ApiError(502, 'Could not fetch image');
       }

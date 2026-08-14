@@ -2,6 +2,7 @@
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 
 const config = require('./config');
 const UserRepository = require('./repositories/UserRepository');
@@ -43,12 +44,37 @@ function createApp() {
   });
 
   const authController = new AuthController({ authService, tokenService, config });
-  const profileController = new ProfileController({ userRepository });
-  const jobController = new JobController({ jobRepository });
+  const profileController = new ProfileController({ userRepository, jobRepository, storageService, config });
+  const jobController = new JobController({ jobRepository, storageService });
   const uploadController = new UploadController({ storageService });
 
   const app = express();
   app.disable('x-powered-by');
+
+  // CSP allows the specific third parties the app actually loads (Google
+  // Fonts, the jsPDF CDN script, R2 for photos) and 'unsafe-inline' for
+  // script/style because every page here is static HTML with inline
+  // <script>/<style> blocks rather than server-rendered templates - a
+  // nonce-based CSP would need that to change first. Clickjacking and
+  // MIME-sniffing protections (frame-ancestors, nosniff) are fully in
+  // effect regardless.
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', ...(config.r2.publicUrl ? [config.r2.publicUrl] : [])],
+        connectSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'self'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+      },
+    },
+  }));
+
   app.use(express.json({ limit: '25mb' }));
   app.use(cookieParser());
 

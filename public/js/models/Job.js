@@ -201,9 +201,19 @@ class Job {
     return (this.project?.staffWages || []).reduce((s, w) => s + (Number(w.amount) || 0), 0);
   }
   get totalSpend() { return this.materialTotal + this.wagesTotal; }
+  /**
+   * Average wage logged per staff member so far - an estimate that works
+   * from partial data, rather than dividing by the planned staffAtStart
+   * headcount (which would understate the figure until every staff member
+   * has a logged entry).
+   */
   get costPerStaff() {
-    const staff = Number(this.project?.staffAtStart) || 0;
-    return staff > 0 ? this.totalSpend / staff : 0;
+    const names = new Set(
+      (this.project?.staffWages || [])
+        .map((w) => (w.name || '').trim().toLowerCase())
+        .filter(Boolean),
+    );
+    return names.size > 0 ? this.wagesTotal / names.size : 0;
   }
   /** Whichever budget figure is authoritative for the chosen budgetMode. */
   get effectiveBudget() {

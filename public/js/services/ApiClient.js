@@ -32,6 +32,7 @@ class ApiClient {
   me()           { return this._request('GET', '/auth/me'); }
   saveProfile(p) { return this._request('PUT', '/profile', p); }
   savePresets(p) { return this._request('PUT', '/profile/presets', p); }
+  deleteAccount() { return this._request('DELETE', '/profile'); }
   listJobs()          { return this._request('GET', '/jobs'); }
   getJob(id)          { return this._request('GET', `/jobs/${id}`); }
   saveJob(id, data)   { return this._request('PUT', `/jobs/${id}`, { data }); }

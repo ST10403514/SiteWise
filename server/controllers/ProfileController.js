@@ -3,6 +3,7 @@
 const AuthService = require('../services/AuthService');
 const ApiError = require('../utils/ApiError');
 const v = require('../utils/validators');
+const { collectPhotoUrls } = require('../utils/photoCleanup');
 
 const INDUSTRIES = new Set([
   'painting', 'plumbing', 'electrical', 'roofing', 'building', 'hvac',
@@ -21,8 +22,11 @@ const SCHEMES = new Set([
  * identity, banking, industry presets and colour scheme.
  */
 class ProfileController {
-  constructor({ userRepository }) {
+  constructor({ userRepository, jobRepository, storageService, config }) {
     this._users = userRepository;
+    this._jobs = jobRepository;
+    this._storage = storageService;
+    this._config = config;
   }
 
   static _enum(value, allowed, field) {
@@ -116,6 +120,24 @@ class ProfileController {
       };
       const user = await this._users.update(req.user.id, { profile });
       res.json({ user: AuthService.toPublic(user) });
+    } catch (err) { next(err); }
+  };
+
+  /**
+   * Permanently deletes the account: every R2 photo/receipt across every
+   * job, then the user row itself (jobs cascade-delete with it in Turso -
+   * see db.js). Irreversible, so the client is expected to have already
+   * confirmed with the user before calling this.
+   */
+  deleteAccount = async (req, res, next) => {
+    try {
+      const jobs = await this._jobs.listFullDataForUser(req.user.id);
+      const urls = jobs.flatMap((data) => collectPhotoUrls(data));
+      await Promise.all(urls.map((u) => this._storage.deleteObject(u)));
+
+      await this._users.delete(req.user.id);
+      res.clearCookie(this._config.cookieName);
+      res.json({ ok: true });
     } catch (err) { next(err); }
   };
 }

@@ -119,6 +119,20 @@ class JobRepository {
     });
     return rs.rowsAffected > 0;
   }
+
+  /**
+   * Full data for every job owned by userId. Only used ahead of account
+   * deletion, to find every R2 photo/receipt to clean up before the
+   * cascade delete removes the rows themselves.
+   * @returns {Promise<object[]>}
+   */
+  async listFullDataForUser(userId) {
+    const rs = await this._db.execute({
+      sql: 'SELECT data FROM jobs WHERE userId = ?',
+      args: [userId],
+    });
+    return rs.rows.map((row) => JSON.parse(row.data));
+  }
 }
 
 module.exports = JobRepository;

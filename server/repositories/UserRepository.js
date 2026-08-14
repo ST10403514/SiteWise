@@ -96,6 +96,21 @@ class UserRepository {
     return user;
   }
 
+  /**
+   * Deletes the user row outright. `jobs.userId` has ON DELETE CASCADE
+   * (see db.js), so every job the user owns is removed with it - callers
+   * must clean up any R2 photos those jobs reference BEFORE calling this,
+   * since the cascade only touches Turso, not R2.
+   * @returns {Promise<boolean>} true if a user was removed
+   */
+  async delete(id) {
+    const rs = await this._db.execute({
+      sql: 'DELETE FROM users WHERE id = ?',
+      args: [id],
+    });
+    return rs.rowsAffected > 0;
+  }
+
   async update(id, changes) {
     const current = await this.findById(id);
     if (!current) throw new Error(`User ${id} not found`);

@@ -38,6 +38,27 @@ class OnboardingPage {
     updateWaHint();
     this._$('logoInput').addEventListener('change', (e) => this._pickLogo(e));
     this._$('onbForm').addEventListener('submit', (e) => this._submit(e));
+    this._$('deleteAccountBtn').addEventListener('click', () => this._deleteAccount());
+  }
+
+  async _deleteAccount() {
+    const typed = prompt(
+      'This permanently deletes your account, every job card, and every uploaded photo. '
+      + 'This cannot be undone.\n\nType DELETE to confirm.',
+    );
+    if (typed !== 'DELETE') return;
+
+    const btn = this._$('deleteAccountBtn');
+    btn.disabled = true;
+    btn.textContent = 'Deleting...';
+    try {
+      await this._api.deleteAccount();
+      location.replace('/');
+    } catch (err) {
+      this._showError(err.message || 'Could not delete your account');
+      btn.disabled = false;
+      btn.textContent = 'Delete my account';
+    }
   }
 
   _buildIndustrySelect() {
