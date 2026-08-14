@@ -7,18 +7,12 @@
  * client-side via PdfService.
  */
 class CsvExport {
-  /**
-   * @param {string} filename e.g. "expenses-SW-260101-123.csv"
-   * @param {object[]} rows
-   * @param {{key: string, label: string}[]} columns
-   */
-  static download(filename, rows, columns) {
-    const escape = (value) => {
-      const s = value === null || value === undefined ? '' : String(value);
-      return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-    };
-    const header = columns.map((c) => escape(c.label)).join(',');
-    const lines = rows.map((row) => columns.map((c) => escape(row[c.key])).join(','));
+  static _escape(value) {
+    const s = value === null || value === undefined ? '' : String(value);
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }
+
+  static _trigger(filename, lines) {
     // "sep=," as the literal first line tells Excel to use a comma for THIS
     // file specifically, overriding Windows' Regional Settings "list
     // separator" - which is what Excel actually uses when a .csv is opened
@@ -27,7 +21,7 @@ class CsvExport {
     // No leading BOM: it was meant to help Excel detect UTF-8, but it can
     // confuse other apps' delimiter auto-detection into treating the whole
     // line as one field instead of splitting on commas.
-    const csv = ['sep=,', header, ...lines].join('\r\n');
+    const csv = ['sep=,', ...lines].join('\r\n');
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -38,6 +32,37 @@ class CsvExport {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  /**
+   * @param {string} filename e.g. "expenses-SW-260101-123.csv"
+   * @param {object[]} rows
+   * @param {{key: string, label: string}[]} columns
+   */
+  static download(filename, rows, columns) {
+    const header = columns.map((c) => CsvExport._escape(c.label)).join(',');
+    const lines = rows.map((row) => columns.map((c) => CsvExport._escape(row[c.key])).join(','));
+    CsvExport._trigger(filename, [header, ...lines]);
+  }
+
+  /**
+   * One CSV file containing several stacked tables (title + header + rows),
+   * separated by a blank line - Excel opens this as a single neatly
+   * sectioned sheet rather than needing one file per category.
+   * @param {string} filename
+   * @param {{title: string, columns: {key: string, label: string}[], rows: object[]}[]} sections
+   */
+  static downloadMultiTable(filename, sections) {
+    const lines = [];
+    sections.forEach((section, i) => {
+      if (i > 0) lines.push('');
+      lines.push(CsvExport._escape(section.title));
+      lines.push(section.columns.map((c) => CsvExport._escape(c.label)).join(','));
+      section.rows.forEach((row) => {
+        lines.push(section.columns.map((c) => CsvExport._escape(row[c.key])).join(','));
+      });
+    });
+    CsvExport._trigger(filename, lines);
   }
 }
 

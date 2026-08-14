@@ -57,7 +57,7 @@ class Job {
       expenses: [],    // { id, date, description, amount, photoUrl }
       staffWages: [],  // { id, date, name, role, amount, photoUrl }
       timeEntries: [], // { id, date, hours, note }
-      slips: [],       // { id, date, caption, amount, photoUrl }
+      variations: [],  // { id, date, description, amount } - extra work approved beyond the original quote
       sitePhotos: [],  // { id, url, caption }
     };
   }
@@ -235,6 +235,14 @@ class Job {
   get labourBudgetRemaining() {
     return (Number(this.project?.labourBudget) || 0) - this.wagesTotal;
   }
+  /** Extra work approved beyond the original accepted quote. */
+  get variationsTotal() {
+    return (this.project?.variations || []).reduce((s, v) => s + (Number(v.amount) || 0), 0);
+  }
+  /** The project's accepted value plus any approved variations since. */
+  get revisedValue() {
+    return (Number(this.project?.value) || 0) + this.variationsTotal;
+  }
 
   // ── Time tracking (rate + logged hours vs. the estimate) ────────
 
@@ -298,7 +306,29 @@ class Job {
     job.date = data.date ? new Date(data.date) : new Date();
     job.methods = new Set(Array.isArray(data.methods) ? data.methods : []);
     job.project = data.project || null;
+    if (job.project) Job._migrateProject(job.project);
     return job;
+  }
+
+  /**
+   * Folds the old, now-removed Slips tab into Expenses (a slip was always
+   * just a receipt/delivery-note photo with an optional amount, which
+   * Expenses already supports) and backfills the Variations list on
+   * projects saved before it existed. Runs on every load so it applies the
+   * moment an old project is opened, even before the next save.
+   */
+  static _migrateProject(project) {
+    if (Array.isArray(project.slips) && project.slips.length) {
+      project.expenses = [
+        ...(project.expenses || []),
+        ...project.slips.map((s) => ({
+          id: s.id, date: s.date, description: s.caption || 'Delivery slip',
+          amount: s.amount || 0, photoUrl: s.photoUrl,
+        })),
+      ];
+    }
+    delete project.slips;
+    if (!Array.isArray(project.variations)) project.variations = [];
   }
 
   /** Snapshot handed to PDFService - items carry totalExcl. */

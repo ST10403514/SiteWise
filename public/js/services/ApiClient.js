@@ -41,7 +41,7 @@ class ApiClient {
   /**
    * Upload a compressed base64 image to R2 and get back its public URL.
    * @param {string} dataUrl
-   * @param {string} [folder] one of photos/expenses/wages/slips/site-photos
+   * @param {string} [folder] one of photos/expenses/wages/site-photos
    * @returns {Promise<{url: string}>}
    */
   uploadPhoto(dataUrl, folder) { return this._request('POST', '/uploads', { dataUrl, folder }); }

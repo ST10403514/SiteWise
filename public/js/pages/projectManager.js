@@ -31,6 +31,7 @@ class ProjectManagerPage {
     AccountMenu.mount(user);
     this._bindHeader();
     this._bindExport();
+    this._bindQuickAdd();
     await this._refresh(jobsPromise);
   }
 
@@ -139,6 +140,8 @@ class ProjectManagerPage {
           startDate: p.startDate || '',
           plannedCompletion: p.plannedCompletion || '',
           projectValue: (p.value || 0).toFixed(2),
+          variationsTotal: job.variationsTotal.toFixed(2),
+          revisedValue: job.revisedValue.toFixed(2),
           depositAmount: (p.depositAmount || 0).toFixed(2),
           depositPaidDate: p.depositPaidDate || '',
           materialSpend: job.materialTotal.toFixed(2),
@@ -158,6 +161,8 @@ class ProjectManagerPage {
         { key: 'startDate', label: 'Start Date' },
         { key: 'plannedCompletion', label: 'Planned Completion' },
         { key: 'projectValue', label: 'Project Value (R)' },
+        { key: 'variationsTotal', label: 'Variations (R)' },
+        { key: 'revisedValue', label: 'Revised Value (R)' },
         { key: 'depositAmount', label: 'Deposit Paid (R)' },
         { key: 'depositPaidDate', label: 'Deposit Paid Date' },
         { key: 'materialSpend', label: 'Material Spend (R)' },
@@ -175,6 +180,47 @@ class ProjectManagerPage {
 
   _today() {
     return new Date().toISOString().slice(0, 10);
+  }
+
+  // ── Add a project without a quote ───────────────────────────────
+
+  _bindQuickAdd() {
+    const typeSelect = this._$('qaType');
+    Object.entries(Job.JOB_TYPES).forEach(([key, label]) => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = label;
+      typeSelect.appendChild(opt);
+    });
+
+    this._$('quickAddToggle').addEventListener('click', () => {
+      const card = this._$('quickAddCard');
+      card.hidden = !card.hidden;
+    });
+
+    this._$('qaCreate').addEventListener('click', () => this._createQuickProject());
+  }
+
+  async _createQuickProject() {
+    const clientName = this._$('qaClient').value.trim();
+    const siteAddress = this._$('qaAddress').value.trim();
+    if (!clientName) {
+      this._toast('Add a client name first');
+      return;
+    }
+
+    const job = new Job();
+    job.clientName = clientName;
+    job.siteAddress = siteAddress;
+    job.jobType = this._$('qaType').value || null;
+    job.project = Job.newProject(Number(this._$('qaValue').value) || 0);
+
+    try {
+      await this._api.saveJob(job.id, job.toJSON());
+      location.assign(`/project-detail?id=${job.id}`);
+    } catch (err) {
+      this._toast(err.message || 'Could not create that project');
+    }
   }
 
   // ── List ──────────────────────────────────────────────────────

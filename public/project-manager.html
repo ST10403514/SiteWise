@@ -81,8 +81,23 @@
   <div class="jobs-head">
     <div class="sec-title"><h1>Projects</h1></div>
     <span class="jobs-count" id="projectsCount"></span>
-    <button class="btn btn-light" id="exportCsv" type="button" style="margin-left:auto">Export CSV</button>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-light" id="quickAddToggle" type="button">+ Add without a quote</button>
+      <button class="btn btn-light" id="exportCsv" type="button">Export CSV</button>
+    </div>
   </div>
+
+  <section class="card" id="quickAddCard" hidden>
+    <div class="sec-title"><h2>Add a project without a quote</h2></div>
+    <p class="sec-hint">For work that skips quoting entirely - jumps straight into project tracking.</p>
+    <div class="grid2">
+      <div class="field"><label for="qaClient">Client name</label><input id="qaClient" placeholder="e.g. J. Naidoo" /></div>
+      <div class="field"><label for="qaAddress">Site address</label><input id="qaAddress" placeholder="e.g. 12 Main Road" /></div>
+      <div class="field"><label for="qaType">Project type</label><select id="qaType"></select></div>
+      <div class="field"><label for="qaValue">Project value (R, optional)</label><input id="qaValue" type="number" min="0" step="0.01" /></div>
+    </div>
+    <button class="btn btn-primary" id="qaCreate" type="button" style="margin-top:14px">Create project</button>
+  </section>
 
   <div class="filter-block">
     <div class="filter-label">Filter by status</div>
@@ -98,7 +113,8 @@
   <div class="jobs-empty" id="projectsEmpty" hidden>
     <p><strong>No projects yet.</strong></p>
     <p>Once a client accepts a quote, open that job card and use
-       "Quote accepted &rarr; start project" to bring it in here.</p>
+       "Quote accepted &rarr; start project" to bring it in here - or use
+       "+ Add without a quote" above if there's no quote for this one.</p>
     <a class="btn btn-primary" href="/jobs">Go to job cards</a>
   </div>
 </main>

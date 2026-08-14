@@ -80,6 +80,18 @@ function validateLedgerEntries(entries, field, storage, { nameField } = {}) {
   });
 }
 
+function validateVariations(entries, field) {
+  return arr(entries, field, 500).map((e, i) => {
+    if (!e || typeof e !== 'object') throw ApiError.badRequest(`${field}[${i}] is invalid`);
+    return {
+      id: str(e.id, `${field}[${i}].id`, SHORT),
+      date: str(e.date, `${field}[${i}].date`, SHORT),
+      description: str(e.description, `${field}[${i}].description`, MEDIUM),
+      amount: num(e.amount, `${field}[${i}].amount`),
+    };
+  });
+}
+
 function validateTimeEntries(entries, field) {
   return arr(entries, field, 2000).map((e, i) => {
     if (!e || typeof e !== 'object') throw ApiError.badRequest(`${field}[${i}] is invalid`);
@@ -124,7 +136,7 @@ function validateProject(project, storage) {
   project.expenses = validateLedgerEntries(project.expenses, 'project.expenses', storage);
   project.staffWages = validateLedgerEntries(project.staffWages, 'project.staffWages', storage, { nameField: true });
   project.timeEntries = validateTimeEntries(project.timeEntries, 'project.timeEntries');
-  project.slips = validateLedgerEntries(project.slips, 'project.slips', storage);
+  project.variations = validateVariations(project.variations, 'project.variations');
   project.sitePhotos = arr(project.sitePhotos, 'project.sitePhotos', 300).map((p, i) => {
     if (!p || typeof p !== 'object') throw ApiError.badRequest(`project.sitePhotos[${i}] is invalid`);
     return {

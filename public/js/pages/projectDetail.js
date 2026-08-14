@@ -2,8 +2,10 @@
 
 /**
  * ProjectDetailPage - the execution-tracking view for a job whose quote has
- * been accepted (job.project is set). Tabs: Overview, Expenses, Staff &
- * Wages, Slips, Site Photos. Everything autosaves through the same
+ * been accepted (job.project is set). Tabs: Overview, Expenses (which holds
+ * material expenses, staff & wages, time, and variations - one tab for
+ * every ledger, not one tab per ledger), Site Photos, Export. Everything
+ * autosaves through the same
  * PUT /api/jobs/:id endpoint the job card uses - a project is still one
  * job row, just with its `project` sub-object populated.
  */
@@ -42,8 +44,9 @@ class ProjectDetailPage {
     this._bindExpenses();
     this._bindWages();
     this._bindTime();
-    this._bindSlips();
+    this._bindVariations();
     this._bindSitePhotos();
+    this._bindExport();
 
     this._hydrate();
     this._startAutosave();
@@ -247,6 +250,14 @@ class ProjectDetailPage {
     }
     html += `<div class="row"><span>Budget remaining</span><span>${Job.formatCurrency(job.budgetRemaining)}</span></div>`;
 
+    if (job.project.hourlyRate > 0 || job.timeLoggedHours > 0) {
+      html += `<div class="row"><span>Hours logged</span><span>${job.timeLoggedHours}h</span></div>`
+        + `<div class="row"><span>Time earned</span><span>${Job.formatCurrency(job.timeEarned)}</span></div>`;
+    }
+    if (job.variationsTotal > 0) {
+      html += `<div class="row"><span>Approved variations</span><span>${Job.formatCurrency(job.variationsTotal)}</span></div>`;
+    }
+
     this._$('spendSummary').innerHTML = html;
   }
 
@@ -255,10 +266,15 @@ class ProjectDetailPage {
     const deposit = job.project.depositAmount > 0
       ? `${Job.formatCurrency(job.project.depositAmount)}${job.project.depositPaidDate ? ` (paid ${job.project.depositPaidDate})` : ''}`
       : 'Not yet paid';
-    this._$('quoteSummary').innerHTML = `
+    let html = `
       <div class="row"><span>Quote number</span><span>${this._escape(job.quoteNumber)}</span></div>
-      <div class="row"><span>Quote total (incl. VAT)</span><span>${Job.formatCurrency(job.grandTotal)}</span></div>
-      <div class="row grand"><span>Deposit</span><span>${deposit}</span></div>`;
+      <div class="row"><span>Quote total (incl. VAT)</span><span>${Job.formatCurrency(job.grandTotal)}</span></div>`;
+    if (job.variationsTotal > 0) {
+      html += `<div class="row"><span>Approved variations</span><span>${Job.formatCurrency(job.variationsTotal)}</span></div>
+        <div class="row"><span>Revised project value</span><span>${Job.formatCurrency(job.revisedValue)}</span></div>`;
+    }
+    html += `<div class="row grand"><span>Deposit</span><span>${deposit}</span></div>`;
+    this._$('quoteSummary').innerHTML = html;
   }
 
   // ── Ledgers shared helpers ───────────────────────────────────
@@ -287,8 +303,8 @@ class ProjectDetailPage {
       const description = this._$('expDesc').value.trim();
       const amount = Number(this._$('expAmount').value) || 0;
       const date = this._$('expDate').value || this._today();
-      if (!description || amount <= 0) {
-        this._toast('Add a description and amount first');
+      if (!description) {
+        this._toast('Add a description first');
         return;
       }
       const photoUrl = await this._readOptionalPhoto(this._$('expPhoto'), 'expenses');
@@ -299,18 +315,6 @@ class ProjectDetailPage {
       this._renderExpenses();
       this._changed();
       this._toast('Expense added');
-    });
-
-    this._$('exportExpenses').addEventListener('click', () => {
-      if (!this._job.project.expenses.length) { this._toast('No expenses logged yet'); return; }
-      const rows = this._job.project.expenses.map((e) => ({
-        date: e.date, description: e.description, amount: (e.amount || 0).toFixed(2),
-      }));
-      CsvExport.download(`expenses-${this._job.quoteNumber}.csv`, rows, [
-        { key: 'date', label: 'Date' },
-        { key: 'description', label: 'Description' },
-        { key: 'amount', label: 'Amount (R)' },
-      ]);
     });
   }
 
@@ -325,6 +329,7 @@ class ProjectDetailPage {
       this._changed();
     })));
     this._$('materialTotal').textContent = Job.formatCurrency(this._job.materialTotal);
+    this._updateExpensesBadge();
   }
 
   // ── Staff & Wages ─────────────────────────────────────────────
@@ -350,19 +355,6 @@ class ProjectDetailPage {
       this._changed();
       this._toast('Wage entry added');
     });
-
-    this._$('exportWages').addEventListener('click', () => {
-      if (!this._job.project.staffWages.length) { this._toast('No wages logged yet'); return; }
-      const rows = this._job.project.staffWages.map((w) => ({
-        date: w.date, name: w.name, role: w.role || '', amount: (w.amount || 0).toFixed(2),
-      }));
-      CsvExport.download(`wages-${this._job.quoteNumber}.csv`, rows, [
-        { key: 'date', label: 'Date' },
-        { key: 'name', label: 'Staff Name' },
-        { key: 'role', label: 'Role' },
-        { key: 'amount', label: 'Amount (R)' },
-      ]);
-    });
   }
 
   _renderWages() {
@@ -378,6 +370,7 @@ class ProjectDetailPage {
       },
     )));
     this._$('wagesTotal').textContent = Job.formatCurrency(this._job.wagesTotal);
+    this._updateExpensesBadge();
   }
 
   // ── Time (rate + logged hours vs. estimate) ─────────────────────
@@ -416,20 +409,6 @@ class ProjectDetailPage {
       this._changed();
       this._toast('Time logged');
     });
-
-    this._$('exportTime').addEventListener('click', () => {
-      if (!this._job.project.timeEntries.length) { this._toast('No time logged yet'); return; }
-      const rate = Number(this._job.project.hourlyRate) || 0;
-      const rows = this._job.project.timeEntries.map((t) => ({
-        date: t.date, hours: t.hours, note: t.note || '', amount: (t.hours * rate).toFixed(2),
-      }));
-      CsvExport.download(`time-${this._job.quoteNumber}.csv`, rows, [
-        { key: 'date', label: 'Date' },
-        { key: 'hours', label: 'Hours' },
-        { key: 'note', label: 'Note' },
-        { key: 'amount', label: 'Amount (R)' },
-      ]);
-    });
   }
 
   _renderTimeEntries() {
@@ -457,6 +436,21 @@ class ProjectDetailPage {
         + `<div class="row grand"><span>Hours remaining</span><span>${job.timeRemainingHours}h</span></div>`;
     }
     this._$('timeSummary').innerHTML = html;
+    this._updateExpensesBadge();
+  }
+
+  // ── Tab badges ────────────────────────────────────────────────
+
+  _setTabLabel(tabKey, label, count) {
+    const tab = this._$('tabs').querySelector(`[data-tab="${tabKey}"]`);
+    tab.textContent = count ? `${label} (${count})` : label;
+  }
+
+  /** One combined count across every ledger now living on the Expenses tab. */
+  _updateExpensesBadge() {
+    const p = this._job.project;
+    const count = p.expenses.length + p.staffWages.length + p.timeEntries.length + p.variations.length;
+    this._setTabLabel('expenses', 'Expenses', count);
   }
 
   // ── Shared ledger row builder (Expenses + Staff & Wages) ───────
@@ -494,57 +488,102 @@ class ProjectDetailPage {
     return row;
   }
 
-  // ── Slips ─────────────────────────────────────────────────────
+  // ── Variations (extra work approved beyond the original quote) ──
 
-  _bindSlips() {
-    this._$('slipDate').value = this._today();
-    this._$('addSlip').addEventListener('click', async () => {
-      const caption = this._$('slipCaption').value.trim();
-      const amount = Number(this._$('slipAmount').value) || 0;
-      const date = this._$('slipDate').value || this._today();
-      const file = this._$('slipPhoto').files?.[0];
-      if (!file) {
-        this._toast('Add a photo of the slip first');
+  _bindVariations() {
+    this._$('varDate').value = this._today();
+    this._$('addVariation').addEventListener('click', () => {
+      const description = this._$('varDesc').value.trim();
+      const amount = Number(this._$('varAmount').value) || 0;
+      const date = this._$('varDate').value || this._today();
+      if (!description) {
+        this._toast('Add a description first');
         return;
       }
-      const photoUrl = await this._readOptionalPhoto(this._$('slipPhoto'), 'slips');
-      this._job.project.slips.push({ id: this._uid(), date, caption, amount, photoUrl });
-      this._$('slipCaption').value = '';
-      this._$('slipAmount').value = '';
-      this._$('slipPhoto').value = '';
-      this._renderSlips();
+      this._job.project.variations.push({ id: this._uid(), date, description, amount });
+      this._$('varDesc').value = '';
+      this._$('varAmount').value = '';
+      this._renderVariations();
       this._changed();
-      this._toast('Slip added');
+      this._toast('Variation added');
     });
   }
 
-  _renderSlips() {
-    const grid = this._$('slipGrid');
-    grid.innerHTML = '';
-    const entries = this._job.project.slips;
-    this._$('slipsEmpty').hidden = entries.length > 0;
-    entries.forEach((entry) => {
-      const cell = document.createElement('div');
-      cell.className = 'photo-cell';
-      const img = document.createElement('img');
-      img.src = entry.photoUrl;
-      img.alt = entry.caption || 'Slip';
-      const caption = document.createElement('div');
-      caption.className = 'photo-caption';
-      caption.textContent = [entry.caption, entry.amount ? Job.formatCurrency(entry.amount) : null]
-        .filter(Boolean).join(' · ');
-      const remove = document.createElement('button');
-      remove.className = 'rm';
-      remove.type = 'button';
-      remove.textContent = 'Remove';
-      remove.addEventListener('click', () => {
-        this._job.project.slips = this._job.project.slips.filter((e) => e.id !== entry.id);
-        this._renderSlips();
-        this._changed();
-      });
-      cell.append(img, caption, remove);
-      grid.appendChild(cell);
-    });
+  _renderVariations() {
+    const list = this._$('variationList');
+    list.innerHTML = '';
+    const entries = this._job.project.variations;
+    this._$('variationsEmpty').hidden = entries.length > 0;
+    entries.forEach((entry) => list.appendChild(this._buildLedgerRow(entry, entry.description, () => {
+      this._job.project.variations = this._job.project.variations.filter((e) => e.id !== entry.id);
+      this._renderVariations();
+      this._changed();
+    })));
+  }
+
+  // ── Export (one CSV with everything logged on this job) ─────────
+
+  _bindExport() {
+    this._$('exportAll').addEventListener('click', () => this._exportAll());
+  }
+
+  _exportAll() {
+    const job = this._job;
+    const p = job.project;
+    const rate = Number(p.hourlyRate) || 0;
+
+    const sections = [
+      {
+        title: 'PROJECT SUMMARY',
+        columns: [{ key: 'field', label: 'Field' }, { key: 'value', label: 'Value' }],
+        rows: [
+          { field: 'Client', value: job.clientName },
+          { field: 'Site address', value: job.siteAddress },
+          { field: 'Quote number', value: job.quoteNumber },
+          { field: 'Status', value: Job.PROJECT_STATUSES[p.status] || p.status },
+          { field: 'Project value (R)', value: (p.value || 0).toFixed(2) },
+          { field: 'Variations (R)', value: job.variationsTotal.toFixed(2) },
+          { field: 'Revised value (R)', value: job.revisedValue.toFixed(2) },
+          { field: 'Total spend (R)', value: job.totalSpend.toFixed(2) },
+          { field: 'Budget remaining (R)', value: job.budgetRemaining.toFixed(2) },
+        ],
+      },
+      {
+        title: 'EXPENSES',
+        columns: [
+          { key: 'date', label: 'Date' }, { key: 'description', label: 'Description' },
+          { key: 'amount', label: 'Amount (R)' },
+        ],
+        rows: p.expenses.map((e) => ({ date: e.date, description: e.description, amount: (e.amount || 0).toFixed(2) })),
+      },
+      {
+        title: 'STAFF & WAGES',
+        columns: [
+          { key: 'date', label: 'Date' }, { key: 'name', label: 'Staff Name' },
+          { key: 'role', label: 'Role' }, { key: 'amount', label: 'Amount (R)' },
+        ],
+        rows: p.staffWages.map((w) => ({ date: w.date, name: w.name, role: w.role || '', amount: (w.amount || 0).toFixed(2) })),
+      },
+      {
+        title: 'TIME LOGGED',
+        columns: [
+          { key: 'date', label: 'Date' }, { key: 'hours', label: 'Hours' },
+          { key: 'note', label: 'Note' }, { key: 'amount', label: 'Amount (R)' },
+        ],
+        rows: p.timeEntries.map((t) => ({ date: t.date, hours: t.hours, note: t.note || '', amount: (t.hours * rate).toFixed(2) })),
+      },
+      {
+        title: 'VARIATIONS',
+        columns: [
+          { key: 'date', label: 'Date' }, { key: 'description', label: 'Description' },
+          { key: 'amount', label: 'Amount (R)' },
+        ],
+        rows: p.variations.map((v) => ({ date: v.date, description: v.description, amount: (v.amount || 0).toFixed(2) })),
+      },
+    ];
+
+    CsvExport.downloadMultiTable(`${job.quoteNumber}-export.csv`, sections);
+    this._toast('Export downloaded');
   }
 
   // ── Site photos ───────────────────────────────────────────────
@@ -602,6 +641,7 @@ class ProjectDetailPage {
       cell.append(img, caption, remove);
       grid.insertBefore(cell, this._$('sitePhotoAdd'));
     });
+    this._setTabLabel('photos', 'Site Photos', this._job.project.sitePhotos.length);
   }
 
   // ── Hydration ─────────────────────────────────────────────────
@@ -641,7 +681,7 @@ class ProjectDetailPage {
     this._renderExpenses();
     this._renderWages();
     this._renderTimeEntries();
-    this._renderSlips();
+    this._renderVariations();
     this._renderSitePhotos();
   }
 

@@ -86,10 +86,8 @@
   <nav class="tabs" id="tabs" role="tablist" aria-label="Project sections">
     <button class="tab" data-tab="overview" role="tab" aria-selected="true" type="button">Overview</button>
     <button class="tab" data-tab="expenses" role="tab" aria-selected="false" type="button">Expenses</button>
-    <button class="tab" data-tab="wages" role="tab" aria-selected="false" type="button">Staff &amp; Wages</button>
-    <button class="tab" data-tab="time" role="tab" aria-selected="false" type="button">Time</button>
-    <button class="tab" data-tab="slips" role="tab" aria-selected="false" type="button">Slips</button>
     <button class="tab" data-tab="photos" role="tab" aria-selected="false" type="button">Site Photos</button>
+    <button class="tab" data-tab="export" role="tab" aria-selected="false" type="button">Export</button>
   </nav>
 
   <!-- ── Overview ─────────────────────────────────────────────── -->
@@ -184,42 +182,28 @@
 
   </section>
 
-  <!-- ── Expenses ─────────────────────────────────────────────── -->
+  <!-- ── Expenses (materials, wages, time, variations) ───────────── -->
   <section class="tab-panel" id="panel-expenses" hidden>
+
     <section class="card">
-      <div class="sec-title"><h2>Material total</h2></div>
+      <div class="sec-title"><h2>Material expenses</h2></div>
       <div class="ledger-total" id="materialTotal">R 0.00</div>
-    </section>
-    <section class="card">
-      <div class="sec-title"><h2>Add expense</h2></div>
-      <div class="grid2">
-        <div class="field"><label for="expDesc">Description</label><input id="expDesc" placeholder="e.g. Waterproofing membrane - 20L" /></div>
-        <div class="field"><label for="expAmount">Amount (R)</label><input id="expAmount" type="number" min="0" step="0.01" /></div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="field"><label for="expDesc">Description</label><input id="expDesc" placeholder="e.g. Waterproofing membrane - 20L, or a delivery note" /></div>
+        <div class="field"><label for="expAmount">Amount (R, optional)</label><input id="expAmount" type="number" min="0" step="0.01" placeholder="Leave blank for a delivery note with no cost" /></div>
         <div class="field"><label for="expDate">Date</label><input id="expDate" type="date" /></div>
-        <div class="field"><label for="expPhoto">Receipt photo (optional)</label>
+        <div class="field"><label for="expPhoto">Receipt or slip photo (optional)</label>
           <input id="expPhoto" type="file" accept="image/*" /></div>
       </div>
       <button class="add-item" id="addExpense" type="button">+ Add expense</button>
-    </section>
-    <section class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div class="sec-title"><h2>Logged expenses</h2></div>
-        <button class="btn btn-light" id="exportExpenses" type="button" style="padding:6px 14px;font-size:12.5px">Export CSV</button>
-      </div>
-      <div class="ledger-list" id="expenseList"></div>
+      <div class="ledger-list" id="expenseList" style="margin-top:14px"></div>
       <p class="empty-hint" id="expensesEmpty">No expenses yet. Log your first material cost for this job.</p>
     </section>
-  </section>
 
-  <!-- ── Staff & Wages ────────────────────────────────────────── -->
-  <section class="tab-panel" id="panel-wages" hidden>
     <section class="card">
-      <div class="sec-title"><h2>Wages total</h2></div>
+      <div class="sec-title"><h2>Staff &amp; wages</h2></div>
       <div class="ledger-total" id="wagesTotal">R 0.00</div>
-    </section>
-    <section class="card">
-      <div class="sec-title"><h2>Add staff / wage entry</h2></div>
-      <div class="grid2">
+      <div class="grid2" style="margin-top:14px">
         <div class="field"><label for="wageName">Staff name</label><input id="wageName" placeholder="e.g. S. Dlamini" /></div>
         <div class="field"><label for="wageRole">Role (optional)</label><input id="wageRole" placeholder="e.g. Waterproofer" /></div>
         <div class="field"><label for="wageAmount">Amount paid (R)</label><input id="wageAmount" type="number" min="0" step="0.01" /></div>
@@ -228,21 +212,12 @@
           <input id="wagePhoto" type="file" accept="image/*" /></div>
       </div>
       <button class="add-item" id="addWage" type="button">+ Add entry</button>
-    </section>
-    <section class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div class="sec-title"><h2>Logged wages</h2></div>
-        <button class="btn btn-light" id="exportWages" type="button" style="padding:6px 14px;font-size:12.5px">Export CSV</button>
-      </div>
-      <div class="ledger-list" id="wageList"></div>
+      <div class="ledger-list" id="wageList" style="margin-top:14px"></div>
       <p class="empty-hint" id="wagesEmpty">No staff wages logged yet.</p>
     </section>
-  </section>
 
-  <!-- ── Time ─────────────────────────────────────────────────── -->
-  <section class="tab-panel" id="panel-time" hidden>
     <section class="card">
-      <div class="sec-title"><h2>Rate &amp; time budget</h2></div>
+      <div class="sec-title"><h2>Time</h2></div>
       <p class="sec-hint">For trades that budget or bill by time, e.g. a sole worker charging per hour.</p>
       <div class="grid2">
         <div class="field"><label for="pHourlyRate">Rate per hour (R)</label>
@@ -254,51 +229,30 @@
         <button class="chip" type="button" data-unit="hours">Hours</button>
         <button class="chip" type="button" data-unit="days">Days (8h)</button>
       </div>
-    </section>
-
-    <section class="card">
-      <div class="sec-title"><h2>Time summary</h2></div>
-      <div class="totals" id="timeSummary"></div>
-    </section>
-
-    <section class="card">
-      <div class="sec-title"><h2>Log time</h2></div>
-      <div class="grid2">
+      <div class="totals" id="timeSummary" style="margin-top:14px"></div>
+      <div class="grid2" style="margin-top:14px">
         <div class="field"><label for="timeHours">Hours worked</label><input id="timeHours" type="number" min="0" step="0.25" placeholder="e.g. 8" /></div>
         <div class="field"><label for="timeDate">Date</label><input id="timeDate" type="date" /></div>
         <div class="field" style="grid-column:1/-1"><label for="timeNote">Note (optional)</label><input id="timeNote" placeholder="e.g. Waterproofing - parapet wall" /></div>
       </div>
       <button class="add-item" id="addTime" type="button">+ Add entry</button>
-    </section>
-
-    <section class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div class="sec-title"><h2>Logged time</h2></div>
-        <button class="btn btn-light" id="exportTime" type="button" style="padding:6px 14px;font-size:12.5px">Export CSV</button>
-      </div>
-      <div class="ledger-list" id="timeList"></div>
+      <div class="ledger-list" id="timeList" style="margin-top:14px"></div>
       <p class="empty-hint" id="timeEmpty">No time logged yet.</p>
     </section>
-  </section>
 
-  <!-- ── Slips ────────────────────────────────────────────────── -->
-  <section class="tab-panel" id="panel-slips" hidden>
     <section class="card">
-      <div class="sec-title"><h2>Add slip</h2></div>
-      <p class="sec-hint">Photograph a delivery note or receipt slip and log it here.</p>
+      <div class="sec-title"><h2>Variations &amp; extra work</h2></div>
+      <p class="sec-hint">Extra work the client approved that wasn't in the original quote. Added to the project's value, not counted as a cost.</p>
       <div class="grid2">
-        <div class="field"><label for="slipCaption">Caption</label><input id="slipCaption" placeholder="e.g. Builders Warehouse delivery note" /></div>
-        <div class="field"><label for="slipAmount">Amount (R, optional)</label><input id="slipAmount" type="number" min="0" step="0.01" /></div>
-        <div class="field"><label for="slipDate">Date</label><input id="slipDate" type="date" /></div>
-        <div class="field"><label for="slipPhoto">Photo</label><input id="slipPhoto" type="file" accept="image/*" /></div>
+        <div class="field"><label for="varDesc">Description</label><input id="varDesc" placeholder="e.g. Extra plug point in garage" /></div>
+        <div class="field"><label for="varAmount">Amount (R)</label><input id="varAmount" type="number" min="0" step="0.01" /></div>
+        <div class="field"><label for="varDate">Date</label><input id="varDate" type="date" /></div>
       </div>
-      <button class="add-item" id="addSlip" type="button">+ Add slip</button>
+      <button class="add-item" id="addVariation" type="button">+ Add variation</button>
+      <div class="ledger-list" id="variationList" style="margin-top:14px"></div>
+      <p class="empty-hint" id="variationsEmpty">No variations logged yet.</p>
     </section>
-    <section class="card">
-      <div class="sec-title"><h2>Slips</h2></div>
-      <div class="photo-grid" id="slipGrid"></div>
-      <p class="empty-hint" id="slipsEmpty">No slips added yet.</p>
-    </section>
+
   </section>
 
   <!-- ── Site Photos ──────────────────────────────────────────── -->
@@ -310,6 +264,15 @@
         <button class="photo-add" id="sitePhotoAdd" type="button">+ Add photos</button>
       </div>
       <input type="file" id="sitePhotoInput" accept="image/*" multiple class="visually-hidden" />
+    </section>
+  </section>
+
+  <!-- ── Export ───────────────────────────────────────────────── -->
+  <section class="tab-panel" id="panel-export" hidden>
+    <section class="card">
+      <div class="sec-title"><h2>Export this project</h2></div>
+      <p class="sec-hint">One CSV file with everything logged on this job - project summary, expenses, staff &amp; wages, time, and variations - each as its own neatly labelled table, ready to hand to an accountant or open in Excel.</p>
+      <button class="btn btn-primary" id="exportAll" type="button">Export CSV</button>
     </section>
   </section>
 
