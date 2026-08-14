@@ -8,13 +8,13 @@ function handler(message) {
 }
 
 // Brute-force guard: a handful of wrong passwords is normal (typos), dozens
-// from one IP in 15 minutes is not.
+// from one IP in 5 minutes is not.
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 5 * 60 * 1000,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  handler: handler('Too many sign-in attempts. Please wait a few minutes and try again.'),
+  handler: handler('Too many sign-in attempts. Please wait 5 minutes and try again.'),
 });
 
 // Abuse guard: stop one IP from mass-creating accounts.
