@@ -19,9 +19,10 @@ class CsvExport {
     };
     const header = columns.map((c) => escape(c.label)).join(',');
     const lines = rows.map((row) => columns.map((c) => escape(row[c.key])).join(','));
-    // Leading BOM so Excel (still the default accountant tool) detects UTF-8
-    // correctly instead of mangling non-ASCII characters in names/addresses.
-    const csv = `﻿${[header, ...lines].join('\r\n')}`;
+    // No leading BOM: it was meant to help Excel detect UTF-8, but it can
+    // confuse other apps' delimiter auto-detection into treating the whole
+    // line as one field instead of splitting on commas.
+    const csv = [header, ...lines].join('\r\n');
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
