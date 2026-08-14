@@ -50,7 +50,7 @@
 .ledger-amount { font-weight: 600; font-size: 14px; color: var(--navy); white-space: nowrap; }
 .ledger-remove { border: none; background: none; color: #cbd5e1; font-size: 14px; cursor: pointer; padding: 4px; }
 .ledger-remove:hover { color: var(--danger); }
-.empty-hint { color: var(--muted); font-size: 13.5px; text-align: center; padding: 18px 0; }
+/* .empty-hint moved to base.css - shared with the Job Cards dashboard */
 
 /* Slip / site photo captions (photo-grid cells reused from app.css) */
 .photo-caption { font-size: 12px; color: var(--muted); padding: 7px 9px; border-top: 1px solid var(--line); }

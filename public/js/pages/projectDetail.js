@@ -300,6 +300,18 @@ class ProjectDetailPage {
       this._changed();
       this._toast('Expense added');
     });
+
+    this._$('exportExpenses').addEventListener('click', () => {
+      if (!this._job.project.expenses.length) { this._toast('No expenses logged yet'); return; }
+      const rows = this._job.project.expenses.map((e) => ({
+        date: e.date, description: e.description, amount: (e.amount || 0).toFixed(2),
+      }));
+      CsvExport.download(`expenses-${this._job.quoteNumber}.csv`, rows, [
+        { key: 'date', label: 'Date' },
+        { key: 'description', label: 'Description' },
+        { key: 'amount', label: 'Amount (R)' },
+      ]);
+    });
   }
 
   _renderExpenses() {
@@ -337,6 +349,19 @@ class ProjectDetailPage {
       this._renderWages();
       this._changed();
       this._toast('Wage entry added');
+    });
+
+    this._$('exportWages').addEventListener('click', () => {
+      if (!this._job.project.staffWages.length) { this._toast('No wages logged yet'); return; }
+      const rows = this._job.project.staffWages.map((w) => ({
+        date: w.date, name: w.name, role: w.role || '', amount: (w.amount || 0).toFixed(2),
+      }));
+      CsvExport.download(`wages-${this._job.quoteNumber}.csv`, rows, [
+        { key: 'date', label: 'Date' },
+        { key: 'name', label: 'Staff Name' },
+        { key: 'role', label: 'Role' },
+        { key: 'amount', label: 'Amount (R)' },
+      ]);
     });
   }
 
@@ -390,6 +415,20 @@ class ProjectDetailPage {
       this._renderTimeEntries();
       this._changed();
       this._toast('Time logged');
+    });
+
+    this._$('exportTime').addEventListener('click', () => {
+      if (!this._job.project.timeEntries.length) { this._toast('No time logged yet'); return; }
+      const rate = Number(this._job.project.hourlyRate) || 0;
+      const rows = this._job.project.timeEntries.map((t) => ({
+        date: t.date, hours: t.hours, note: t.note || '', amount: (t.hours * rate).toFixed(2),
+      }));
+      CsvExport.download(`time-${this._job.quoteNumber}.csv`, rows, [
+        { key: 'date', label: 'Date' },
+        { key: 'hours', label: 'Hours' },
+        { key: 'note', label: 'Note' },
+        { key: 'amount', label: 'Amount (R)' },
+      ]);
     });
   }
 

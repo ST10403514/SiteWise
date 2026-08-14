@@ -30,6 +30,7 @@ class ProjectManagerPage {
     this._applyProfile(user.profile);
     AccountMenu.mount(user);
     this._bindHeader();
+    this._bindExport();
     await this._refresh(jobsPromise);
   }
 
@@ -102,6 +103,78 @@ class ProjectManagerPage {
     chip.textContent = count ? `${label} (${count})` : label;
     chip.addEventListener('click', onClick);
     return chip;
+  }
+
+  // ── CSV export ────────────────────────────────────────────────
+
+  _bindExport() {
+    this._$('exportCsv').addEventListener('click', () => this._exportCsv());
+  }
+
+  /**
+   * Exports the currently filtered/visible projects, with full financial
+   * figures (not just the dashboard summary) - fetches each project's full
+   * data so the export is actually useful for handing to an accountant.
+   */
+  async _exportCsv() {
+    const targets = this._filtered();
+    if (!targets.length) {
+      this._toast('No projects to export');
+      return;
+    }
+    this._toast(`Preparing export of ${targets.length} project${targets.length > 1 ? 's' : ''}…`);
+    try {
+      const jobs = await Promise.all(targets.map(async (t) => {
+        const { job } = await this._api.getJob(t.id);
+        return Job.fromJSON(job.id, job.data);
+      }));
+
+      const rows = jobs.map((job) => {
+        const p = job.project || {};
+        return {
+          client: job.clientName,
+          address: job.siteAddress,
+          type: Job.JOB_TYPES[job.jobType] || job.jobType || '',
+          status: Job.PROJECT_STATUSES[p.status] || p.status || '',
+          startDate: p.startDate || '',
+          plannedCompletion: p.plannedCompletion || '',
+          projectValue: (p.value || 0).toFixed(2),
+          depositAmount: (p.depositAmount || 0).toFixed(2),
+          depositPaidDate: p.depositPaidDate || '',
+          materialSpend: job.materialTotal.toFixed(2),
+          wagesSpend: job.wagesTotal.toFixed(2),
+          totalSpend: job.totalSpend.toFixed(2),
+          budgetRemaining: job.budgetRemaining.toFixed(2),
+          hoursLogged: job.timeLoggedHours,
+          timeEarned: job.timeEarned.toFixed(2),
+        };
+      });
+
+      CsvExport.download(`projects-${this._today()}.csv`, rows, [
+        { key: 'client', label: 'Client' },
+        { key: 'address', label: 'Address' },
+        { key: 'type', label: 'Type' },
+        { key: 'status', label: 'Status' },
+        { key: 'startDate', label: 'Start Date' },
+        { key: 'plannedCompletion', label: 'Planned Completion' },
+        { key: 'projectValue', label: 'Project Value (R)' },
+        { key: 'depositAmount', label: 'Deposit Paid (R)' },
+        { key: 'depositPaidDate', label: 'Deposit Paid Date' },
+        { key: 'materialSpend', label: 'Material Spend (R)' },
+        { key: 'wagesSpend', label: 'Wages Spend (R)' },
+        { key: 'totalSpend', label: 'Total Spend (R)' },
+        { key: 'budgetRemaining', label: 'Budget Remaining (R)' },
+        { key: 'hoursLogged', label: 'Hours Logged' },
+        { key: 'timeEarned', label: 'Time Earned (R)' },
+      ]);
+      this._toast('Export downloaded');
+    } catch (err) {
+      this._toast(err.message || 'Could not export projects');
+    }
+  }
+
+  _today() {
+    return new Date().toISOString().slice(0, 10);
   }
 
   // ── List ──────────────────────────────────────────────────────

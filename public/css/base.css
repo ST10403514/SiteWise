@@ -180,3 +180,19 @@ a { color: var(--blue-ink); }
   border-bottom: 1px solid rgba(255,255,255,.12); border-radius: 0 0 4px 0;
 }
 .pwa-ios-nowrap { white-space: nowrap; }
+
+/* == Filter rows (Job Cards search/filter, Project Manager filters) === */
+.filter-block { margin-bottom: 14px; }
+.filter-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.search-field {
+  width: 100%; font: inherit; font-size: 14.5px; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px;
+  background: #fff; margin-bottom: 16px;
+}
+.search-field:focus {
+  outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, .14);
+}
+.empty-hint { color: var(--muted); font-size: 13.5px; text-align: center; padding: 18px 0; }

@@ -2,11 +2,17 @@
 
 /** JobsPage - the tenant's dashboard of saved job cards. */
 class JobsPage {
+  static OUTCOME_LABELS = { pass: 'Pass', work: 'Further work required', monitor: 'Monitor' };
+
   constructor() {
     this._api = new ApiClient();
     this._guard = new SessionGuard(this._api);
     this._$ = (id) => document.getElementById(id);
     this._toastTimer = null;
+    this._jobs = [];
+    this._searchQuery = '';
+    this._outcomeFilter = 'all';
+    this._typeFilter = 'all';
   }
 
   async init() {
@@ -23,11 +29,13 @@ class JobsPage {
     this._applyProfile(user.profile);
     AccountMenu.mount(user);
     this._bindHeader();
+    this._bindFilters();
     await this._refresh(jobsPromise);
   }
 
   _applyProfile(profile) {
     Theme.apply(profile.scheme);
+    Job.usePresets(profile.industry, profile);
     this._$('companyName').textContent = profile.companyName;
     this._$('companyTagline').textContent = profile.tagline || 'Your job cards';
     const logoBox = this._$('companyLogo');
@@ -46,23 +54,88 @@ class JobsPage {
     this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
   }
 
+  _bindFilters() {
+    this._$('jobSearch').addEventListener('input', (e) => {
+      this._searchQuery = e.target.value.trim().toLowerCase();
+      this._renderList();
+    });
+  }
+
   async _refresh(preloaded) {
     const { jobs } = await (preloaded || this._api.listJobs());
+    this._jobs = jobs;
+    this._renderFilters();
+    this._renderList();
+  }
+
+  // ── Filters ───────────────────────────────────────────────────
+
+  _renderFilters() {
+    const outcomeBox = this._$('outcomeFilters');
+    outcomeBox.innerHTML = '';
+    const outcomeOptions = [['all', 'All'], ...Object.entries(JobsPage.OUTCOME_LABELS)];
+    outcomeOptions.forEach(([key, label]) => {
+      const count = key === 'all' ? this._jobs.length : this._jobs.filter((j) => j.outcome === key).length;
+      outcomeBox.appendChild(this._buildFilterChip(label, count, key === this._outcomeFilter, () => {
+        this._outcomeFilter = key;
+        this._renderFilters();
+        this._renderList();
+      }));
+    });
+
+    const typeBox = this._$('jobTypeFilters');
+    typeBox.innerHTML = '';
+    const types = [...new Set(this._jobs.map((j) => j.jobType).filter(Boolean))];
+    const typeOptions = [['all', 'All'], ...types.map((key) => [key, Job.JOB_TYPES[key] || 'Other'])];
+    typeOptions.forEach(([key, label]) => {
+      const count = key === 'all' ? this._jobs.length : this._jobs.filter((j) => j.jobType === key).length;
+      typeBox.appendChild(this._buildFilterChip(label, count, key === this._typeFilter, () => {
+        this._typeFilter = key;
+        this._renderFilters();
+        this._renderList();
+      }));
+    });
+  }
+
+  _buildFilterChip(label, count, active, onClick) {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip';
+    chip.setAttribute('aria-pressed', String(active));
+    chip.textContent = count ? `${label} (${count})` : label;
+    chip.addEventListener('click', onClick);
+    return chip;
+  }
+
+  _filtered() {
+    return this._jobs.filter((j) => {
+      if (this._outcomeFilter !== 'all' && j.outcome !== this._outcomeFilter) return false;
+      if (this._typeFilter !== 'all' && j.jobType !== this._typeFilter) return false;
+      if (this._searchQuery) {
+        const haystack = `${j.clientName || ''} ${j.siteAddress || ''} ${j.quoteNumber || ''}`.toLowerCase();
+        if (!haystack.includes(this._searchQuery)) return false;
+      }
+      return true;
+    });
+  }
+
+  // ── List ──────────────────────────────────────────────────────
+
+  _renderList() {
     const list = this._$('jobList');
     list.innerHTML = '';
-    this._$('jobsEmpty').hidden = jobs.length > 0;
-    this._$('jobsCount').textContent = jobs.length
-      ? `${jobs.length} saved job card${jobs.length > 1 ? 's' : ''}` : '';
-    jobs.forEach((job) => list.appendChild(this._buildCard(job)));
+    const filtered = this._filtered();
+    this._$('jobsEmpty').hidden = this._jobs.length > 0;
+    this._$('jobsFilterEmpty').hidden = this._jobs.length === 0 || filtered.length > 0;
+    this._$('jobsCount').textContent = this._jobs.length
+      ? `${this._jobs.length} saved job card${this._jobs.length > 1 ? 's' : ''}` : '';
+    filtered.forEach((job) => list.appendChild(this._buildCard(job)));
   }
 
   _buildCard(job) {
     const card = document.createElement('article');
     card.className = 'job-card';
 
-    const outcomeLabels = {
-      pass: 'Pass', work: 'Further work required', monitor: 'Monitor',
-    };
     const updated = new Date(job.updatedAt).toLocaleDateString('en-ZA', {
       day: 'numeric', month: 'short', year: 'numeric',
     });
@@ -82,7 +155,7 @@ class JobsPage {
     side.className = 'side';
     side.innerHTML = `
       <div class="total">${Job.formatCurrency(job.grandTotal || 0)}</div>
-      ${job.outcome ? `<span class="badge ${job.outcome}">${outcomeLabels[job.outcome] || job.outcome}</span>` : ''}`;
+      ${job.outcome ? `<span class="badge ${job.outcome}">${JobsPage.OUTCOME_LABELS[job.outcome] || job.outcome}</span>` : ''}`;
 
     const actions = document.createElement('div');
     actions.className = 'actions';

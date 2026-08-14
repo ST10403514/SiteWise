@@ -202,7 +202,10 @@
       <button class="add-item" id="addExpense" type="button">+ Add expense</button>
     </section>
     <section class="card">
-      <div class="sec-title"><h2>Logged expenses</h2></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div class="sec-title"><h2>Logged expenses</h2></div>
+        <button class="btn btn-light" id="exportExpenses" type="button" style="padding:6px 14px;font-size:12.5px">Export CSV</button>
+      </div>
       <div class="ledger-list" id="expenseList"></div>
       <p class="empty-hint" id="expensesEmpty">No expenses yet. Log your first material cost for this job.</p>
     </section>
@@ -227,7 +230,10 @@
       <button class="add-item" id="addWage" type="button">+ Add entry</button>
     </section>
     <section class="card">
-      <div class="sec-title"><h2>Logged wages</h2></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div class="sec-title"><h2>Logged wages</h2></div>
+        <button class="btn btn-light" id="exportWages" type="button" style="padding:6px 14px;font-size:12.5px">Export CSV</button>
+      </div>
       <div class="ledger-list" id="wageList"></div>
       <p class="empty-hint" id="wagesEmpty">No staff wages logged yet.</p>
     </section>
@@ -266,7 +272,10 @@
     </section>
 
     <section class="card">
-      <div class="sec-title"><h2>Logged time</h2></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div class="sec-title"><h2>Logged time</h2></div>
+        <button class="btn btn-light" id="exportTime" type="button" style="padding:6px 14px;font-size:12.5px">Export CSV</button>
+      </div>
       <div class="ledger-list" id="timeList"></div>
       <p class="empty-hint" id="timeEmpty">No time logged yet.</p>
     </section>
@@ -316,6 +325,7 @@
 <script src="/js/models/Job.js"></script>
 <script src="/js/services/PdfService.js"></script>
 <script src="/js/services/AccountMenu.js"></script>
+<script src="/js/services/CsvExport.js"></script>
 <script src="/js/pages/projectDetail.js" defer></script>
 <script src="/js/pwa.js" defer></script>
 </body>

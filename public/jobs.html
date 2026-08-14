@@ -90,7 +90,20 @@
     <div class="sec-title"><h1>Job cards</h1></div>
     <span class="jobs-count" id="jobsCount"></span>
   </div>
+
+  <input type="search" id="jobSearch" class="search-field" placeholder="Search by client, address or quote number&hellip;" />
+
+  <div class="filter-block">
+    <div class="filter-label">Filter by outcome</div>
+    <div class="chips" id="outcomeFilters" role="group" aria-label="Filter by outcome"></div>
+  </div>
+  <div class="filter-block">
+    <div class="filter-label">Filter by type</div>
+    <div class="chips" id="jobTypeFilters" role="group" aria-label="Filter by type"></div>
+  </div>
+
   <div id="jobList" class="job-list" aria-live="polite"></div>
+  <p class="empty-hint" id="jobsFilterEmpty" hidden>No job cards match your search/filters.</p>
   <div class="jobs-empty" id="jobsEmpty" hidden>
     <p><strong>No job cards yet.</strong></p>
     <p>Start your first one - it saves automatically as you work,
