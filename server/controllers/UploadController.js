@@ -32,7 +32,11 @@ class UploadController {
         throw ApiError.badRequest('Image is too large');
       }
       const folder = UploadController.FOLDERS.has(req.body?.folder) ? req.body.folder : 'photos';
-      const url = await this._storage.uploadDataUrl(dataUrl, `${folder}/${req.user.id}`);
+      const canonicalUrl = await this._storage.uploadDataUrl(dataUrl, `${folder}/${req.user.id}`);
+      // Return a signed URL so the browser can display it immediately (the
+      // bucket may be private) - it self-corrects back to the canonical
+      // form the next time the job autosaves, via jobValidators' photoRef.
+      const url = await this._storage.getSignedUrl(canonicalUrl);
       res.status(201).json({ url });
     } catch (err) {
       if (err.code === 'BAD_IMAGE') return next(ApiError.badRequest('Unsupported image format'));
