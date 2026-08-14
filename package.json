@@ -16,6 +16,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1110.0",
     "@libsql/client": "^0.17.4",
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.6",
     "dotenv": "^17.4.2",
     "express": "^4.19.2",

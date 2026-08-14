@@ -8,13 +8,19 @@
  * a cache fallback so the app still opens if the connection drops.
  */
 
-const CACHE = 'sitewise-shell-v2';
+const CACHE = 'sitewise-shell-v3';
 
 const SHELL = [
   '/app',
   '/jobs',
+  '/project-manager',
+  '/project-detail',
+  '/onboarding',
   '/css/base.css',
   '/css/app.css',
+  '/css/jobs.css',
+  '/css/project-manager.css',
+  '/css/project-detail.css',
   '/js/config/IndustryPresets.js',
   '/js/services/Theme.js',
   '/js/services/ApiClient.js',
@@ -25,6 +31,9 @@ const SHELL = [
   '/js/services/PdfService.js',
   '/js/pages/app.js',
   '/js/pages/jobs.js',
+  '/js/pages/projectManager.js',
+  '/js/pages/projectDetail.js',
+  '/js/pages/onboarding.js',
 ];
 
 self.addEventListener('install', (event) => {

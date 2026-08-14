@@ -12,6 +12,30 @@
  * signed-in user's company profile via PDFService.configure(profile).
  */
 class PDFService {
+  static JSPDF_CDN_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  static _jsPdfLoadPromise = null;
+
+  /**
+   * jsPDF used to be a static <script> tag loaded on every job/project page
+   * whether or not a PDF was ever generated that visit. Loaded on demand
+   * instead, the first time any download is requested. Safe to call
+   * concurrently - only injects the script once.
+   * @returns {Promise<void>}
+   */
+  static _ensureJsPdfLoaded() {
+    if (window.jspdf) return Promise.resolve();
+    if (!PDFService._jsPdfLoadPromise) {
+      PDFService._jsPdfLoadPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = PDFService.JSPDF_CDN_URL;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Could not load the PDF library - check your connection'));
+        document.head.appendChild(script);
+      });
+    }
+    return PDFService._jsPdfLoadPromise;
+  }
+
   // ── Page geometry (mm) ────────────────────────────────────────
   static PW   = 210;   // page width
   static PH   = 297;   // page height
@@ -86,7 +110,7 @@ class PDFService {
     // Photos are stored as R2 URLs; pull them into inline data URLs first so
     // the synchronous jsPDF drawing below has image data to work with.
     job = await PDFService._withResolvedPhotos(job);
-    const doc = PDFService._createDoc();
+    const doc = await PDFService._createDoc();
     let y = PDFService._addHeader(doc, job, 'REPORT & QUOTATION');
     y = PDFService._addReportSection(doc, job, y);
     y = PDFService._addPhotos(doc, job, y);
@@ -98,8 +122,8 @@ class PDFService {
   }
 
   /** Generate and download a quote-only PDF. @param {Job} job */
-  static downloadQuote(job) {
-    const doc = PDFService._createDoc();
+  static async downloadQuote(job) {
+    const doc = await PDFService._createDoc();
     const y = PDFService._addHeader(doc, job, 'QUOTATION');
     PDFService._addQuoteSection(doc, job, y);
     PDFService._addPageNumbers(doc);
@@ -109,7 +133,7 @@ class PDFService {
   /** Generate and download a report-only PDF. @param {Job} job */
   static async downloadReport(job) {
     job = await PDFService._withResolvedPhotos(job);
-    const doc = PDFService._createDoc();
+    const doc = await PDFService._createDoc();
     let y = PDFService._addHeader(doc, job, 'SITE INSPECTION REPORT');
     y = PDFService._addReportSection(doc, job, y);
     PDFService._addPhotos(doc, job, y);
@@ -119,7 +143,8 @@ class PDFService {
 
   // ── Private builders ──────────────────────────────────────────
 
-  static _createDoc() {
+  static async _createDoc() {
+    await PDFService._ensureJsPdfLoaded();
     const { jsPDF } = window.jspdf;
     return new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   }

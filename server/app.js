@@ -1,8 +1,10 @@
 'use strict';
 
+const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+const compression = require('compression');
 
 const config = require('./config');
 const UserRepository = require('./repositories/UserRepository');
@@ -81,6 +83,11 @@ function createApp() {
     },
   }));
 
+  // Text responses (HTML/CSS/JS/JSON) compress 70-80% smaller over the wire -
+  // meaningful for users on weak on-site mobile signal. Skips already-compressed
+  // content (images) automatically.
+  app.use(compression());
+
   app.use(express.json({ limit: '25mb' }));
   app.use(cookieParser());
 
@@ -88,6 +95,14 @@ function createApp() {
   app.use('/api/profile', profileRoutes({ profileController, authGuard }));
   app.use('/api/jobs', jobRoutes({ jobController, authGuard }));
   app.use('/api/uploads', uploadRoutes({ uploadController, authGuard }));
+
+  // The raw R2 endpoint domain is dynamic (built from env vars), so it can't be
+  // hardcoded into a static <link rel="preconnect"> the way the Google Fonts one
+  // is - only the two pages that actually display real R2 photos get the hint.
+  const r2Origin = config.r2.accountId
+    ? `https://${config.r2.bucket}.${config.r2.accountId}.r2.cloudflarestorage.com`
+    : null;
+  const PHOTO_PAGES = new Set(['app.html', 'project-detail.html']);
 
   // JS/CSS are cached for a short while so navigating between pages doesn't
   // re-validate ~10 files with the server every time. HTML pages are left
@@ -97,6 +112,9 @@ function createApp() {
     setHeaders(res, filePath) {
       if (/\.(?:css|js)$/.test(filePath)) {
         res.setHeader('Cache-Control', 'public, max-age=600');
+      }
+      if (r2Origin && PHOTO_PAGES.has(path.basename(filePath))) {
+        res.setHeader('Link', `<${r2Origin}>; rel=preconnect`);
       }
     },
   }));
