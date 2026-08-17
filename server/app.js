@@ -102,12 +102,20 @@ function createApp() {
   // (a static file), so a Turso outage shows up here instead of going
   // unnoticed until a real user hits it.
   app.get('/healthz', async (_req, res) => {
+    const start = Date.now();
+    let db = { ok: false };
     try {
       await getClient(config.db).execute('SELECT 1');
-      res.status(200).json({ ok: true });
+      db = { ok: true, latencyMs: Date.now() - start };
     } catch {
-      res.status(503).json({ ok: false });
+      db = { ok: false, latencyMs: Date.now() - start };
     }
+    res.status(db.ok ? 200 : 503).json({
+      ok: db.ok,
+      timestamp: new Date().toISOString(),
+      uptimeSeconds: Math.round(process.uptime()),
+      checks: { db },
+    });
   });
 
   app.use('/api/auth', authRoutes({ authController, authGuard }));
