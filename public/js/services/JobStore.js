@@ -34,16 +34,50 @@ class JobStore {
     return !err || err.status === undefined;
   }
 
+  /** Builds a dashboard-summary row from a full local record, matching the shape GET /api/jobs returns. */
+  static _summarize(record) {
+    const data = record.data || {};
+    return {
+      id: record.id,
+      quoteNumber: data.quoteNumber,
+      clientName: data.clientName,
+      siteAddress: data.siteAddress,
+      outcome: data.outcome,
+      grandTotal: data.grandTotal,
+      jobType: data.jobType,
+      projectStatus: data.project?.status || null,
+      projectValue: data.project?.value ?? null,
+      photoCount: (data.photos || []).length,
+      updatedAt: record.localUpdatedAt || record.updatedAt,
+    };
+  }
+
+  /**
+   * Folds in any job that only exists as a pending local edit - e.g. one
+   * created offline via "add without a quote" - which the server (and
+   * therefore the cached list, which mirrors the server) doesn't know
+   * about yet. Without this, a job you just created offline would vanish
+   * the moment you navigated back to the list, even though it's safe and
+   * queued to sync.
+   */
+  static async _withPending(baseJobs) {
+    const pending = await LocalStore.getPendingJobs();
+    if (!pending.length) return baseJobs;
+    const known = new Set(baseJobs.map((j) => j.id));
+    const extra = pending.filter((record) => !known.has(record.id)).map(JobStore._summarize);
+    return [...extra, ...baseJobs];
+  }
+
   /** @returns {Promise<{jobs: object[], offline: boolean}>} */
   async listJobs() {
     try {
       const { jobs } = await this._api.listJobs();
       LocalStore.saveJobList(jobs);
-      return { jobs, offline: false };
+      return { jobs: await JobStore._withPending(jobs), offline: false };
     } catch (err) {
       if (!JobStore._isNetworkError(err)) throw err;
       const jobs = await LocalStore.getJobList();
-      return { jobs, offline: true };
+      return { jobs: await JobStore._withPending(jobs), offline: true };
     }
   }
 

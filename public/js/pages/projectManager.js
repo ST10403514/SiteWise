@@ -232,7 +232,11 @@ class ProjectManagerPage {
     job.project = Job.newProject(Number(this._$('qaValue').value) || 0);
 
     try {
-      await this._api.saveJob(job.id, job.toJSON());
+      // Goes through JobStore, not ApiClient directly, so this works
+      // offline too: the project is written to IndexedDB first and only
+      // then does a sync attempt happen - a network failure here isn't an
+      // error, the project still gets created locally and queues to sync.
+      await this._jobStore.saveJob(job.id, job.toJSON());
       location.assign(`/project-detail?id=${job.id}`);
     } catch (err) {
       this._toast(err.message || 'Could not create that project');
