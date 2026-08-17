@@ -404,16 +404,25 @@ class AppPage {
       let added = 0;
       for (const file of files) {
         try {
-          const dataUrl = await ImageTools.compress(file, 1000, 0.8);
-          try {
-            // Upload to R2 and store only the URL, so jobs stay small and load fast.
-            const { url } = await this._api.uploadPhoto(dataUrl);
-            this._job.photos.push({ url, caption: '', mediaType: 'image' });
-          } catch (uploadErr) {
-            // Upload failed (e.g. no signal on site). Keep the photo locally so
-            // it isn't lost - it still displays, and the migration/next save can
-            // push it up later. Falls back to the inline data URL.
-            this._job.photos.push({ dataUrl, caption: '', mediaType: 'image' });
+          const [dataUrl, thumbDataUrl] = await Promise.all([
+            ImageTools.compress(file, 1000, 0.8),
+            ImageTools.compress(file, ImageTools.THUMB_MAX_DIM, 0.7),
+          ]);
+          // allSettled, not all: a thumb-upload failure shouldn't discard a
+          // full-size upload that already succeeded (and would otherwise be
+          // orphaned in R2, referenced nowhere) - each is kept independently.
+          const [fullResult, thumbResult] = await Promise.allSettled([
+            this._api.uploadPhoto(dataUrl),
+            this._api.uploadPhoto(thumbDataUrl),
+          ]);
+          const thumbUrl = thumbResult.status === 'fulfilled' ? thumbResult.value.url : null;
+          if (fullResult.status === 'fulfilled') {
+            this._job.photos.push({ url: fullResult.value.url, thumbUrl, caption: '', mediaType: 'image' });
+          } else {
+            // Full upload failed (e.g. no signal on site). Keep it embedded
+            // locally so it isn't lost - the next successful save migrates
+            // it to R2 automatically. A thumb that did upload is kept too.
+            this._job.photos.push({ dataUrl, thumbUrl, caption: '', mediaType: 'image' });
           }
           added += 1;
           this._renderPhotos();
@@ -435,7 +444,7 @@ class AppPage {
 
       const img = document.createElement('img');
       img.loading = 'lazy';
-      img.src = photo.url || photo.dataUrl;
+      img.src = photo.thumbUrl || photo.url || photo.dataUrl;
       img.alt = photo.caption || `Site photo ${i + 1}`;
 
       const caption = document.createElement('input');

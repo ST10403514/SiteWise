@@ -286,16 +286,25 @@ class ProjectDetailPage {
     return (crypto.randomUUID && crypto.randomUUID()) || `id-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
   }
 
+  /** @returns {Promise<{url: string|null, thumbUrl: string|null}>} */
   async _readOptionalPhoto(inputEl, folder) {
     const file = inputEl.files?.[0];
-    if (!file) return null;
-    const dataUrl = await ImageTools.compress(file, 1000, 0.8);
-    try {
-      const { url } = await this._api.uploadPhoto(dataUrl, folder);
-      return url;
-    } catch {
-      return dataUrl; // fall back to inline data URL if upload fails
-    }
+    if (!file) return { url: null, thumbUrl: null };
+    const [dataUrl, thumbDataUrl] = await Promise.all([
+      ImageTools.compress(file, 1000, 0.8),
+      ImageTools.compress(file, ImageTools.THUMB_MAX_DIM, 0.7),
+    ]);
+    // allSettled, not all: a thumb-upload failure shouldn't discard a
+    // full-size upload that already succeeded (and would otherwise be
+    // orphaned in R2, referenced nowhere).
+    const [fullResult, thumbResult] = await Promise.allSettled([
+      this._api.uploadPhoto(dataUrl, folder),
+      this._api.uploadPhoto(thumbDataUrl, folder),
+    ]);
+    return {
+      url: fullResult.status === 'fulfilled' ? fullResult.value.url : dataUrl,
+      thumbUrl: thumbResult.status === 'fulfilled' ? thumbResult.value.url : null,
+    };
   }
 
   // ── Expenses ──────────────────────────────────────────────────
@@ -310,8 +319,8 @@ class ProjectDetailPage {
         this._toast('Add a description first');
         return;
       }
-      const photoUrl = await this._readOptionalPhoto(this._$('expPhoto'), 'expenses');
-      this._job.project.expenses.push({ id: this._uid(), date, description, amount, photoUrl });
+      const { url: photoUrl, thumbUrl: photoThumbUrl } = await this._readOptionalPhoto(this._$('expPhoto'), 'expenses');
+      this._job.project.expenses.push({ id: this._uid(), date, description, amount, photoUrl, photoThumbUrl });
       this._$('expDesc').value = '';
       this._$('expAmount').value = '';
       this._$('expPhoto').value = '';
@@ -348,8 +357,8 @@ class ProjectDetailPage {
         this._toast('Add a staff name and amount first');
         return;
       }
-      const photoUrl = await this._readOptionalPhoto(this._$('wagePhoto'), 'wages');
-      this._job.project.staffWages.push({ id: this._uid(), date, name, role, amount, photoUrl });
+      const { url: photoUrl, thumbUrl: photoThumbUrl } = await this._readOptionalPhoto(this._$('wagePhoto'), 'wages');
+      this._job.project.staffWages.push({ id: this._uid(), date, name, role, amount, photoUrl, photoThumbUrl });
       this._$('wageName').value = '';
       this._$('wageRole').value = '';
       this._$('wageAmount').value = '';
@@ -466,7 +475,7 @@ class ProjectDetailPage {
       const thumb = document.createElement('img');
       thumb.className = 'ledger-thumb';
       thumb.loading = 'lazy';
-      thumb.src = entry.photoUrl;
+      thumb.src = entry.photoThumbUrl || entry.photoUrl;
       thumb.alt = '';
       row.appendChild(thumb);
     }
@@ -602,13 +611,20 @@ class ProjectDetailPage {
       let added = 0;
       for (const file of files) {
         try {
-          const dataUrl = await ImageTools.compress(file, 1000, 0.8);
-          let url = dataUrl;
-          try {
-            const uploaded = await this._api.uploadPhoto(dataUrl, 'site-photos');
-            url = uploaded.url;
-          } catch { /* fall back to inline data URL */ }
-          this._job.project.sitePhotos.push({ id: this._uid(), url, caption: '' });
+          const [dataUrl, thumbDataUrl] = await Promise.all([
+            ImageTools.compress(file, 1000, 0.8),
+            ImageTools.compress(file, ImageTools.THUMB_MAX_DIM, 0.7),
+          ]);
+          // allSettled, not all: a thumb-upload failure shouldn't discard a
+          // full-size upload that already succeeded (and would otherwise be
+          // orphaned in R2, referenced nowhere).
+          const [fullResult, thumbResult] = await Promise.allSettled([
+            this._api.uploadPhoto(dataUrl, 'site-photos'),
+            this._api.uploadPhoto(thumbDataUrl, 'site-photos'),
+          ]);
+          const url = fullResult.status === 'fulfilled' ? fullResult.value.url : dataUrl;
+          const thumbUrl = thumbResult.status === 'fulfilled' ? thumbResult.value.url : null;
+          this._job.project.sitePhotos.push({ id: this._uid(), url, thumbUrl, caption: '' });
           added += 1;
           this._renderSitePhotos();
           this._changed();
@@ -628,7 +644,7 @@ class ProjectDetailPage {
       cell.className = 'photo-cell';
       const img = document.createElement('img');
       img.loading = 'lazy';
-      img.src = photo.url;
+      img.src = photo.thumbUrl || photo.url;
       img.alt = photo.caption || `Site photo ${i + 1}`;
       const caption = document.createElement('input');
       caption.placeholder = `Caption - photo ${i + 1}`;

@@ -6,6 +6,9 @@
  * and jsPDF's addImage(..., 'JPEG', ...) always succeeds.
  */
 class ImageTools {
+  /** Longest edge, in px, for the small companion image used in thumbnail-sized display (ledger rows, photo grids). */
+  static THUMB_MAX_DIM = 320;
+
   /**
    * @param {File} file
    * @param {number} maxDim longest edge in px

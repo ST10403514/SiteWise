@@ -68,6 +68,10 @@ function validateLedgerEntries(entries, field, storage, { nameField } = {}) {
       date: str(e.date, `${field}[${i}].date`, SHORT),
       amount: num(e.amount, `${field}[${i}].amount`),
       photoUrl: e.photoUrl ? photoRef(e.photoUrl, `${field}[${i}].photoUrl`, storage) : null,
+      // A smaller companion image for thumbnail-sized display (ledger rows,
+      // photo grids) - optional, since photos saved before this existed
+      // only ever have the one, full-size photoUrl.
+      photoThumbUrl: e.photoThumbUrl ? photoRef(e.photoThumbUrl, `${field}[${i}].photoThumbUrl`, storage) : null,
     };
     if (nameField) {
       out.name = str(e.name, `${field}[${i}].name`, SHORT);
@@ -142,6 +146,7 @@ function validateProject(project, storage) {
     return {
       id: str(p.id, `project.sitePhotos[${i}].id`, SHORT),
       url: photoRef(p.url, `project.sitePhotos[${i}].url`, storage),
+      thumbUrl: p.thumbUrl ? photoRef(p.thumbUrl, `project.sitePhotos[${i}].thumbUrl`, storage) : null,
       caption: str(p.caption, `project.sitePhotos[${i}].caption`, MEDIUM),
     };
   });
@@ -183,6 +188,7 @@ function validateJobData(data, storage) {
     if (!p || typeof p !== 'object') throw ApiError.badRequest(`Photos[${i}] is invalid`);
     return {
       url: p.url ? photoRef(p.url, `Photos[${i}].url`, storage) : undefined,
+      thumbUrl: p.thumbUrl ? photoRef(p.thumbUrl, `Photos[${i}].thumbUrl`, storage) : undefined,
       dataUrl: p.dataUrl ? photoRef(p.dataUrl, `Photos[${i}].dataUrl`, storage) : undefined,
       caption: str(p.caption, `Photos[${i}].caption`, MEDIUM),
       mediaType: p.mediaType ? str(p.mediaType, `Photos[${i}].mediaType`, SHORT) : undefined,

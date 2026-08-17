@@ -13,13 +13,12 @@ function collectPhotoUrls(data) {
   const urls = [];
   const add = (u) => { if (typeof u === 'string' && u.startsWith('http')) urls.push(u); };
 
-  (data?.photos || []).forEach((p) => add(p?.url));
+  (data?.photos || []).forEach((p) => { add(p?.url); add(p?.thumbUrl); });
   const project = data?.project;
   if (project) {
-    (project.expenses || []).forEach((e) => add(e?.photoUrl));
-    (project.staffWages || []).forEach((w) => add(w?.photoUrl));
-    (project.slips || []).forEach((s) => add(s?.photoUrl));
-    (project.sitePhotos || []).forEach((p) => add(p?.url));
+    (project.expenses || []).forEach((e) => { add(e?.photoUrl); add(e?.photoThumbUrl); });
+    (project.staffWages || []).forEach((w) => { add(w?.photoUrl); add(w?.photoThumbUrl); });
+    (project.sitePhotos || []).forEach((p) => { add(p?.url); add(p?.thumbUrl); });
   }
   return urls;
 }
