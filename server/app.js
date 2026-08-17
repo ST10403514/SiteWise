@@ -98,24 +98,58 @@ function createApp() {
   app.use(cookieParser());
 
   // Unauthenticated, unrate-limited - for Render's own health checks and an
-  // external uptime monitor. Actually touches the DB, unlike hitting `/`
-  // (a static file), so a Turso outage shows up here instead of going
-  // unnoticed until a real user hits it.
+  // external uptime monitor. Only `db` is critical (it actually gates the
+  // status code/overall pass-fail) - storage/email are informational, since
+  // the app degrades gracefully without them rather than going down. Each
+  // check and the handler itself are isolated so one unexpected failure
+  // can't take out the whole response.
   app.get('/healthz', async (_req, res) => {
-    const start = Date.now();
-    let db = { ok: false };
+    const startedAt = Date.now();
     try {
-      await getClient(config.db).execute('SELECT 1');
-      db = { ok: true, latencyMs: Date.now() - start };
-    } catch {
-      db = { ok: false, latencyMs: Date.now() - start };
+      const dbStart = Date.now();
+      let db;
+      try {
+        await getClient(config.db).execute('SELECT 1');
+        db = { status: 'pass', latencyMs: Date.now() - dbStart };
+      } catch (err) {
+        db = { status: 'fail', latencyMs: Date.now() - dbStart, message: err.message || 'Database unreachable' };
+      }
+
+      const storage = config.r2Configured
+        ? { status: 'pass', message: 'R2 configured' }
+        : { status: 'warn', message: 'R2 not configured - photo upload/display will fail' };
+
+      const email = config.emailConfigured
+        ? { status: 'pass', message: 'Resend configured' }
+        : { status: 'warn', message: 'Resend not configured - password reset emails will not send' };
+
+      const mem = process.memoryUsage();
+      const memory = {
+        status: 'pass',
+        rssMb: Math.round(mem.rss / 1024 / 1024),
+        heapUsedMb: Math.round(mem.heapUsed / 1024 / 1024),
+      };
+
+      const ok = db.status === 'pass';
+      res.status(ok ? 200 : 503).json({
+        status: ok ? 'pass' : 'fail',
+        ok,
+        // Render injects this automatically on deploys from a connected
+        // git repo - lets you confirm a deploy actually landed by hitting
+        // this endpoint. Null (not a crash) anywhere else, e.g. local dev.
+        version: process.env.RENDER_GIT_COMMIT || null,
+        environment: config.isProduction ? 'production' : 'development',
+        timestamp: new Date().toISOString(),
+        uptimeSeconds: Math.round(process.uptime()),
+        responseTimeMs: Date.now() - startedAt,
+        checks: { db, storage, email, memory },
+      });
+    } catch (err) {
+      // Should be unreachable given the checks above are already
+      // individually guarded, but a health endpoint must never itself
+      // throw an unhandled error - that would look like the whole app is down.
+      res.status(500).json({ status: 'fail', ok: false, message: err.message || 'Health check failed' });
     }
-    res.status(db.ok ? 200 : 503).json({
-      ok: db.ok,
-      timestamp: new Date().toISOString(),
-      uptimeSeconds: Math.round(process.uptime()),
-      checks: { db },
-    });
   });
 
   app.use('/api/auth', authRoutes({ authController, authGuard }));
