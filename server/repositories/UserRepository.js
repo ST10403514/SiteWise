@@ -29,6 +29,7 @@ class UserRepository {
       onboarded: !!row.onboarded,
       profile: row.profile ? JSON.parse(row.profile) : null,
       acceptedTermsAt: row.acceptedTermsAt || null,
+      passwordChangedAt: row.passwordChangedAt || null,
       resetTokenHash: row.resetTokenHash || null,
       resetTokenExpires: row.resetTokenExpires ? Number(row.resetTokenExpires) : null,
       createdAt: row.createdAt,
@@ -69,6 +70,7 @@ class UserRepository {
       onboarded: false,
       profile: null,
       acceptedTermsAt: null,
+      passwordChangedAt: null,
       resetTokenHash: null,
       resetTokenExpires: null,
       createdAt: new Date().toISOString(),
@@ -76,10 +78,10 @@ class UserRepository {
     await this._db.execute({
       sql: `INSERT INTO users
               (id, name, email, passwordHash, onboarded, profile, acceptedTermsAt,
-               resetTokenHash, resetTokenExpires, createdAt)
+               passwordChangedAt, resetTokenHash, resetTokenExpires, createdAt)
             VALUES
               (:id, :name, :email, :passwordHash, :onboarded, :profile, :acceptedTermsAt,
-               :resetTokenHash, :resetTokenExpires, :createdAt)`,
+               :passwordChangedAt, :resetTokenHash, :resetTokenExpires, :createdAt)`,
       args: {
         id: user.id,
         name: user.name,
@@ -88,6 +90,7 @@ class UserRepository {
         onboarded: 0,
         profile: null,
         acceptedTermsAt: null,
+        passwordChangedAt: null,
         resetTokenHash: null,
         resetTokenExpires: null,
         createdAt: user.createdAt,
@@ -125,6 +128,7 @@ class UserRepository {
                 onboarded = :onboarded,
                 profile = :profile,
                 acceptedTermsAt = :acceptedTermsAt,
+                passwordChangedAt = :passwordChangedAt,
                 resetTokenHash = :resetTokenHash,
                 resetTokenExpires = :resetTokenExpires
             WHERE id = :id`,
@@ -136,6 +140,7 @@ class UserRepository {
         onboarded: merged.onboarded ? 1 : 0,
         profile: merged.profile ? JSON.stringify(merged.profile) : null,
         acceptedTermsAt: merged.acceptedTermsAt || null,
+        passwordChangedAt: merged.passwordChangedAt || null,
         resetTokenHash: merged.resetTokenHash || null,
         resetTokenExpires: merged.resetTokenExpires != null ? String(merged.resetTokenExpires) : null,
       },

@@ -89,9 +89,13 @@ class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    // Update password AND clear the token so it can't be reused.
+    // Update password, clear the token so it can't be reused, and stamp
+    // passwordChangedAt so any session token issued before this moment -
+    // e.g. a stolen cookie - stops working immediately instead of surviving
+    // until its natural 7-day expiry (see requireAuth).
     await this._users.update(user.id, {
       passwordHash,
+      passwordChangedAt: new Date().toISOString(),
       resetTokenHash: null,
       resetTokenExpires: null,
     });

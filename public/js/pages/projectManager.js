@@ -28,11 +28,21 @@ class ProjectManagerPage {
     if (!user) return;
 
     this._applyProfile(user.profile);
-    AccountMenu.mount(user);
-    this._bindHeader();
-    this._bindExport();
-    this._bindQuickAdd();
+
+    // Load the project list before wiring up secondary UI - a broken button
+    // binding below should never be able to stop the page's core content
+    // (the list itself) from loading and rendering.
     await this._refresh(jobsPromise);
+
+    this._safeBind(() => AccountMenu.mount(user));
+    this._safeBind(() => this._bindHeader());
+    this._safeBind(() => this._bindExport());
+    this._safeBind(() => this._bindQuickAdd());
+  }
+
+  /** Runs a UI-binding step in isolation so one failure can't cascade. */
+  _safeBind(fn) {
+    try { fn(); } catch (err) { console.error('SiteWise: UI binding failed', err); }
   }
 
   _applyProfile(profile) {
@@ -193,9 +203,13 @@ class ProjectManagerPage {
       typeSelect.appendChild(opt);
     });
 
-    this._$('quickAddToggle').addEventListener('click', () => {
+    this._$('pickJob').addEventListener('click', () => {
       const card = this._$('quickAddCard');
       card.hidden = !card.hidden;
+      if (!card.hidden) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        this._$('qaClient').focus();
+      }
     });
 
     this._$('qaCreate').addEventListener('click', () => this._createQuickProject());

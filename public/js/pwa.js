@@ -98,8 +98,15 @@
   function setupAndroidButton() {
     var btn = document.getElementById('installBtn');
     if (!btn) return;
-    btn.hidden = true;
-    if (isDone()) { btn.hidden = true; return; }
+
+    // The CSS reveals this button via a .pwa-show class (not the `hidden`
+    // attribute alone) - both are kept in sync here so it's hidden from
+    // assistive tech (hidden) and actually hidden visually (pwa-show).
+    function show() { btn.hidden = false; btn.classList.add('pwa-show'); }
+    function hide() { btn.hidden = true; btn.classList.remove('pwa-show'); }
+
+    hide();
+    if (isDone()) return;
 
     // dismiss "x" so it can always be closed
     if (!btn.querySelector('.pwa-dismiss')) {
@@ -112,7 +119,7 @@
       x.addEventListener('click', function (ev) {
         ev.stopPropagation();
         remember();
-        btn.hidden = true;
+        hide();
       });
       btn.appendChild(x);
     }
@@ -123,7 +130,7 @@
       e.preventDefault();
       if (isDone()) return;
       deferredPrompt = e;
-      btn.hidden = false;
+      show();
     });
 
     btn.addEventListener('click', function (e) {
@@ -133,13 +140,16 @@
       deferredPrompt.userChoice.then(function (choice) {
         if (choice && choice.outcome === 'accepted') remember();
         deferredPrompt = null;
-        btn.hidden = true;
+        hide();
       });
     });
 
+    // Fires on ANY successful install (button, browser's own address-bar
+    // affordance, etc.) - covers the "never show again once installed" case
+    // even when our button wasn't what triggered it.
     window.addEventListener('appinstalled', function () {
       remember();
-      btn.hidden = true;
+      hide();
     });
   }
 

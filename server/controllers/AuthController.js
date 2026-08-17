@@ -46,7 +46,13 @@ class AuthController {
   };
 
   logout = (_req, res) => {
-    res.clearCookie(this._config.cookieName);
+    // clearCookie must be called with the same attributes the cookie was set
+    // with (sameSite/secure), or some browsers won't actually clear it.
+    res.clearCookie(this._config.cookieName, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: this._config.isProduction,
+    });
     res.json({ ok: true });
   };
 

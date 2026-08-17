@@ -462,6 +462,7 @@ class ProjectDetailPage {
     if (entry.photoUrl) {
       const thumb = document.createElement('img');
       thumb.className = 'ledger-thumb';
+      thumb.loading = 'lazy';
       thumb.src = entry.photoUrl;
       thumb.alt = '';
       row.appendChild(thumb);
@@ -623,6 +624,7 @@ class ProjectDetailPage {
       const cell = document.createElement('div');
       cell.className = 'photo-cell';
       const img = document.createElement('img');
+      img.loading = 'lazy';
       img.src = photo.url;
       img.alt = photo.caption || `Site photo ${i + 1}`;
       const caption = document.createElement('input');

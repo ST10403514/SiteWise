@@ -23,6 +23,7 @@ const SCHEMA = `
     onboarded      INTEGER NOT NULL DEFAULT 0,
     profile        TEXT,
     acceptedTermsAt TEXT,
+    passwordChangedAt TEXT,
     createdAt      TEXT NOT NULL
   );
 
@@ -40,6 +41,15 @@ const SCHEMA = `
 async function initSchema(config) {
   const client = getClient(config);
   await client.executeMultiple(SCHEMA);
+  // CREATE TABLE IF NOT EXISTS doesn't retroactively add columns to a table
+  // that already existed before this one was added - needed for any
+  // pre-existing production database. Harmless no-op on a fresh one, since
+  // the column above already exists there and this just fails quietly.
+  try {
+    await client.execute('ALTER TABLE users ADD COLUMN passwordChangedAt TEXT');
+  } catch (err) {
+    if (!/duplicate column/i.test(err.message)) throw err;
+  }
   return client;
 }
 

@@ -38,6 +38,11 @@
 </head>
 <body>
 
+<button id="installBtn" class="pwa-install" type="button" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+  Install SiteWise
+</button>
+
 <header class="app-band">
   <div class="wrap">
     <div class="app-logo" id="companyLogo">S</div>
@@ -46,7 +51,7 @@
       <div class="app-sub" id="companyTagline">Project manager</div>
     </div>
     <div class="app-meta">
-      <a class="btn btn-primary" href="/jobs" id="pickJob">+ New project</a>
+      <button class="btn btn-primary" id="pickJob" type="button">+ New project</button>
       <div class="acct" id="acct">
         <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
           <span class="acct-avatar" id="acctAvatar">S</span>
@@ -81,10 +86,7 @@
   <div class="jobs-head">
     <div class="sec-title"><h1>Projects</h1></div>
     <span class="jobs-count" id="projectsCount"></span>
-    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-light" id="quickAddToggle" type="button">+ Add without a quote</button>
-      <button class="btn btn-light" id="exportCsv" type="button">Export CSV</button>
-    </div>
+    <button class="btn btn-light" id="exportCsv" type="button" style="margin-left:auto">Export CSV</button>
   </div>
 
   <section class="card" id="quickAddCard" hidden>
@@ -112,9 +114,9 @@
 
   <div class="jobs-empty" id="projectsEmpty" hidden>
     <p><strong>No projects yet.</strong></p>
-    <p>Once a client accepts a quote, open that job card and use
-       "Quote accepted &rarr; start project" to bring it in here - or use
-       "+ Add without a quote" above if there's no quote for this one.</p>
+    <p>Use "+ New project" above to start one without a quote, or open an
+       accepted job card and use "Quote accepted &rarr; start project" to
+       bring it in here instead.</p>
     <a class="btn btn-primary" href="/jobs">Go to job cards</a>
   </div>
 </main>

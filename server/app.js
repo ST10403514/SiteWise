@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 
 const config = require('./config');
+const { getClient } = require('./repositories/db');
 const UserRepository = require('./repositories/UserRepository');
 const JobRepository = require('./repositories/JobRepository');
 const AuthService = require('./services/AuthService');
@@ -52,6 +53,11 @@ function createApp() {
 
   const app = express();
   app.disable('x-powered-by');
+  // Render sits in front of the app behind a single reverse-proxy hop, so
+  // without this Express (and express-rate-limit, which keys on req.ip)
+  // sees the proxy's address on every request instead of the real client's -
+  // collapsing every visitor into one shared rate-limit bucket.
+  app.set('trust proxy', 1);
 
   // CSP allows the specific third parties the app actually loads (Google
   // Fonts, the jsPDF CDN script, R2 for photos) and 'unsafe-inline' for
@@ -90,6 +96,19 @@ function createApp() {
 
   app.use(express.json({ limit: '25mb' }));
   app.use(cookieParser());
+
+  // Unauthenticated, unrate-limited - for Render's own health checks and an
+  // external uptime monitor. Actually touches the DB, unlike hitting `/`
+  // (a static file), so a Turso outage shows up here instead of going
+  // unnoticed until a real user hits it.
+  app.get('/healthz', async (_req, res) => {
+    try {
+      await getClient(config.db).execute('SELECT 1');
+      res.status(200).json({ ok: true });
+    } catch {
+      res.status(503).json({ ok: false });
+    }
+  });
 
   app.use('/api/auth', authRoutes({ authController, authGuard }));
   app.use('/api/profile', profileRoutes({ profileController, authGuard }));

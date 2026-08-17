@@ -15,16 +15,21 @@ class TokenService {
 
   /** @param {{id: string}} user */
   issue(user) {
-    return jwt.sign({ sub: user.id }, this._secret, { expiresIn: this._ttl });
+    return jwt.sign({ sub: user.id }, this._secret, { expiresIn: this._ttl, algorithm: 'HS256' });
   }
 
   /**
    * @param {string} token
-   * @returns {string|null} the user id, or null if invalid/expired
+   * @returns {{id: string, issuedAt: number}|null} the user id and the
+   *   token's issued-at time (seconds since epoch), or null if invalid/expired.
+   *   issuedAt lets callers reject tokens issued before a password change.
    */
   verify(token) {
     try {
-      return jwt.verify(token, this._secret).sub;
+      // Pinning the algorithm defends against algorithm-confusion attacks -
+      // without it, jsonwebtoken accepts whatever alg the token itself claims.
+      const payload = jwt.verify(token, this._secret, { algorithms: ['HS256'] });
+      return { id: payload.sub, issuedAt: payload.iat };
     } catch {
       return null;
     }

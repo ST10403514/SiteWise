@@ -431,6 +431,7 @@ class AppPage {
       cell.className = 'photo-cell';
 
       const img = document.createElement('img');
+      img.loading = 'lazy';
       img.src = photo.url || photo.dataUrl;
       img.alt = photo.caption || `Site photo ${i + 1}`;
 
