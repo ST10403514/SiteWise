@@ -3,12 +3,15 @@
 /**
  * SiteWise service worker.
  * Minimal by design: makes the app installable and able to launch
- * standalone, without ever caching API responses or per-user job data
- * (that must always be fresh). Static shell files are network-first with
- * a cache fallback so the app still opens if the connection drops.
+ * standalone. Never caches API responses itself - job/project data is
+ * cached separately, in IndexedDB via LocalStore/JobStore, which is what
+ * actually lets the app read cached data offline. This worker's job is
+ * only the static shell (HTML/CSS/JS): network-first with a cache
+ * fallback, so the app still opens (with its last-cached code) if the
+ * connection drops before those two services even get a chance to run.
  */
 
-const CACHE = 'sitewise-shell-v3';
+const CACHE = 'sitewise-shell-v4';
 
 const SHELL = [
   '/app',
@@ -25,6 +28,8 @@ const SHELL = [
   '/js/services/Theme.js',
   '/js/services/ApiClient.js',
   '/js/services/SessionGuard.js',
+  '/js/services/LocalStore.js',
+  '/js/services/JobStore.js',
   '/js/services/ImageTools.js',
   '/js/services/AccountMenu.js',
   '/js/models/Job.js',

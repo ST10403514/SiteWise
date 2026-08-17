@@ -10,6 +10,7 @@ class ProjectManagerPage {
   constructor() {
     this._api = new ApiClient();
     this._guard = new SessionGuard(this._api);
+    this._jobStore = new JobStore(this._api);
     this._$ = (id) => document.getElementById(id);
     this._toastTimer = null;
     this._projects = [];
@@ -21,7 +22,7 @@ class ProjectManagerPage {
     // Fired alongside the auth check rather than after it - both just need
     // the session cookie, so there's no reason to wait for one round trip
     // to a remote DB before starting the other.
-    const jobsPromise = this._api.listJobs();
+    const jobsPromise = this._jobStore.listJobs();
     jobsPromise.catch(() => {});
 
     const user = await this._guard.requireOnboardedUser();
@@ -60,17 +61,18 @@ class ProjectManagerPage {
 
   _bindHeader() {
     this._$('logout').addEventListener('click', async () => {
-      await this._api.logout();
+      await this._guard.logout();
       location.replace('/');
     });
     this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
   }
 
   async _refresh(preloaded) {
-    const { jobs } = await (preloaded || this._api.listJobs());
+    const { jobs, offline } = await (preloaded || this._jobStore.listJobs());
     this._projects = jobs.filter((j) => j.projectStatus);
     this._renderFilters();
     this._renderList();
+    if (offline) this._toast('Offline - showing your last-saved projects');
   }
 
   // ── Filters ───────────────────────────────────────────────────

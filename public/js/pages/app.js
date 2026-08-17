@@ -12,6 +12,7 @@ class AppPage {
   constructor() {
     this._api = new ApiClient();
     this._guard = new SessionGuard(this._api);
+    this._jobStore = new JobStore(this._api);
     this._job = null;
     this._dirty = false;
     this._saving = false;
@@ -24,7 +25,7 @@ class AppPage {
     // the session cookie, so there's no reason to wait a full round trip to
     // a remote DB for one before starting the other.
     const existingId = new URLSearchParams(location.search).get('id');
-    const jobPromise = existingId ? this._api.getJob(existingId) : null;
+    const jobPromise = existingId ? this._jobStore.getJob(existingId) : null;
     if (jobPromise) jobPromise.catch(() => {});
 
     const user = await this._guard.requireOnboardedUser();
@@ -70,7 +71,9 @@ class AppPage {
     const id = new URLSearchParams(location.search).get('id');
     if (id) {
       try {
-        const { job } = await (preloadedPromise || this._api.getJob(id));
+        const { job, offline, pending } = await (preloadedPromise || this._jobStore.getJob(id));
+        if (pending) this._toast('Showing your unsynced changes from earlier - still saved on this device');
+        else if (offline) this._toast('Offline - showing your last-saved version of this job');
         return Job.fromJSON(job.id, job.data);
       } catch {
         this._toast('Could not open that job - starting a new one');
@@ -86,7 +89,7 @@ class AppPage {
   _bindHeader() {
     this._$('logout').addEventListener('click', async () => {
       await this._flushSave();
-      await this._api.logout();
+      await this._guard.logout();
       location.replace('/');
     });
     this._$('editProfile').addEventListener('click', () => {
@@ -578,12 +581,19 @@ class AppPage {
     this._dirty = false;
     this._setSaveState('Saving\u2026');
     try {
-      await this._api.saveJob(this._job.id, this._job.toJSON());
-      const time = new Date().toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
-      this._setSaveState(`Saved ${time}`);
-    } catch {
+      // Writes to IndexedDB before attempting the network, so the edit is
+      // durable (survives a reload or lost signal) even if the sync below
+      // fails - offline is a normal outcome here, not an error.
+      const { offline } = await this._jobStore.saveJob(this._job.id, this._job.toJSON());
+      if (offline) {
+        this._setSaveState('Saved on this device - will sync when back online');
+      } else {
+        const time = new Date().toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+        this._setSaveState(`Saved ${time}`);
+      }
+    } catch (err) {
       this._dirty = true; // retry on next tick
-      this._setSaveState('Save failed - retrying');
+      this._setSaveState(err.message || 'Save failed - retrying');
     } finally {
       this._saving = false;
     }

@@ -7,6 +7,7 @@ class JobsPage {
   constructor() {
     this._api = new ApiClient();
     this._guard = new SessionGuard(this._api);
+    this._jobStore = new JobStore(this._api);
     this._$ = (id) => document.getElementById(id);
     this._toastTimer = null;
     this._jobs = [];
@@ -20,7 +21,7 @@ class JobsPage {
     // the session cookie, and waiting for one before starting the other
     // doubles the round trip to a remote DB for no reason. If the auth
     // check fails, this result is simply never awaited.
-    const jobsPromise = this._api.listJobs();
+    const jobsPromise = this._jobStore.listJobs();
     jobsPromise.catch(() => {});
 
     const user = await this._guard.requireOnboardedUser();
@@ -48,7 +49,7 @@ class JobsPage {
 
   _bindHeader() {
     this._$('logout').addEventListener('click', async () => {
-      await this._api.logout();
+      await this._guard.logout();
       location.replace('/');
     });
     this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
@@ -62,10 +63,11 @@ class JobsPage {
   }
 
   async _refresh(preloaded) {
-    const { jobs } = await (preloaded || this._api.listJobs());
+    const { jobs, offline } = await (preloaded || this._jobStore.listJobs());
     this._jobs = jobs;
     this._renderFilters();
     this._renderList();
+    if (offline) this._toast('Offline - showing your last-saved job cards');
   }
 
   // ── Filters ───────────────────────────────────────────────────

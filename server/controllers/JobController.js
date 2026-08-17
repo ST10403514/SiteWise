@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { validateJobData } = require('../utils/jobValidators');
 const { collectPhotoUrls } = require('../utils/photoCleanup');
 const { signJobPhotos } = require('../utils/photoSigning');
+const { migrateInlinePhotos } = require('../utils/photoMigration');
 
 const ID_RE = /^[a-zA-Z0-9-]{8,64}$/;
 
@@ -47,13 +48,17 @@ class JobController {
     try {
       const id = this._id(req.params.id);
       const data = validateJobData(req.body?.data, this._storage);
+      // Swaps any embedded data:image/... fallback (from an offline or
+      // failed upload) for a real R2 upload before it's persisted, so a
+      // job never permanently settles on a bloated, uncacheable inline copy.
+      const migrated = await migrateInlinePhotos(data, this._storage, req.user.id);
 
       const existing = await this._jobs.findByIdForUser(id, req.user.id);
-      const record = await this._jobs.upsert(id, req.user.id, data);
+      const record = await this._jobs.upsert(id, req.user.id, migrated);
 
       if (existing) {
         const before = collectPhotoUrls(existing.data);
-        const after = collectPhotoUrls(data);
+        const after = collectPhotoUrls(migrated);
         await this._cleanupRemovedPhotos(before, after);
       }
 
