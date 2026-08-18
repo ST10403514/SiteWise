@@ -1,4 +1,5 @@
 node_modules/
+dist/
 
 # Runtime data (never commit)
 server/data/*.json

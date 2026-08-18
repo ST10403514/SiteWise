@@ -71,7 +71,7 @@ work:
 | Layer          | Choice                                    | Why |
 |----------------|--------------------------------------------|-----|
 | Backend        | Node.js + Express                          | Simple, no framework magic |
-| Frontend       | Vanilla JS, no framework, no build step    | Every page is static HTML + plain `<script>` tags - open a file, read exactly what runs |
+| Frontend       | Vanilla JS, no framework                   | Dev runs every file unbundled - open one, read exactly what runs. Production runs a minimal `esbuild` step (bundle + minify only, no framework, no JSX/TS) - see Quick start |
 | Database       | Turso (libSQL), SQL over HTTP              | Serverless SQLite that still gives real indexes/queries |
 | Photo storage  | Cloudflare R2 (S3-compatible)              | Object storage, not a SQL blob column |
 | Email          | Resend                                     | Password-reset delivery |
@@ -87,6 +87,18 @@ npm start          # or: npm run dev (auto-restart on file changes)
 ```
 
 Open **http://localhost:3000**.
+
+`npm run dev`/`npm start` serve `public/` directly - every file unbundled,
+edit and refresh, no build step. Production (`NODE_ENV=production`) instead
+serves `dist/`, produced by:
+
+```bash
+npm run build       # bundles+minifies public/ into dist/ (see scripts/build.js)
+```
+
+Render runs this automatically on every deploy (`render.yaml`'s
+`buildCommand`); you only need to run it yourself to inspect the production
+output locally.
 
 With **zero configuration**, local dev runs against a local SQLite file (auto-created
 under `server/data/`) and an auto-generated JWT secret - enough to sign up,
@@ -130,7 +142,11 @@ server/
                                migration helpers
   scripts/                    One-off migration scripts (JSON → SQLite, historical)
 
-public/                       Frontend - static HTML, no build step
+scripts/
+  build.js                     Production build - bundles+minifies public/ into
+                               dist/ (gitignored, regenerated on every deploy)
+
+public/                       Frontend source - dev serves this directly, unbundled
   index.html                  Marketing landing page
   auth.html, forgot-password.html, reset-password.html   Sign in / reset flow
   onboarding.html             Business setup (branding, industry, banking)
@@ -194,9 +210,18 @@ public/                       Frontend - static HTML, no build step
   Resend) without letting those flip the overall pass/fail - only the
   database can do that.
 - **Frontend**: a controller class per page, shared service classes, a `Job`
-  model that owns all quote/project maths and serialization. No bundler, no
-  npm frontend dependencies - every `<script>` tag is a real file you can
-  open and read top to bottom.
+  model that owns all quote/project maths and serialization. No framework,
+  no npm frontend *dependencies* shipped to the browser - every source file
+  is a real, readable file. The one build step (`scripts/build.js`, `esbuild`
+  under the hood) only bundles `config/`+`services/`+`models/` into one
+  `shared.min.js` and minifies each page's own script in place - it never
+  runs in dev, and it doesn't touch how the code is written or organised.
+- **Schema changes**: a new column goes in two places in `db.js` - the
+  `CREATE TABLE` block (so a fresh database gets it for free) and the
+  `MIGRATIONS` list (so an already-running production database picks it up
+  on next deploy instead of erroring forever). Every migration entry is
+  idempotent and re-runs on every startup, so past entries are never edited
+  or removed once shipped.
 
 ## Known limitations / roadmap
 

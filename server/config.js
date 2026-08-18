@@ -21,11 +21,14 @@ class Config {
     this.jobsFile = path.join(this.dataDir, 'jobs.json');   // legacy
     this.dbFile = path.join(this.dataDir, 'sitewise.db');
 
-    this.publicDir = path.join(__dirname, '..', 'public');
     this.cookieName = 'ssp_session';
     this.tokenTtl = '7d';
     this.cookieMaxAgeMs = 7 * 24 * 60 * 60 * 1000;
     this.isProduction = process.env.NODE_ENV === 'production';
+    // Production serves the bundled/minified build (`npm run build` output) -
+    // dev serves public/ directly, unbundled, so editing a file takes effect
+    // on the next request with no build step at all.
+    this.publicDir = path.join(__dirname, '..', this.isProduction ? 'dist' : 'public');
     this.jwtSecret = process.env.JWT_SECRET || this._loadOrCreateSecret();
 
     // Absolute base URL of the app, used to build links in emails. MUST be set

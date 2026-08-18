@@ -38,17 +38,37 @@ const SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_jobs_user ON jobs(userId);
 `;
 
+/**
+ * Retroactive column additions - CREATE TABLE IF NOT EXISTS above only
+ * covers a *fresh* database; it doesn't add a column to a table that
+ * already existed before that column was added, which any already-running
+ * production database is. Each entry here patches that gap.
+ *
+ * Convention for adding a new column to an existing table:
+ *   1. Add it to the CREATE TABLE block above (so fresh installs get it
+ *      for free, and it's documented in one place as the current schema).
+ *   2. Add a matching entry here (so the already-running production
+ *      database picks it up on next deploy, instead of erroring forever).
+ * Never edit or remove a past entry once it's shipped - old databases may
+ * still need to run it. Each one is idempotent (safe to re-run against a
+ * database that already has the column), since every entry here runs on
+ * every startup, forever.
+ */
+const MIGRATIONS = [
+  { name: 'users.passwordChangedAt', sql: 'ALTER TABLE users ADD COLUMN passwordChangedAt TEXT' },
+];
+
 async function initSchema(config) {
   const client = getClient(config);
   await client.executeMultiple(SCHEMA);
-  // CREATE TABLE IF NOT EXISTS doesn't retroactively add columns to a table
-  // that already existed before this one was added - needed for any
-  // pre-existing production database. Harmless no-op on a fresh one, since
-  // the column above already exists there and this just fails quietly.
-  try {
-    await client.execute('ALTER TABLE users ADD COLUMN passwordChangedAt TEXT');
-  } catch (err) {
-    if (!/duplicate column/i.test(err.message)) throw err;
+  for (const migration of MIGRATIONS) {
+    try {
+      await client.execute(migration.sql);
+    } catch (err) {
+      if (!/duplicate column/i.test(err.message)) {
+        throw new Error(`Migration "${migration.name}" failed: ${err.message}`);
+      }
+    }
   }
   return client;
 }

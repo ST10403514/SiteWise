@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "dev": "node --watch server/index.js",
+    "build": "node scripts/build.js"
   },
   "engines": {
     "node": ">=18"
@@ -25,5 +26,8 @@
     "jsonwebtoken": "^9.0.2",
     "resend": "^6.18.1"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
 }
