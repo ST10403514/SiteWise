@@ -43,6 +43,7 @@ class AppPage {
     this._bindItems();
     this._bindDownloads();
     this._bindConvertToProject();
+    this._bindActionBarToggle();
 
     this._hydrate();
     this._startAutosave();
@@ -684,6 +685,32 @@ class AppPage {
       location.assign(`/project-detail?id=${this._job.id}`);
     });
     this._refreshConvertButton();
+  }
+
+  // ── Bottom action bar: collapse toggle ───────────────────────
+
+  /**
+   * The action bar's height varies with screen width and which buttons are
+   * showing (e.g. the WhatsApp button only appears once a valid number is
+   * entered), so a fixed body padding-bottom can't reliably reserve enough
+   * room without either wasting space or letting the bar cover the last
+   * field. Track its real height instead, and let the user pull it out of
+   * the way entirely if it's still cramping the form on a short screen.
+   */
+  _bindActionBarToggle() {
+    const bar = document.querySelector('.action-bar');
+    const toggle = this._$('barToggle');
+    const syncPadding = () => {
+      document.body.style.paddingBottom = `${bar.offsetHeight}px`;
+    };
+    toggle.addEventListener('click', () => {
+      const collapsed = bar.classList.toggle('collapsed');
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+      toggle.setAttribute('aria-label', collapsed ? 'Show quote actions' : 'Hide quote actions');
+      setTimeout(syncPadding, 260);
+    });
+    new ResizeObserver(syncPadding).observe(bar);
+    syncPadding();
   }
 
   _refreshConvertButton() {

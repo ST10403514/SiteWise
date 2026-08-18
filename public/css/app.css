@@ -101,6 +101,24 @@ section.card { background: var(--card); border: 1px solid var(--line); border-ra
 /* Sticky action bar */
 .action-bar { position: fixed; inset: auto 0 0 0; z-index: 20; background: var(--navy-deep); border-top: 3px solid var(--blue); padding: 12px 0; }
 .action-bar .wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* Pull-up/down handle: lets the bottom action bar be tucked away so it
+   never permanently covers form fields on short mobile screens, instead
+   of guessing a bottom padding that has to fit every button combination. */
+.bar-toggle {
+  position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+  width: 48px; height: 20px; padding: 0; cursor: pointer;
+  background: var(--navy-deep); border: 3px solid var(--blue); border-bottom: none;
+  border-radius: 10px 10px 0 0; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.bar-toggle svg { width: 16px; height: 16px; transition: transform .2s ease; }
+.action-bar.collapsed .bar-toggle svg { transform: rotate(180deg); }
+.action-bar .bar-actions {
+  overflow: hidden; max-height: 300px;
+  transition: max-height .25s ease, opacity .2s ease, margin-top .25s ease;
+}
+.action-bar.collapsed .bar-actions { max-height: 0; opacity: 0; margin-top: 0; pointer-events: none; }
 .live-total { color: #fff; margin-right: auto; }
 .live-total .lbl { display: block; font-size: 10.5px; letter-spacing: .8px; color: #a0afc8; text-transform: uppercase; }
 .live-total .val { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1.1; }
