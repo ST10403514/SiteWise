@@ -156,6 +156,15 @@
   // ---- choose the path for this device ----
   if (isDone()) return;                 // already installed anywhere - do nothing
 
+  // The install banner/button only render correctly on pages that load
+  // base.css (every real app page) - the marketing landing page and
+  // terms.html don't, so the iOS banner would get appended with no
+  // positioning CSS at all and show up as a plain block dumped after the
+  // footer instead of a floating overlay. Also just premature UX-wise to
+  // prompt someone to install before they've even signed up.
+  var hasAppStyles = !!document.querySelector('link[href="/css/base.css"]');
+  if (!hasAppStyles) return;
+
   if (isIos()) {
     // wait for DOM so we can append the banner
     if (document.readyState === 'loading') {
