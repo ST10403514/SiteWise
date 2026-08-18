@@ -6,7 +6,7 @@ services:
     name: sitewise
     runtime: node
     plan: starter          # smallest paid plan; required for a persistent disk
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
