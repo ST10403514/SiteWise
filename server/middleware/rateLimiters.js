@@ -7,6 +7,12 @@ function handler(message) {
   return (_req, res) => res.status(429).json({ error: message });
 }
 
+// Automated tests legitimately need to sign up/log in far more often, in
+// far less wall-clock time, than these limits assume any real user would -
+// enforcing them there would make the test suite flaky on request volume,
+// not on anything actually worth catching. Production behavior is untouched.
+const skipInTest = () => process.env.NODE_ENV === 'test';
+
 // Brute-force guard: a handful of wrong passwords is normal (typos), dozens
 // from one IP in 5 minutes is not.
 const loginLimiter = rateLimit({
@@ -14,6 +20,7 @@ const loginLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   handler: handler('Too many sign-in attempts. Please wait 5 minutes and try again.'),
 });
 
@@ -26,6 +33,7 @@ const loginAccountLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   keyGenerator: (req) => String(req.body?.email || '').trim().toLowerCase() || 'unknown',
   handler: handler('Too many sign-in attempts for this account. Please wait 5 minutes and try again.'),
 });
@@ -36,6 +44,7 @@ const signupLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   handler: handler('Too many accounts created from this connection. Please try again later.'),
 });
 
@@ -45,6 +54,7 @@ const forgotPasswordLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   handler: handler('Too many reset requests. Please wait a while and try again.'),
 });
 
@@ -56,6 +66,7 @@ const resetPasswordLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   handler: handler('Too many attempts. Please wait a while and try again.'),
 });
 

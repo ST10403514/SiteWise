@@ -24,6 +24,8 @@ const SCHEMA = `
     profile        TEXT,
     acceptedTermsAt TEXT,
     passwordChangedAt TEXT,
+    resetTokenHash    TEXT,
+    resetTokenExpires TEXT,
     createdAt      TEXT NOT NULL
   );
 
@@ -56,6 +58,13 @@ const SCHEMA = `
  */
 const MIGRATIONS = [
   { name: 'users.passwordChangedAt', sql: 'ALTER TABLE users ADD COLUMN passwordChangedAt TEXT' },
+  // These two were added to production by hand at some point, before this
+  // migration list existed - added here now so a genuinely fresh database
+  // (a new environment, a from-scratch restore) doesn't 500 on first signup
+  // the way one did in testing. Harmless no-ops against the live database,
+  // which already has them.
+  { name: 'users.resetTokenHash', sql: 'ALTER TABLE users ADD COLUMN resetTokenHash TEXT' },
+  { name: 'users.resetTokenExpires', sql: 'ALTER TABLE users ADD COLUMN resetTokenExpires TEXT' },
 ];
 
 async function initSchema(config) {

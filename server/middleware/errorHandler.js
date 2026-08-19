@@ -2,10 +2,11 @@
 
 const Sentry = require('@sentry/node');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
 
 /** Final error middleware - maps errors to JSON responses. */
 // eslint-disable-next-line no-unused-vars
-function errorHandler(err, _req, res, _next) {
+function errorHandler(err, req, res, _next) {
   // ApiError and oversized-upload are expected outcomes (bad input, a
   // forbidden cross-tenant access attempt, etc.), not bugs - only report
   // the genuinely unexpected branch below to Sentry, or every 404/403 would
@@ -16,7 +17,7 @@ function errorHandler(err, _req, res, _next) {
   if (err?.type === 'entity.too.large') {
     return res.status(413).json({ error: 'Upload is too large' });
   }
-  console.error(err);
+  logger.error({ err, path: req.originalUrl, method: req.method }, err.message);
   Sentry.captureException(err);
   res.status(500).json({ error: 'Something went wrong on our side' });
 }

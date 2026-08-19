@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl: presignUrl } = require('@aws-sdk/s3-request-presigner');
+const logger = require('../utils/logger');
 
 const SIGNED_URL_TTL_SECONDS = 3600; // 1 hour - long enough for a normal session, short enough to matter
 
@@ -109,7 +110,7 @@ class StorageService {
     try {
       await this._client.send(new DeleteObjectCommand({ Bucket: this._bucket, Key: key }));
     } catch (err) {
-      console.error('Failed to delete R2 object:', key, err.message);
+      logger.error({ err, key }, 'Failed to delete R2 object');
     }
   }
 

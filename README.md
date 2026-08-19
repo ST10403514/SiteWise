@@ -100,6 +100,17 @@ Render runs this automatically on every deploy (`render.yaml`'s
 `buildCommand`); you only need to run it yourself to inspect the production
 output locally.
 
+```bash
+npm test            # server/test/*.test.js, via Node's built-in test runner
+```
+
+Covers auth (signup/login/reset), tenant isolation (one account can never
+read, overwrite, delete, or list another's jobs), and job-data validation.
+Each test file gets its own disposable local SQLite database (real
+integration, not mocks) so nothing here touches your actual dev data.
+Rate limiting is skipped when `NODE_ENV=test` - the limits exist for real
+abuse patterns, not a test suite's legitimately higher request volume.
+
 With **zero configuration**, local dev runs against a local SQLite file (auto-created
 under `server/data/`) and an auto-generated JWT secret - enough to sign up,
 build quotes, and use Project Manager. Photo uploads and password-reset
@@ -118,7 +129,7 @@ dashboard → Job card → (once accepted) Project Manager**
 | `TURSO_URL`, `TURSO_AUTH_TOKEN` | Production only | Falls back to a local SQLite file in dev |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL` | Production only | Photo uploads/display fail without these, everything else still works |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Optional | Without it, password-reset requests succeed but no email sends |
-| `SENTRY_DSN_SERVER` | Optional | Without it, unexpected errors are only logged via `console.error`, same as before |
+| `SENTRY_DSN_SERVER` | Optional | Without it, unexpected errors are only logged (via `pino`), never sent to Sentry |
 | `APP_BASE_URL` | Recommended in production | Used to build absolute links in reset emails; defaults to `localhost` |
 | `PORT` | Optional | Defaults to 3000 |
 
@@ -140,7 +151,11 @@ server/
   middleware/                 requireAuth guard, rate limiters, error handler
   routes/                     Route tables
   utils/                      Validators, ApiError, photo cleanup/signing/
-                               migration helpers
+                               migration helpers, logger (pino)
+  instrument.js                Sentry init - required first in index.js so its
+                               process-wide crash handlers register early
+  test/                        node:test suites - auth, tenant isolation,
+                               job validation (see Quick start)
   scripts/                    One-off migration scripts (JSON → SQLite, historical)
 
 scripts/
@@ -232,9 +247,13 @@ public/                       Frontend source - dev serves this directly, unbund
 - **Deleting a job/project isn't offline-queued.** Every other write -
   editing, and creating a project without a quote - is; delete still needs
   a connection.
-- **No error tracking or uptime monitoring yet** (Sentry, an external
-  monitor) - errors are currently only visible via `console.error` in
-  Render's log stream.
+- **No external uptime monitoring yet.** Sentry (error tracking) and
+  structured logging are both in place; `/healthz` is built and detailed -
+  it just doesn't have anything external pinging it yet.
+- **Test coverage is a first pass, not comprehensive.** Auth, tenant
+  isolation, and job validation are covered; offline/IndexedDB sync logic
+  isn't yet (it needs a browser-like test environment, a separate piece of
+  work).
 - **Paystack billing is planned, not built.** The app is free during beta;
   webhook idempotency, signature verification, and a subscription state
   model are designed only in discussion so far.

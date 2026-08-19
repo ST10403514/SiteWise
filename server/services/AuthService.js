@@ -3,6 +3,7 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
 
 const SALT_ROUNDS = 12;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -67,7 +68,7 @@ class AuthService {
           await this._email.sendPasswordReset({ to: user.email, resetUrl, name: user.name });
         } catch (e) {
           // Don't leak send failures to the caller; log for the operator.
-          console.error('Password reset email failed:', e.message);
+          logger.error({ err: e, userId: user.id }, 'Password reset email failed');
         }
       }
     }
