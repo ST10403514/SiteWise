@@ -118,6 +118,7 @@ dashboard → Job card → (once accepted) Project Manager**
 | `TURSO_URL`, `TURSO_AUTH_TOKEN` | Production only | Falls back to a local SQLite file in dev |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL` | Production only | Photo uploads/display fail without these, everything else still works |
 | `RESEND_API_KEY`, `EMAIL_FROM` | Optional | Without it, password-reset requests succeed but no email sends |
+| `SENTRY_DSN_SERVER` | Optional | Without it, unexpected errors are only logged via `console.error`, same as before |
 | `APP_BASE_URL` | Recommended in production | Used to build absolute links in reset emails; defaults to `localhost` |
 | `PORT` | Optional | Defaults to 3000 |
 

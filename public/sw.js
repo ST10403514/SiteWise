@@ -25,6 +25,7 @@ const SHELL = [
   '/css/project-manager.css',
   '/css/project-detail.css',
   '/js/config/IndustryPresets.js',
+  '/js/services/ErrorTracking.js',
   '/js/services/Theme.js',
   '/js/services/ApiClient.js',
   '/js/services/SessionGuard.js',

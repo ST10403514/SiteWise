@@ -70,6 +70,12 @@ class Config {
       from: process.env.EMAIL_FROM || 'SiteWise <onboarding@resend.dev>',
     };
     this.emailConfigured = !!this.resend.apiKey;
+
+    // ── Error tracking (Sentry) ──────────────────────────────────────────
+    // Optional, same as email: without it the app just logs to the console
+    // as it always did, rather than failing to start.
+    this.sentry = { dsn: process.env.SENTRY_DSN_SERVER || null };
+    this.sentryConfigured = !!this.sentry.dsn;
   }
 
   _loadOrCreateSecret() {

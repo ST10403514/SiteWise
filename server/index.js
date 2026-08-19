@@ -1,5 +1,6 @@
 'use strict';
 require('dotenv').config();
+require('./instrument');
 const createApp = require('./app');
 const config = require('./config');
 const { initSchema } = require('./repositories/db');

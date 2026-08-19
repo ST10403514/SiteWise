@@ -70,7 +70,7 @@ function createApp() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://browser.sentry-cdn.com'],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         // Photos load from two R2 URL forms: the canonical public-looking
@@ -80,7 +80,8 @@ function createApp() {
         imgSrc: ["'self'", 'data:',
           ...(config.r2.publicUrl ? [config.r2.publicUrl] : []),
           ...(config.r2.accountId ? [`https://${config.r2.bucket}.${config.r2.accountId}.r2.cloudflarestorage.com`] : [])],
-        connectSrc: ["'self'"],
+        // Sentry's browser SDK posts error events to this org's ingest host.
+        connectSrc: ["'self'", 'https://o4511936136544256.ingest.de.sentry.io'],
         objectSrc: ["'none'"],
         frameAncestors: ["'self'"],
         baseUri: ["'self'"],
