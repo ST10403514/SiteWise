@@ -9,24 +9,33 @@ const compression = require('compression');
 const config = require('./config');
 const { getClient } = require('./repositories/db');
 const UserRepository = require('./repositories/UserRepository');
+const BusinessRepository = require('./repositories/BusinessRepository');
+const InviteRepository = require('./repositories/InviteRepository');
 const JobRepository = require('./repositories/JobRepository');
 const AuthService = require('./services/AuthService');
+const TeamService = require('./services/TeamService');
 const TokenService = require('./services/TokenService');
 const StorageService = require('./services/StorageService');
 const EmailService = require('./services/EmailService');
 const AuthController = require('./controllers/AuthController');
 const ProfileController = require('./controllers/ProfileController');
 const JobController = require('./controllers/JobController');
+const TeamController = require('./controllers/TeamController');
 const UploadController = require('./controllers/UploadController');
 const requireAuth = require('./middleware/requireAuth');
+const requireOwner = require('./middleware/requireOwner');
 const errorHandler = require('./middleware/errorHandler');
+const { inviteLimiter } = require('./middleware/rateLimiters');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const teamRoutes = require('./routes/teamRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
 function createApp() {
   const userRepository = new UserRepository(config.db);
+  const businessRepository = new BusinessRepository(config.db);
+  const inviteRepository = new InviteRepository(config.db);
   const jobRepository = new JobRepository(config.db);
   const tokenService = new TokenService(config.jwtSecret, config.tokenTtl);
   const storageService = new StorageService(config.r2);
@@ -35,7 +44,11 @@ function createApp() {
     from: config.resend.from,
     appName: 'SiteWise',
   });
-  const authService = new AuthService(userRepository, {
+  const authService = new AuthService(userRepository, businessRepository, {
+    emailService,
+    appBaseUrl: config.appBaseUrl,
+  });
+  const teamService = new TeamService(userRepository, businessRepository, inviteRepository, {
     emailService,
     appBaseUrl: config.appBaseUrl,
   });
@@ -43,12 +56,16 @@ function createApp() {
   const authGuard = requireAuth({
     tokenService,
     userRepository,
+    businessRepository,
     cookieName: config.cookieName,
   });
 
-  const authController = new AuthController({ authService, tokenService, config });
-  const profileController = new ProfileController({ userRepository, jobRepository, storageService, config });
+  const authController = new AuthController({ authService, teamService, tokenService, config });
+  const profileController = new ProfileController({
+    userRepository, businessRepository, jobRepository, storageService, config,
+  });
   const jobController = new JobController({ jobRepository, storageService });
+  const teamController = new TeamController({ teamService });
   const uploadController = new UploadController({ storageService });
 
   const app = express();
@@ -156,6 +173,7 @@ function createApp() {
   app.use('/api/auth', authRoutes({ authController, authGuard }));
   app.use('/api/profile', profileRoutes({ profileController, authGuard }));
   app.use('/api/jobs', jobRoutes({ jobController, authGuard }));
+  app.use('/api/team', teamRoutes({ teamController, authGuard, requireOwner, inviteLimiter }));
   app.use('/api/uploads', uploadRoutes({ uploadController, authGuard }));
 
   // The raw R2 endpoint domain is dynamic (built from env vars), so it can't be

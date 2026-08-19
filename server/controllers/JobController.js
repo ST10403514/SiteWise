@@ -8,7 +8,7 @@ const { migrateInlinePhotos } = require('../utils/photoMigration');
 
 const ID_RE = /^[a-zA-Z0-9-]{8,64}$/;
 
-/** CRUD for a user's saved jobs. */
+/** CRUD for a business's saved jobs - shared by every team member on it. */
 class JobController {
   constructor({ jobRepository, storageService }) {
     this._jobs = jobRepository;
@@ -31,13 +31,13 @@ class JobController {
 
   list = async (req, res, next) => {
     try {
-      res.json({ jobs: await this._jobs.listByUser(req.user.id) });
+      res.json({ jobs: await this._jobs.listByBusiness(req.user.businessId) });
     } catch (err) { next(err); }
   };
 
   get = async (req, res, next) => {
     try {
-      const job = await this._jobs.findByIdForUser(this._id(req.params.id), req.user.id);
+      const job = await this._jobs.findByIdForBusiness(this._id(req.params.id), req.user.businessId);
       if (!job) throw new ApiError(404, 'Job not found');
       const data = await signJobPhotos(job.data, this._storage);
       res.json({ job: { id: job.id, updatedAt: job.updatedAt, data } });
@@ -51,10 +51,10 @@ class JobController {
       // Swaps any embedded data:image/... fallback (from an offline or
       // failed upload) for a real R2 upload before it's persisted, so a
       // job never permanently settles on a bloated, uncacheable inline copy.
-      const migrated = await migrateInlinePhotos(data, this._storage, req.user.id);
+      const migrated = await migrateInlinePhotos(data, this._storage, req.user.businessId);
 
-      const existing = await this._jobs.findByIdForUser(id, req.user.id);
-      const record = await this._jobs.upsert(id, req.user.id, migrated);
+      const existing = await this._jobs.findByIdForBusiness(id, req.user.businessId);
+      const record = await this._jobs.upsert(id, { businessId: req.user.businessId, userId: req.user.id }, migrated);
 
       if (existing) {
         const before = collectPhotoUrls(existing.data);
@@ -72,10 +72,10 @@ class JobController {
   remove = async (req, res, next) => {
     try {
       const id = this._id(req.params.id);
-      const existing = await this._jobs.findByIdForUser(id, req.user.id);
+      const existing = await this._jobs.findByIdForBusiness(id, req.user.businessId);
       if (!existing) throw new ApiError(404, 'Job not found');
 
-      await this._jobs.removeForUser(id, req.user.id);
+      await this._jobs.removeForBusiness(id, req.user.businessId);
       await Promise.all(collectPhotoUrls(existing.data).map((u) => this._storage.deleteObject(u)));
 
       res.json({ ok: true });

@@ -32,7 +32,9 @@ class UploadController {
         throw ApiError.badRequest('Image is too large');
       }
       const folder = UploadController.FOLDERS.has(req.body?.folder) ? req.body.folder : 'photos';
-      const canonicalUrl = await this._storage.uploadDataUrl(dataUrl, `${folder}/${req.user.id}`);
+      // Keyed by business, not the individual login - any team member's
+      // upload lands in the same shared space as their teammates'.
+      const canonicalUrl = await this._storage.uploadDataUrl(dataUrl, `${folder}/${req.user.businessId}`);
       // Return a signed URL so the browser can display it immediately (the
       // bucket may be private) - it self-corrects back to the canonical
       // form the next time the job autosaves, via jobValidators' photoRef.

@@ -38,6 +38,10 @@ class ApiClient {
   saveJob(id, data)   { return this._request('PUT', `/jobs/${id}`, { data }); }
   deleteJob(id)       { return this._request('DELETE', `/jobs/${id}`); }
 
+  listTeamMembers()        { return this._request('GET', '/team/members'); }
+  inviteTeamMember(email)  { return this._request('POST', '/team/invite', { email }); }
+  removeTeamMember(userId) { return this._request('DELETE', `/team/members/${userId}`); }
+
   /**
    * Upload a compressed base64 image to R2 and get back its public URL.
    * @param {string} dataUrl

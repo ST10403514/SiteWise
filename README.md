@@ -31,6 +31,13 @@ quote, site progress photos, and an optional time/rate tracker for trades
 that bill by the hour. A single CSV export per project (or a portfolio-wide
 one from the dashboard) hands all of it to an accountant in one file.
 
+**Team accounts**: a business is no longer one login - the owner can invite
+teammates by email (a token-based invite, same pattern as password reset),
+and every invited login sees and edits the exact same jobs/projects as the
+owner, no re-entering client history per person. No roles/permissions yet
+beyond owner-vs-not (owner invites/removes people; everyone else has full
+access) - that's an intentional v1 scope cut, not an oversight.
+
 **Runs like a native app**: installable to a home screen on Android and iOS
 (with the guided prompts each platform actually needs, since iOS has no
 programmatic install API at all), and offline-first - see below.
@@ -104,8 +111,10 @@ output locally.
 npm test            # server/test/*.test.js, via Node's built-in test runner
 ```
 
-Covers auth (signup/login/reset), tenant isolation (one account can never
-read, overwrite, delete, or list another's jobs), and job-data validation.
+Covers auth (signup/login/reset), tenant isolation (two different businesses
+can never see each other's jobs, while two logins on the *same* business
+correctly share everything), team accounts (invite/accept/remove), and
+job-data validation.
 Each test file gets its own disposable local SQLite database (real
 integration, not mocks) so nothing here touches your actual dev data.
 Rate limiting is skipped when `NODE_ENV=test` - the limits exist for real
@@ -197,10 +206,12 @@ public/                       Frontend source - dev serves this directly, unbund
 
 - **Separation of concerns**: routes → controllers → services → repositories.
   Controllers know HTTP, services know the rules, repositories know storage.
-- **Tenant isolation is structural, not per-query discipline.** Every job
-  operation goes through `JobRepository`, and every method takes and enforces
-  `userId` - there's no raw SQL in controllers, and `upsert` explicitly
-  rejects a write against a job owned by someone else.
+- **Tenant isolation is structural, not per-query discipline.** The tenant is
+  a *business*, not a login (a business can have several team members) -
+  every job operation goes through `JobRepository`, and every method takes
+  and enforces `businessId`, not the individual `userId` that created the
+  row (kept only for attribution). No raw SQL in controllers; `upsert`
+  explicitly rejects a write against a job owned by a different business.
 - **Auth**: bcrypt (12 rounds); JWT sessions in an `httpOnly`, `SameSite=Lax`
   cookie, `Secure` in production. Login runs a dummy hash compare so response
   timing can't reveal whether an email has an account. A password reset

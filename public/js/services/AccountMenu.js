@@ -35,6 +35,26 @@ class AccountMenu {
     const headEm = document.getElementById('acctHeadEmail');
     if (headEm) headEm.textContent = user.email || '';
 
+    // Team management is an owner-only concern - the API enforces this
+    // independently either way, this just avoids offering a link that
+    // would 403 for anyone else. Inserted here (not hardcoded per page)
+    // since only mount() knows whether the signed-in user is the owner.
+    if (user.isOwner) {
+      const menu = root.querySelector('.acct-menu');
+      const sep = root.querySelector('.acct-sep');
+      if (menu && sep && !menu.querySelector('[data-team-link]')) {
+        const teamLink = document.createElement('a');
+        teamLink.className = 'acct-item';
+        teamLink.href = '/team';
+        teamLink.setAttribute('role', 'menuitem');
+        teamLink.setAttribute('data-team-link', '');
+        teamLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+          + 'stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>'
+          + '<circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Team';
+        sep.before(teamLink);
+      }
+    }
+
     const btn = document.getElementById('acctBtn');
     const close = () => {
       root.classList.remove('open');

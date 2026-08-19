@@ -19,11 +19,13 @@ const SHELL = [
   '/project-manager',
   '/project-detail',
   '/onboarding',
+  '/team',
   '/css/base.css',
   '/css/app.css',
   '/css/jobs.css',
   '/css/project-manager.css',
   '/css/project-detail.css',
+  '/css/team.css',
   '/js/config/IndustryPresets.js',
   '/js/services/ErrorTracking.js',
   '/js/services/Theme.js',
@@ -40,6 +42,7 @@ const SHELL = [
   '/js/pages/projectManager.js',
   '/js/pages/projectDetail.js',
   '/js/pages/onboarding.js',
+  '/js/pages/team.js',
 ];
 
 self.addEventListener('install', (event) => {

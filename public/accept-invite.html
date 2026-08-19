@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Join your team &middot; SiteWise</title>
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <style>
+    .auth-wrap { max-width: 420px; margin: 8vh auto; padding: 0 20px; }
+    .auth-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:28px; }
+    .auth-card h1 { margin:0 0 8px; font-size:20px; color:#1e293b; }
+    .auth-card p.sub { margin:0 0 20px; color:#64748b; font-size:14px; line-height:1.5; }
+    .auth-card label { display:block; font-size:13px; color:#334155; margin:14px 0 6px; font-weight:600; }
+    .auth-card input[type="text"],
+    .auth-card input[type="password"] { width:100%; box-sizing:border-box; padding:11px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:15px; }
+    .auth-card button { width:100%; margin-top:18px; padding:12px; border:0; border-radius:8px; background:#2563eb; color:#fff; font-size:15px; font-weight:600; cursor:pointer; }
+    .auth-card button:disabled { opacity:.6; cursor:default; }
+    .auth-msg { margin-top:16px; font-size:14px; line-height:1.5; padding:12px; border-radius:8px; display:none; }
+    .auth-msg.ok { background:#ecfdf5; color:#065f46; display:block; }
+    .auth-msg.err { background:#fef2f2; color:#991b1b; display:block; }
+    .auth-foot { margin-top:18px; text-align:center; font-size:13px; }
+    .auth-foot a { color:#2563eb; text-decoration:none; }
+    .hint { font-size:12px; color:#94a3b8; margin-top:6px; }
+    .check-row { display:flex; gap:8px; align-items:flex-start; margin-top:16px; font-size:13px; color:#334155; line-height:1.4; }
+    .check-row input { margin-top:2px; }
+    .check-row a { color:#2563eb; }
+  </style>
+</head>
+<body>
+  <script src="/js/services/ErrorTracking.js"></script>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Join your team</h1>
+      <p class="sub" id="subText">Set up your login to accept this invite.</p>
+
+      <div id="form">
+        <label for="name">Your name</label>
+        <input id="name" type="text" autocomplete="name" placeholder="e.g. Sipho Dlamini" />
+        <label for="pw">Password</label>
+        <input id="pw" type="password" autocomplete="new-password" placeholder="At least 8 characters" />
+        <label for="pw2">Confirm password</label>
+        <input id="pw2" type="password" autocomplete="new-password" placeholder="Re-enter password" />
+        <div class="hint">Use at least 8 characters.</div>
+        <label class="check-row">
+          <input type="checkbox" id="acceptTerms" />
+          <span>I agree to the <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions and Privacy Policy</a></span>
+        </label>
+        <button id="submit" type="button">Accept invite</button>
+      </div>
+
+      <div id="msg" class="auth-msg"></div>
+      <div class="auth-foot"><a href="/">Back to sign in</a></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get('token');
+
+      var form = document.getElementById('form');
+      var name = document.getElementById('name');
+      var pw = document.getElementById('pw');
+      var pw2 = document.getElementById('pw2');
+      var terms = document.getElementById('acceptTerms');
+      var btn = document.getElementById('submit');
+      var msg = document.getElementById('msg');
+
+      function show(kind, text) {
+        msg.className = 'auth-msg ' + kind;
+        msg.textContent = text;
+      }
+
+      if (!token) {
+        form.style.display = 'none';
+        show('err', 'This invite link is missing its token. Ask whoever invited you to send a new one.');
+        return;
+      }
+
+      async function submit() {
+        var n = (name.value || '').trim();
+        var a = pw.value || '';
+        var b = pw2.value || '';
+        if (!n) { show('err', 'Please enter your name.'); return; }
+        if (a.length < 8) { show('err', 'Password must be at least 8 characters.'); return; }
+        if (a !== b) { show('err', 'The two passwords do not match.'); return; }
+        if (!terms.checked) { show('err', 'Please accept the Terms & Conditions to continue.'); return; }
+
+        btn.disabled = true;
+        show('', '');
+        try {
+          var res = await fetch('/api/auth/accept-invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token, name: n, password: a, acceptedTerms: true }),
+          });
+          var data = await res.json().catch(function () { return {}; });
+          if (res.ok) {
+            form.style.display = 'none';
+            show('ok', 'You\'re in! Redirecting...');
+            setTimeout(function () { window.location.href = '/jobs'; }, 1200);
+          } else {
+            show('err', (data && data.error) || 'Could not accept this invite. The link may have expired.');
+            btn.disabled = false;
+          }
+        } catch (e) {
+          show('err', 'Network error. Please try again.');
+          btn.disabled = false;
+        }
+      }
+
+      btn.addEventListener('click', submit);
+      pw2.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+    })();
+  </script>
+</body>
+</html>

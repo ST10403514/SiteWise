@@ -13,16 +13,18 @@ const DATA_URL_RE = /^data:image\//;
  * rather than losing the photo - never throws.
  * @param {object} data validated job data
  * @param {import('../services/StorageService')} storage
- * @param {string} userId scopes the R2 key, matching UploadController's convention
+ * @param {string} businessId scopes the R2 key, matching UploadController's
+ *   convention - a business's uploads, not an individual login's, since any
+ *   team member can save the same shared job.
  * @returns {Promise<object>}
  */
-async function migrateInlinePhotos(data, storage, userId) {
+async function migrateInlinePhotos(data, storage, businessId) {
   if (!data) return data;
 
   const upload = async (dataUrl, folder) => {
     if (typeof dataUrl !== 'string' || !DATA_URL_RE.test(dataUrl)) return null;
     try {
-      return await storage.uploadDataUrl(dataUrl, `${folder}/${userId}`);
+      return await storage.uploadDataUrl(dataUrl, `${folder}/${businessId}`);
     } catch {
       return null;
     }

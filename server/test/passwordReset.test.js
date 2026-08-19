@@ -20,12 +20,16 @@ before(async () => {
   // the raw value only ever exists on its way to the email service).
   const config = require('../config');
   const UserRepository = require('../repositories/UserRepository');
+  const BusinessRepository = require('../repositories/BusinessRepository');
   const AuthService = require('../services/AuthService');
   const stubEmail = {
     configured: true,
     sendPasswordReset: async ({ resetUrl }) => { capturedResetUrl = resetUrl; },
   };
-  authService = new AuthService(new UserRepository(config.db), { emailService: stubEmail, appBaseUrl: 'http://test' });
+  authService = new AuthService(
+    new UserRepository(config.db), new BusinessRepository(config.db),
+    { emailService: stubEmail, appBaseUrl: 'http://test' },
+  );
 });
 
 after(() => close());

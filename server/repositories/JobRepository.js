@@ -3,16 +3,21 @@
 const { getClient } = require('./db');
 
 /**
- * libSQL/Turso-backed job store, scoped per user.
+ * libSQL/Turso-backed job store, scoped per BUSINESS (team). `businessId` is
+ * the access-control boundary - every method takes and enforces it, exactly
+ * as `userId` used to before team accounts existed. `userId` is kept on each
+ * job as "created by" only (set once on insert, never rewritten by an
+ * update) - it no longer gates access to anything.
  *
- * Public method NAMES are unchanged (listByUser, findByIdForUser, upsert,
- * removeForUser), and every method is async (returns a Promise).
+ * Public method NAMES changed from the pre-team-accounts shape (*ForUser ->
+ * *ForBusiness) to make the swap impossible to miss at a call site - every
+ * caller had to be touched deliberately, not silently reinterpreted.
  *
  * The full job payload (client, photos, line items, totals, etc.) is kept
  * as JSON text in the `data` column.
  *
  * PERFORMANCE NOTE: photos are stored as base64 inside `data`, so a single
- * job row can be hundreds of KB. listByUser therefore extracts only the
+ * job row can be hundreds of KB. listByBusiness therefore extracts only the
  * small summary fields server-side with json_extract, so the dashboard never
  * pulls the heavy photo payloads across the network. Selecting the whole
  * `data` blob here would ship every job's photos on every dashboard load.
@@ -24,12 +29,12 @@ class JobRepository {
   }
 
   /**
-   * Lightweight summaries for the dashboard (no photo payloads).
-   * The summary fields are pulled out of the JSON server-side, so only a
-   * few hundred bytes per job cross the wire instead of the full blob.
+   * Lightweight summaries for the dashboard (no photo payloads) - every
+   * team member sees every job the business owns, regardless of who
+   * created it.
    * @returns {Promise<object[]>} newest first
    */
-  async listByUser(userId) {
+  async listByBusiness(businessId) {
     const rs = await this._db.execute({
       sql: `SELECT id,
                    json_extract(data, '$.quoteNumber')  AS quoteNumber,
@@ -43,9 +48,9 @@ class JobRepository {
                    COALESCE(json_array_length(data, '$.photos'), 0) AS photoCount,
                    updatedAt
             FROM jobs
-            WHERE userId = ?
+            WHERE businessId = ?
             ORDER BY updatedAt DESC`,
-      args: [userId],
+      args: [businessId],
     });
     // Rows already have the exact summary shape the dashboard expects.
     return rs.rows.map((row) => ({
@@ -63,32 +68,40 @@ class JobRepository {
     }));
   }
 
-  /** @returns {Promise<object|null>} full record, only if owned by userId */
-  async findByIdForUser(id, userId) {
+  /** @returns {Promise<object|null>} full record, only if owned by businessId */
+  async findByIdForBusiness(id, businessId) {
     const rs = await this._db.execute({
-      sql: 'SELECT * FROM jobs WHERE id = ? AND userId = ?',
-      args: [id, userId],
+      sql: 'SELECT * FROM jobs WHERE id = ? AND businessId = ?',
+      args: [id, businessId],
     });
     const row = rs.rows[0];
     if (!row) return null;
     return {
       id: row.id,
       userId: row.userId,
+      businessId: row.businessId,
       data: JSON.parse(row.data),
       updatedAt: row.updatedAt,
     };
   }
 
-  /** Create or replace a job owned by userId. @returns {Promise<object>} */
-  async upsert(id, userId, data) {
+  /**
+   * Create or replace a job owned by businessId.
+   * @param {string} id
+   * @param {{businessId: string, userId: string}} owner userId is only ever
+   *   written on insert (who created it, for attribution) - businessId is
+   *   the actual access-control column, checked on every call.
+   * @returns {Promise<object>}
+   */
+  async upsert(id, { businessId, userId }, data) {
     const existingRs = await this._db.execute({
-      sql: 'SELECT userId FROM jobs WHERE id = ?',
+      sql: 'SELECT businessId FROM jobs WHERE id = ?',
       args: [id],
     });
     const existing = existingRs.rows[0];
 
-    if (existing && existing.userId !== userId) {
-      const err = new Error('Job belongs to another user');
+    if (existing && existing.businessId !== businessId) {
+      const err = new Error('Job belongs to another business');
       err.code = 'FORBIDDEN';
       throw err;
     }
@@ -103,35 +116,51 @@ class JobRepository {
       });
     } else {
       await this._db.execute({
-        sql: 'INSERT INTO jobs (id, userId, data, updatedAt) VALUES (:id, :userId, :data, :updatedAt)',
-        args: { id, userId, data: serialized, updatedAt },
+        sql: 'INSERT INTO jobs (id, userId, businessId, data, updatedAt) VALUES (:id, :userId, :businessId, :data, :updatedAt)',
+        args: { id, userId, businessId, data: serialized, updatedAt },
       });
     }
 
-    return { id, userId, data, updatedAt };
+    return { id, userId, businessId, data, updatedAt };
   }
 
   /** @returns {Promise<boolean>} true if a job was removed */
-  async removeForUser(id, userId) {
+  async removeForBusiness(id, businessId) {
     const rs = await this._db.execute({
-      sql: 'DELETE FROM jobs WHERE id = ? AND userId = ?',
-      args: [id, userId],
+      sql: 'DELETE FROM jobs WHERE id = ? AND businessId = ?',
+      args: [id, businessId],
     });
     return rs.rowsAffected > 0;
   }
 
   /**
-   * Full data for every job owned by userId. Only used ahead of account
-   * deletion, to find every R2 photo/receipt to clean up before the
-   * cascade delete removes the rows themselves.
+   * Full data for every job owned by businessId. Used ahead of a full
+   * account/business deletion, to find every R2 photo/receipt to clean up
+   * before the rows themselves are removed.
    * @returns {Promise<object[]>}
    */
-  async listFullDataForUser(userId) {
+  async listFullDataForBusiness(businessId) {
     const rs = await this._db.execute({
-      sql: 'SELECT data FROM jobs WHERE userId = ?',
-      args: [userId],
+      sql: 'SELECT data FROM jobs WHERE businessId = ?',
+      args: [businessId],
     });
     return rs.rows.map((row) => JSON.parse(row.data));
+  }
+
+  /**
+   * Deletes every job a business owns outright. Only used when the sole
+   * owner of a business (no other team members) deletes their account -
+   * never relies on any FK cascade, an explicit, deliberate delete so a
+   * team member being removed can never accidentally take the business's
+   * jobs down with them (see ProfileController.deleteAccount).
+   * @returns {Promise<number>} how many jobs were removed
+   */
+  async removeAllForBusiness(businessId) {
+    const rs = await this._db.execute({
+      sql: 'DELETE FROM jobs WHERE businessId = ?',
+      args: [businessId],
+    });
+    return rs.rowsAffected;
   }
 }
 

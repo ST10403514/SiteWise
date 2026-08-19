@@ -10,7 +10,7 @@ const ApiError = require('../utils/ApiError');
  * any lookup error is forwarded to the error handler rather than thrown
  * as an unhandled rejection.
  */
-function requireAuth({ tokenService, userRepository, cookieName }) {
+function requireAuth({ tokenService, userRepository, businessRepository, cookieName }) {
   return async (req, _res, next) => {
     try {
       const token = req.cookies?.[cookieName];
@@ -26,6 +26,12 @@ function requireAuth({ tokenService, userRepository, cookieName }) {
           return next(ApiError.unauthorized('Please sign in again'));
         }
       }
+      // A login's `profile` no longer lives on the user row - it's the
+      // business's, shared by every team member on it. Attaching it here
+      // means every downstream controller can keep reading req.user.profile
+      // exactly as before, with no idea a business even exists.
+      const business = user.businessId ? await businessRepository.findById(user.businessId) : null;
+      user.profile = business ? business.profile : null;
       req.user = user;
       next();
     } catch (err) {

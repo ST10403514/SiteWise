@@ -15,12 +15,26 @@ const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 class AuthService {
   /**
    * @param {import('../repositories/UserRepository')} userRepository
+   * @param {import('../repositories/BusinessRepository')} businessRepository
    * @param {{ emailService?: object, appBaseUrl?: string }} [deps]
    */
-  constructor(userRepository, deps = {}) {
+  constructor(userRepository, businessRepository, deps = {}) {
     this._users = userRepository;
+    this._businesses = businessRepository;
     this._email = deps.emailService || null;
     this._appBaseUrl = deps.appBaseUrl || '';
+  }
+
+  /**
+   * A login is a person; a business is the tenant (profile/branding/
+   * banking) they belong to - `profile` is no longer stored on the user
+   * row itself, so every path that returns a user to a client attaches the
+   * current business profile onto it here, in one place.
+   */
+  async _withProfile(user) {
+    const business = user.businessId ? await this._businesses.findById(user.businessId) : null;
+    user.profile = business ? business.profile : null;
+    return user;
   }
 
   async signup({ name, email, password, acceptedTerms }) {
@@ -31,9 +45,12 @@ class AuthService {
       throw ApiError.conflict('An account with that email already exists');
     }
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await this._users.create({ name, email, passwordHash });
+    // Every signup is the owner of a brand-new business - team members
+    // instead arrive via TeamService.acceptInvite, joining an existing one.
+    const business = await this._businesses.create({ profile: null });
+    const user = await this._users.create({ name, email, passwordHash, businessId: business.id, isOwner: true });
     await this._users.update(user.id, { acceptedTermsAt: new Date().toISOString() });
-    return this._users.findById(user.id);
+    return this._withProfile(await this._users.findById(user.id));
   }
 
   async login({ email, password }) {
@@ -41,7 +58,7 @@ class AuthService {
     const hash = user ? user.passwordHash : '$2a$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvali';
     const ok = await bcrypt.compare(password, hash);
     if (!user || !ok) throw ApiError.unauthorized('Incorrect email or password');
-    return user;
+    return this._withProfile(user);
   }
 
   static _hashToken(raw) {
@@ -109,6 +126,7 @@ class AuthService {
       name: user.name,
       email: user.email,
       onboarded: user.onboarded,
+      isOwner: !!user.isOwner,
       profile: user.profile,
     };
   }

@@ -4,8 +4,9 @@ const AuthService = require('../services/AuthService');
 const v = require('../utils/validators');
 
 class AuthController {
-  constructor({ authService, tokenService, config }) {
+  constructor({ authService, teamService, tokenService, config }) {
     this._auth = authService;
+    this._team = teamService;
     this._tokens = tokenService;
     this._config = config;
   }
@@ -28,6 +29,24 @@ class AuthController {
         acceptedTerms: req.body?.acceptedTerms === true,
       };
       const user = await this._auth.signup(input);
+      this._setSession(res, user);
+      res.status(201).json({ user: AuthService.toPublic(user) });
+    } catch (err) { next(err); }
+  };
+
+  // Accepting a team invite is another way to create a session - reuses
+  // _setSession directly rather than duplicating cookie logic, same as
+  // signup/login. Business logic (token validation, user creation) lives
+  // in TeamService.acceptInvite.
+  acceptInvite = async (req, res, next) => {
+    try {
+      const input = {
+        token: v.requireString(req.body?.token, 'Invite token', { max: 200 }),
+        name: v.requireString(req.body?.name, 'Name', { max: 100 }),
+        password: v.requirePassword(req.body?.password),
+        acceptedTerms: req.body?.acceptedTerms === true,
+      };
+      const user = await this._team.acceptInvite(input);
       this._setSession(res, user);
       res.status(201).json({ user: AuthService.toPublic(user) });
     } catch (err) { next(err); }

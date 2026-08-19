@@ -14,6 +14,11 @@ function getClient(config) {
 }
 
 // acceptedTermsAt records WHEN a user accepted the Terms (POPIA proof of consent).
+// businessId/isOwner (users) and businessId (jobs) support team accounts - see
+// the "businesses" and "invites" tables below. A user's login is a person; a
+// business is the tenant itself (profile/branding/banking), which multiple
+// users can belong to. Not relied on for fresh-install correctness alone -
+// existing rows need the backfill script (server/scripts/backfill-businesses.js).
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS users (
     id             TEXT PRIMARY KEY,
@@ -26,19 +31,50 @@ const SCHEMA = `
     passwordChangedAt TEXT,
     resetTokenHash    TEXT,
     resetTokenExpires TEXT,
+    businessId     TEXT,
+    isOwner        INTEGER NOT NULL DEFAULT 0,
     createdAt      TEXT NOT NULL
   );
 
-  CREATE TABLE IF NOT EXISTS jobs (
+  CREATE TABLE IF NOT EXISTS businesses (
     id        TEXT PRIMARY KEY,
-    userId    TEXT NOT NULL,
-    data      TEXT NOT NULL,
-    updatedAt TEXT NOT NULL,
+    profile   TEXT,
+    createdAt TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS jobs (
+    id         TEXT PRIMARY KEY,
+    userId     TEXT NOT NULL,
+    businessId TEXT,
+    data       TEXT NOT NULL,
+    updatedAt  TEXT NOT NULL,
     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
   );
 
+  CREATE TABLE IF NOT EXISTS invites (
+    id              TEXT PRIMARY KEY,
+    businessId      TEXT NOT NULL,
+    email           TEXT NOT NULL,
+    invitedByUserId TEXT NOT NULL,
+    tokenHash       TEXT NOT NULL UNIQUE,
+    expiresAt       TEXT NOT NULL,
+    acceptedAt      TEXT,
+    createdAt       TEXT NOT NULL,
+    FOREIGN KEY (businessId) REFERENCES businesses(id),
+    FOREIGN KEY (invitedByUserId) REFERENCES users(id)
+  );
+
   CREATE INDEX IF NOT EXISTS idx_jobs_user ON jobs(userId);
+  CREATE INDEX IF NOT EXISTS idx_invites_business ON invites(businessId);
+  CREATE INDEX IF NOT EXISTS idx_invites_tokenHash ON invites(tokenHash);
 `;
+// idx_jobs_business is NOT in SCHEMA above, deliberately - it indexes a
+// column (jobs.businessId) that only exists on a fresh install via the
+// CREATE TABLE block. On an already-running database, that CREATE TABLE is
+// a no-op (the table already exists without the column), so an index on it
+// here would fail before the MIGRATIONS loop below ever adds the column.
+// invites/businesses don't have this problem - they're wholly new tables,
+// so their CREATE TABLE always runs in full, columns and all, either way.
 
 /**
  * Retroactive column additions - CREATE TABLE IF NOT EXISTS above only
@@ -65,6 +101,18 @@ const MIGRATIONS = [
   // which already has them.
   { name: 'users.resetTokenHash', sql: 'ALTER TABLE users ADD COLUMN resetTokenHash TEXT' },
   { name: 'users.resetTokenExpires', sql: 'ALTER TABLE users ADD COLUMN resetTokenExpires TEXT' },
+  // Team accounts: businessId is nullable here on purpose (no meaningful
+  // constant default for a UUID) - every pre-existing row gets a real one
+  // via the one-off server/scripts/backfill-businesses.js script, not via
+  // this migration. isOwner defaults to 0 for existing rows; the backfill
+  // script explicitly flips it to 1 for each one (they're the sole owner of
+  // their own newly-created business).
+  { name: 'users.businessId', sql: 'ALTER TABLE users ADD COLUMN businessId TEXT' },
+  { name: 'users.isOwner', sql: 'ALTER TABLE users ADD COLUMN isOwner INTEGER NOT NULL DEFAULT 0' },
+  { name: 'jobs.businessId', sql: 'ALTER TABLE jobs ADD COLUMN businessId TEXT' },
+  // Must run after the migration above, not in SCHEMA - see the comment by
+  // idx_jobs_business's absence there for why.
+  { name: 'idx_jobs_business', sql: 'CREATE INDEX IF NOT EXISTS idx_jobs_business ON jobs(businessId)' },
 ];
 
 async function initSchema(config) {

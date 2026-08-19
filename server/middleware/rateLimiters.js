@@ -70,4 +70,29 @@ const resetPasswordLimiter = rateLimit({
   handler: handler('Too many attempts. Please wait a while and try again.'),
 });
 
-module.exports = { loginLimiter, loginAccountLimiter, signupLimiter, forgotPasswordLimiter, resetPasswordLimiter };
+// Stop a compromised/malicious owner account from spamming invite emails.
+const inviteLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipInTest,
+  handler: handler('Too many invites sent. Please wait a while and try again.'),
+});
+
+// Same shape as resetPasswordLimiter - invite tokens are 256 bits of
+// randomness, brute-forcing one is infeasible regardless; this is
+// defense-in-depth on a public, token-based endpoint, not the real defense.
+const acceptInviteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipInTest,
+  handler: handler('Too many attempts. Please wait a while and try again.'),
+});
+
+module.exports = {
+  loginLimiter, loginAccountLimiter, signupLimiter, forgotPasswordLimiter, resetPasswordLimiter,
+  inviteLimiter, acceptInviteLimiter,
+};

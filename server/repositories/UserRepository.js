@@ -32,6 +32,8 @@ class UserRepository {
       passwordChangedAt: row.passwordChangedAt || null,
       resetTokenHash: row.resetTokenHash || null,
       resetTokenExpires: row.resetTokenExpires ? Number(row.resetTokenExpires) : null,
+      businessId: row.businessId || null,
+      isOwner: !!row.isOwner,
       createdAt: row.createdAt,
     };
   }
@@ -61,7 +63,8 @@ class UserRepository {
     return this._hydrate(rs.rows[0]);
   }
 
-  async create({ name, email, passwordHash }) {
+  /** @param {{name, email, passwordHash, businessId: string, isOwner?: boolean}} input */
+  async create({ name, email, passwordHash, businessId, isOwner = false }) {
     const user = {
       id: crypto.randomUUID(),
       name,
@@ -73,15 +76,17 @@ class UserRepository {
       passwordChangedAt: null,
       resetTokenHash: null,
       resetTokenExpires: null,
+      businessId,
+      isOwner,
       createdAt: new Date().toISOString(),
     };
     await this._db.execute({
       sql: `INSERT INTO users
               (id, name, email, passwordHash, onboarded, profile, acceptedTermsAt,
-               passwordChangedAt, resetTokenHash, resetTokenExpires, createdAt)
+               passwordChangedAt, resetTokenHash, resetTokenExpires, businessId, isOwner, createdAt)
             VALUES
               (:id, :name, :email, :passwordHash, :onboarded, :profile, :acceptedTermsAt,
-               :passwordChangedAt, :resetTokenHash, :resetTokenExpires, :createdAt)`,
+               :passwordChangedAt, :resetTokenHash, :resetTokenExpires, :businessId, :isOwner, :createdAt)`,
       args: {
         id: user.id,
         name: user.name,
@@ -93,6 +98,8 @@ class UserRepository {
         passwordChangedAt: null,
         resetTokenHash: null,
         resetTokenExpires: null,
+        businessId,
+        isOwner: isOwner ? 1 : 0,
         createdAt: user.createdAt,
       },
     });
@@ -130,7 +137,9 @@ class UserRepository {
                 acceptedTermsAt = :acceptedTermsAt,
                 passwordChangedAt = :passwordChangedAt,
                 resetTokenHash = :resetTokenHash,
-                resetTokenExpires = :resetTokenExpires
+                resetTokenExpires = :resetTokenExpires,
+                businessId = :businessId,
+                isOwner = :isOwner
             WHERE id = :id`,
       args: {
         id,
@@ -143,10 +152,40 @@ class UserRepository {
         passwordChangedAt: merged.passwordChangedAt || null,
         resetTokenHash: merged.resetTokenHash || null,
         resetTokenExpires: merged.resetTokenExpires != null ? String(merged.resetTokenExpires) : null,
+        businessId: merged.businessId || null,
+        isOwner: merged.isOwner ? 1 : 0,
       },
     });
 
     return merged;
+  }
+
+  /**
+   * Team roster for a business - deliberately not `SELECT *`: passwordHash
+   * and reset-token fields must never leave this method.
+   * @returns {Promise<object[]>} oldest-first
+   */
+  async listByBusiness(businessId) {
+    const rs = await this._db.execute({
+      sql: 'SELECT id, name, email, isOwner, createdAt FROM users WHERE businessId = ? ORDER BY createdAt ASC',
+      args: [businessId],
+    });
+    return rs.rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      isOwner: !!row.isOwner,
+      createdAt: row.createdAt,
+    }));
+  }
+
+  /** @returns {Promise<number>} how many logins belong to this business */
+  async countByBusiness(businessId) {
+    const rs = await this._db.execute({
+      sql: 'SELECT COUNT(*) as n FROM users WHERE businessId = ?',
+      args: [businessId],
+    });
+    return Number(rs.rows[0].n);
   }
 }
 

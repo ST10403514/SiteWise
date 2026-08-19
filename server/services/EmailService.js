@@ -39,6 +39,70 @@ class EmailService {
     return data;
   }
 
+  async sendInvite({ to, inviteUrl, businessName, inviterName }) {
+    if (!this._resend) throw new Error('Email is not configured (missing RESEND_API_KEY)');
+
+    const business = businessName || 'their team';
+    const inviter = inviterName ? `${inviterName} has` : 'You have been';
+    const html = EmailService._inviteHtml({ inviter, business, inviteUrl, appName: this._appName });
+    const text =
+      `${inviter} invited you to join ${business} on ${this._appName}.\n` +
+      `Accept the invite here (link expires in 7 days):\n${inviteUrl}\n\n` +
+      `If you weren't expecting this, you can safely ignore this email.`;
+
+    const { data, error } = await this._resend.emails.send({
+      from: this._from,
+      to: [to],
+      subject: `You've been invited to join ${business} on ${this._appName}`,
+      html,
+      text,
+    });
+
+    if (error) {
+      const err = new Error(error.message || 'Failed to send email');
+      err.cause = error;
+      throw err;
+    }
+    return data;
+  }
+
+  static _inviteHtml({ inviter, business, inviteUrl, appName }) {
+    return `<!doctype html><html><body style="margin:0;padding:0;background:#f8fafc;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:24px 0;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+        <tr><td style="background:#233154;padding:22px 28px;">
+          <span style="color:#ffffff;font-size:18px;font-weight:bold;">${appName}</span>
+        </td></tr>
+        <tr><td style="padding:28px;">
+          <p style="margin:0 0 18px;color:#334155;font-size:14px;line-height:1.55;">
+            ${inviter} invited you to join <strong>${business}</strong> on ${appName}.
+            Click below to set up your login. This link expires in <strong>7 days</strong>.
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;">
+            <tr><td style="border-radius:8px;background:#2563eb;">
+              <a href="${inviteUrl}" style="display:inline-block;padding:12px 22px;color:#ffffff;font-size:14px;font-weight:bold;text-decoration:none;border-radius:8px;">Accept invite</a>
+            </td></tr>
+          </table>
+          <p style="margin:0 0 6px;color:#64748b;font-size:12px;line-height:1.5;">
+            If the button doesn't work, paste this link into your browser:
+          </p>
+          <p style="margin:0 0 18px;word-break:break-all;font-size:12px;">
+            <a href="${inviteUrl}" style="color:#2563eb;">${inviteUrl}</a>
+          </p>
+          <p style="margin:0;color:#94a3b8;font-size:12px;line-height:1.5;">
+            If you weren't expecting this, you can safely ignore this email.
+          </p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;border-top:1px solid #e2e8f0;">
+          <span style="color:#94a3b8;font-size:11px;">${appName} &middot; Passion and Precision</span>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+  }
+
   static _resetHtml({ greeting, resetUrl, appName }) {
     return `<!doctype html><html><body style="margin:0;padding:0;background:#f8fafc;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:24px 0;">

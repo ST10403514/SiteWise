@@ -177,6 +177,14 @@ section.card { background: var(--card); border: 1px solid var(--line); border-ra
   .app-band .wrap { gap: 10px 12px; }
   .app-meta { width: 100%; margin-left: 0; justify-content: space-between; }
   .app-meta .field input { width: 130px; }
+  /* space-between only spreads elements apart when there's more than one -
+     on a page whose header has just the account button (e.g. team.html),
+     that leaves it (and the dropdown anchored to it) sitting at the LEFT
+     edge instead of the right, which then pushes the dropdown itself off
+     the left edge of the screen. An auto margin on the account button
+     specifically pushes just it to the end regardless of sibling count,
+     without changing pages that already have another header button. */
+  .acct { margin-left: auto; }
 }
 
 /* == Custom (tenant-created) chips =========================== */

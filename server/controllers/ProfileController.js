@@ -22,8 +22,9 @@ const SCHEMES = new Set([
  * identity, banking, industry presets and colour scheme.
  */
 class ProfileController {
-  constructor({ userRepository, jobRepository, storageService, config }) {
+  constructor({ userRepository, businessRepository, jobRepository, storageService, config }) {
     this._users = userRepository;
+    this._businesses = businessRepository;
     this._jobs = jobRepository;
     this._storage = storageService;
     this._config = config;
@@ -96,7 +97,9 @@ class ProfileController {
         customMethods: ProfileController._presetList(
           b.customMethods ?? existing.customMethods, 'Custom methods'),
       };
-      const user = await this._users.update(req.user.id, { profile, onboarded: true });
+      await this._businesses.update(req.user.businessId, { profile });
+      const user = await this._users.update(req.user.id, { onboarded: true });
+      user.profile = profile;
       res.json({ user: AuthService.toPublic(user) });
     } catch (err) { next(err); }
   };
@@ -118,24 +121,46 @@ class ProfileController {
         customMethods: ProfileController._presetList(
           b.customMethods ?? existing.customMethods, 'Custom methods'),
       };
-      const user = await this._users.update(req.user.id, { profile });
-      res.json({ user: AuthService.toPublic(user) });
+      await this._businesses.update(req.user.businessId, { profile });
+      req.user.profile = profile;
+      res.json({ user: AuthService.toPublic(req.user) });
     } catch (err) { next(err); }
   };
 
   /**
-   * Permanently deletes the account: every R2 photo/receipt across every
-   * job, then the user row itself (jobs cascade-delete with it in Turso -
-   * see db.js). Irreversible, so the client is expected to have already
-   * confirmed with the user before calling this.
+   * "Delete my account" means something different depending on who's
+   * asking, now that a business can have more than one login on it:
+   *  - Sole owner (no teammates): full deletion, exactly as before - every
+   *    R2 photo/receipt across every job, then the business and the user.
+   *  - Owner with teammates still present: refused - removing them all
+   *    first is required, so an owner can't accidentally take teammates'
+   *    access to shared data down with their own account.
+   *  - Any other team member: reinterpreted as "leave the team" - only
+   *    their own login is removed. The business and its jobs/photos are
+   *    untouched, since they belong to the business, not to them.
+   * Irreversible where it does act, so the client is expected to have
+   * already confirmed with the user before calling this.
    */
   deleteAccount = async (req, res, next) => {
     try {
-      const jobs = await this._jobs.listFullDataForUser(req.user.id);
+      if (!req.user.isOwner) {
+        await this._users.delete(req.user.id);
+        res.clearCookie(this._config.cookieName);
+        return res.json({ ok: true, left: true });
+      }
+
+      const memberCount = await this._users.countByBusiness(req.user.businessId);
+      if (memberCount > 1) {
+        throw ApiError.badRequest('Remove all team members before deleting your business');
+      }
+
+      const jobs = await this._jobs.listFullDataForBusiness(req.user.businessId);
       const urls = jobs.flatMap((data) => collectPhotoUrls(data));
       await Promise.all(urls.map((u) => this._storage.deleteObject(u)));
 
+      await this._jobs.removeAllForBusiness(req.user.businessId);
       await this._users.delete(req.user.id);
+      await this._businesses.delete(req.user.businessId);
       res.clearCookie(this._config.cookieName);
       res.json({ ok: true });
     } catch (err) { next(err); }
