@@ -18,22 +18,28 @@ class BusinessRepository {
     return {
       id: row.id,
       profile: row.profile ? JSON.parse(row.profile) : null,
+      // 'free' | 'solo' | 'team' - only 'team' currently unlocks anything
+      // (inviting others). No self-serve upgrade yet; flipped by hand until
+      // billing exists.
+      tier: row.tier || 'solo',
       createdAt: row.createdAt,
     };
   }
 
-  /** @param {{profile?: object|null}} [input] */
-  async create({ profile = null } = {}) {
+  /** @param {{profile?: object|null, tier?: string}} [input] */
+  async create({ profile = null, tier = 'solo' } = {}) {
     const business = {
       id: crypto.randomUUID(),
       profile,
+      tier,
       createdAt: new Date().toISOString(),
     };
     await this._db.execute({
-      sql: 'INSERT INTO businesses (id, profile, createdAt) VALUES (:id, :profile, :createdAt)',
+      sql: 'INSERT INTO businesses (id, profile, tier, createdAt) VALUES (:id, :profile, :tier, :createdAt)',
       args: {
         id: business.id,
         profile: profile ? JSON.stringify(profile) : null,
+        tier,
         createdAt: business.createdAt,
       },
     });
@@ -54,6 +60,12 @@ class BusinessRepository {
       sql: 'UPDATE businesses SET profile = :profile WHERE id = :id',
       args: { id, profile: profile ? JSON.stringify(profile) : null },
     });
+    return this.findById(id);
+  }
+
+  /** No self-serve path yet - called by hand (a script, or direct DB access) until billing exists. */
+  async updateTier(id, tier) {
+    await this._db.execute({ sql: 'UPDATE businesses SET tier = :tier WHERE id = :id', args: { id, tier } });
     return this.findById(id);
   }
 

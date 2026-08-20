@@ -39,6 +39,7 @@ const SCHEMA = `
   CREATE TABLE IF NOT EXISTS businesses (
     id        TEXT PRIMARY KEY,
     profile   TEXT,
+    tier      TEXT NOT NULL DEFAULT 'solo',
     createdAt TEXT NOT NULL
   );
 
@@ -113,6 +114,11 @@ const MIGRATIONS = [
   // Must run after the migration above, not in SCHEMA - see the comment by
   // idx_jobs_business's absence there for why.
   { name: 'idx_jobs_business', sql: 'CREATE INDEX IF NOT EXISTS idx_jobs_business ON jobs(businessId)' },
+  // 'solo' matches current reality (no caps enforced anywhere yet) for
+  // every pre-existing business - the only thing 'solo' vs 'team' actually
+  // gates today is the invite flow, so this migration alone doesn't change
+  // any existing business's behavior at all.
+  { name: 'businesses.tier', sql: "ALTER TABLE businesses ADD COLUMN tier TEXT NOT NULL DEFAULT 'solo'" },
 ];
 
 async function initSchema(config) {

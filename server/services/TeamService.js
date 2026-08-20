@@ -36,6 +36,17 @@ class TeamService {
 
   /** @param {{businessId: string, invitedByUserId: string, email: string}} input */
   async invite({ businessId, invitedByUserId, email }) {
+    const business = await this._businesses.findById(businessId);
+    // The only thing 'tier' currently gates. 402, not 403 - this isn't "not
+    // allowed", it's "needs upgrading", and the frontend needs to tell the
+    // two apart (an owner always passes requireOwner's 403 check by the
+    // time they reach here, so a 403 here would be indistinguishable from
+    // that). No self-serve upgrade yet, so this is a real dead end for a
+    // free/solo business today - the message says so rather than
+    // pretending there's a button to press.
+    if (!business || business.tier !== 'team') {
+      throw new ApiError(402, 'Inviting a team member needs the Team plan - contact us to upgrade.');
+    }
     // Not anti-enumeration-safe like forgotPassword, deliberately - this is
     // an authenticated, owner-only action about someone the owner already
     // knows they want to invite, so useful error feedback matters more here
@@ -54,10 +65,7 @@ class TeamService {
     await this._invites.create({ businessId, email, invitedByUserId, tokenHash, expiresAt });
 
     if (this._email && this._email.configured) {
-      const [business, inviter] = await Promise.all([
-        this._businesses.findById(businessId),
-        this._users.findById(invitedByUserId),
-      ]);
+      const inviter = await this._users.findById(invitedByUserId);
       const inviteUrl = `${this._appBaseUrl}/accept-invite?token=${rawToken}`;
       try {
         await this._email.sendInvite({
@@ -108,6 +116,7 @@ class TeamService {
     const business = await this._businesses.findById(invite.businessId);
     const finalUser = await this._users.findById(user.id);
     finalUser.profile = business ? business.profile : null;
+    finalUser.tier = business ? business.tier : 'solo';
     return finalUser;
   }
 

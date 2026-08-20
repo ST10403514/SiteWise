@@ -44,10 +44,12 @@ class TeamPage {
   }
 
   _bindInvite() {
-    if (!this._user.isOwner) {
-      this._$('inviteCard').hidden = true;
+    if (!this._user.isOwner) return; // neither card is shown to a non-owner
+    if (this._user.tier !== 'team') {
+      this._$('upgradeCard').hidden = false;
       return;
     }
+    this._$('inviteCard').hidden = false;
     const emailInput = this._$('inviteEmail');
     const btn = this._$('inviteBtn');
     const submit = async () => {

@@ -85,7 +85,7 @@
     <div class="sec-title"><h1>Team</h1></div>
   </div>
 
-  <div class="invite-card" id="inviteCard">
+  <div class="invite-card" id="inviteCard" hidden>
     <h2>Invite a team member</h2>
     <p>They'll get an email with a link to set up their own login. Everyone on the team sees the same jobs and projects.</p>
     <div class="invite-row">
@@ -95,6 +95,12 @@
       </div>
       <button class="btn btn-primary" id="inviteBtn" type="button">Send invite</button>
     </div>
+  </div>
+
+  <div class="invite-card upgrade-card" id="upgradeCard" hidden>
+    <h2>Invite a team member</h2>
+    <p>Adding teammates is part of the Team plan. Your account is currently on the Solo plan (one login).</p>
+    <a class="btn btn-primary" id="upgradeLink" href="mailto:hello@sitewise.co.za?subject=Upgrade%20to%20Team%20plan">Contact us to upgrade</a>
   </div>
 
   <div id="memberList" class="member-list" aria-live="polite"></div>

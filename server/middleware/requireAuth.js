@@ -29,9 +29,11 @@ function requireAuth({ tokenService, userRepository, businessRepository, cookieN
       // A login's `profile` no longer lives on the user row - it's the
       // business's, shared by every team member on it. Attaching it here
       // means every downstream controller can keep reading req.user.profile
-      // exactly as before, with no idea a business even exists.
+      // exactly as before, with no idea a business even exists. Same for
+      // `tier`, which gates the invite flow (TeamService.invite).
       const business = user.businessId ? await businessRepository.findById(user.businessId) : null;
       user.profile = business ? business.profile : null;
+      user.tier = business ? business.tier : 'solo';
       req.user = user;
       next();
     } catch (err) {

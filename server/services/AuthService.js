@@ -34,6 +34,7 @@ class AuthService {
   async _withProfile(user) {
     const business = user.businessId ? await this._businesses.findById(user.businessId) : null;
     user.profile = business ? business.profile : null;
+    user.tier = business ? business.tier : 'solo';
     return user;
   }
 
@@ -127,6 +128,7 @@ class AuthService {
       email: user.email,
       onboarded: user.onboarded,
       isOwner: !!user.isOwner,
+      tier: user.tier || 'solo',
       profile: user.profile,
     };
   }

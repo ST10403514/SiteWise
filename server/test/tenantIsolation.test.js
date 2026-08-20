@@ -8,6 +8,7 @@ const { freshApp, listen } = require('./helpers/testApp');
 let baseUrl;
 let close;
 let teamService;
+let businessRepository;
 let capturedInviteUrl;
 
 before(async () => {
@@ -27,8 +28,9 @@ before(async () => {
     configured: true,
     sendInvite: async ({ inviteUrl }) => { capturedInviteUrl = inviteUrl; },
   };
+  businessRepository = new BusinessRepository(config.db);
   teamService = new TeamService(
-    new UserRepository(config.db), new BusinessRepository(config.db), new InviteRepository(config.db),
+    new UserRepository(config.db), businessRepository, new InviteRepository(config.db),
     { emailService: stubEmail, appBaseUrl: 'http://test' },
   );
 });
@@ -101,6 +103,9 @@ test('two logins on the SAME business correctly share access to a job', async ()
   const owner = await lookupUser(ownerEmail);
 
   const teammateEmail = `teammate-${crypto.randomUUID()}@example.com`;
+  // This test is proving businessId-scoping, not the tier gate - put the
+  // owner's business on 'team' so the invite itself isn't blocked.
+  await businessRepository.updateTier(owner.businessId, 'team');
   await teamService.invite({ businessId: owner.businessId, invitedByUserId: owner.id, email: teammateEmail });
   assert.ok(capturedInviteUrl, 'expected the stub email service to capture an invite URL');
   const token = new URL(capturedInviteUrl).searchParams.get('token');

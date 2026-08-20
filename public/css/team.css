@@ -10,6 +10,9 @@
 .invite-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
 .invite-row .field { flex: 1; min-width: 220px; margin: 0; }
 
+.upgrade-card { background: var(--card); border-style: dashed; border-color: var(--blue-line); }
+.upgrade-card .btn { margin-top: 2px; }
+
 .member-list { display: grid; gap: 10px; margin-bottom: 60px; }
 .member-row {
   display: flex; align-items: center; gap: 12px;

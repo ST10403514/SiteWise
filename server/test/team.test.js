@@ -8,6 +8,7 @@ const { freshApp, listen } = require('./helpers/testApp');
 let baseUrl;
 let close;
 let teamService;
+let businessRepository;
 let capturedInviteUrl;
 
 before(async () => {
@@ -23,8 +24,9 @@ before(async () => {
     configured: true,
     sendInvite: async ({ inviteUrl }) => { capturedInviteUrl = inviteUrl; },
   };
+  businessRepository = new BusinessRepository(config.db);
   teamService = new TeamService(
-    new UserRepository(config.db), new BusinessRepository(config.db), new InviteRepository(config.db),
+    new UserRepository(config.db), businessRepository, new InviteRepository(config.db),
     { emailService: stubEmail, appBaseUrl: 'http://test' },
   );
 });
@@ -48,6 +50,10 @@ async function lookupUser(email) {
 }
 
 async function inviteAndAccept(owner, email = `teammate-${crypto.randomUUID()}@example.com`) {
+  // New businesses default to 'solo' - every test using this helper is
+  // exercising the invite mechanism itself, not the tier gate, so put the
+  // owner's business on 'team' first (the gate has its own dedicated tests).
+  await businessRepository.updateTier(owner.businessId, 'team');
   await teamService.invite({ businessId: owner.businessId, invitedByUserId: owner.id, email });
   const token = new URL(capturedInviteUrl).searchParams.get('token');
   const res = await fetch(`${baseUrl}/api/auth/accept-invite`, {
@@ -71,6 +77,29 @@ test('owner can invite, invitee can accept and gets a working session', async ()
   assert.equal(me.status, 200);
 });
 
+test('an owner on the solo (default) tier gets 402 trying to invite', async () => {
+  const { cookie: ownerCookie } = await signup();
+  const res = await fetch(`${baseUrl}/api/team/invite`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: ownerCookie },
+    body: JSON.stringify({ email: `nope-${crypto.randomUUID()}@example.com` }),
+  });
+  assert.equal(res.status, 402, 'needs upgrading is a distinct outcome from not being allowed at all (403)');
+});
+
+test('an owner upgraded to the team tier can invite over HTTP', async () => {
+  const { cookie: ownerCookie, email: ownerEmail } = await signup();
+  const owner = await lookupUser(ownerEmail);
+  await businessRepository.updateTier(owner.businessId, 'team');
+
+  const res = await fetch(`${baseUrl}/api/team/invite`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: ownerCookie },
+    body: JSON.stringify({ email: `teammate-${crypto.randomUUID()}@example.com` }),
+  });
+  assert.equal(res.status, 200);
+});
+
 test('a non-owner gets 403 inviting or removing team members', async () => {
   const { email: ownerEmail } = await signup();
   const owner = await lookupUser(ownerEmail);
@@ -92,6 +121,7 @@ test('a non-owner gets 403 inviting or removing team members', async () => {
 test('inviting an email that already has an account is rejected', async () => {
   const { email: ownerEmail } = await signup();
   const owner = await lookupUser(ownerEmail);
+  await businessRepository.updateTier(owner.businessId, 'team');
   const { email: existingEmail } = await signup();
 
   await assert.rejects(
