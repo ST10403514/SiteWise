@@ -21,17 +21,34 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/auth.css">
+  <link rel="stylesheet" href="/css/app.css">
 </head>
 <body class="auth-body">
 
-<button id="installBtn" class="pwa-install" type="button" hidden>
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-  Install SiteWise
-</button>
-
-<div class="auth-top">
-  <a href="/">SiteWise<small>Job cards for trade businesses</small></a>
-</div>
+<header class="app-band">
+  <div class="wrap">
+    <div class="app-logo" id="companyLogo">S</div>
+    <div>
+      <div class="app-title" id="companyName">SiteWise</div>
+      <div class="app-sub" id="companyTagline">Set up your business</div>
+    </div>
+    <div class="app-meta">
+      <div class="acct" id="acct">
+        <button class="acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="acct-avatar" id="acctAvatar">S</span>
+          <span class="acct-name" id="acctName">Your business</span>
+          <span class="acct-caret">&#9662;</span>
+        </button>
+        <div class="acct-menu" role="menu">
+          <div class="acct-head">
+            <div class="nm" id="acctHeadName">Your business</div>
+            <div class="em" id="acctHeadEmail"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
 
 <main class="auth-shell">
   <div class="auth-card wide">
@@ -128,6 +145,7 @@
 <script src="/js/services/SessionGuard.js"></script>
 <script src="/js/services/ImageTools.js"></script>
 <script src="/js/services/Theme.js"></script>
+<script src="/js/services/AccountMenu.js"></script>
 <script src="/js/pages/onboarding.js" defer></script>
 <script src="/js/pwa.js" defer></script>
 </body>

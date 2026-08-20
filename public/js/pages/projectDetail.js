@@ -35,11 +35,10 @@ class ProjectDetailPage {
     if (!user) return;
 
     this._applyProfile(user.profile);
-    AccountMenu.mount(user);
+    AccountMenu.mount(user, this._guard, () => this._flushSave());
     this._job = await this._loadJob(jobPromise);
     if (!this._job) return;
 
-    this._bindHeader();
     this._bindTabs();
     this._bindOverview();
     this._bindExpenses();
@@ -84,15 +83,6 @@ class ProjectDetailPage {
       location.replace('/project-manager');
       return null;
     }
-  }
-
-  _bindHeader() {
-    this._$('logout').addEventListener('click', async () => {
-      await this._flushSave();
-      await this._guard.logout();
-      location.replace('/');
-    });
-    this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
   }
 
   _bindTabs() {

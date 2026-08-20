@@ -28,8 +28,7 @@ class JobsPage {
     if (!user) return;
 
     this._applyProfile(user.profile);
-    AccountMenu.mount(user);
-    this._bindHeader();
+    AccountMenu.mount(user, this._guard);
     this._bindFilters();
     await this._refresh(jobsPromise);
   }
@@ -45,14 +44,6 @@ class JobsPage {
     } else {
       logoBox.textContent = (profile.companyName || 'S')[0].toUpperCase();
     }
-  }
-
-  _bindHeader() {
-    this._$('logout').addEventListener('click', async () => {
-      await this._guard.logout();
-      location.replace('/');
-    });
-    this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
   }
 
   _bindFilters() {

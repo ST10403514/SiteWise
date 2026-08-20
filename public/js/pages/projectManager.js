@@ -35,8 +35,7 @@ class ProjectManagerPage {
     // (the list itself) from loading and rendering.
     await this._refresh(jobsPromise);
 
-    this._safeBind(() => AccountMenu.mount(user));
-    this._safeBind(() => this._bindHeader());
+    this._safeBind(() => AccountMenu.mount(user, this._guard));
     this._safeBind(() => this._bindExport());
     this._safeBind(() => this._bindQuickAdd());
   }
@@ -57,14 +56,6 @@ class ProjectManagerPage {
     } else {
       logoBox.textContent = (profile.companyName || 'S')[0].toUpperCase();
     }
-  }
-
-  _bindHeader() {
-    this._$('logout').addEventListener('click', async () => {
-      await this._guard.logout();
-      location.replace('/');
-    });
-    this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
   }
 
   async _refresh(preloaded) {

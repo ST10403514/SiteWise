@@ -18,8 +18,7 @@ class TeamPage {
     this._user = user;
 
     this._applyProfile(user.profile);
-    AccountMenu.mount(user);
-    this._bindHeader();
+    AccountMenu.mount(user, this._guard);
     this._bindInvite();
     await this._refresh();
   }
@@ -33,14 +32,6 @@ class TeamPage {
     } else {
       logoBox.textContent = (profile.companyName || 'S')[0].toUpperCase();
     }
-  }
-
-  _bindHeader() {
-    this._$('logout').addEventListener('click', async () => {
-      await this._guard.logout();
-      location.replace('/');
-    });
-    this._$('editProfile').addEventListener('click', () => location.assign('/onboarding'));
   }
 
   _bindInvite() {

@@ -17,6 +17,9 @@ class OnboardingPage {
     const user = await this._guard.requireUser();
     if (!user) return;
 
+    this._applyProfile(user);
+    AccountMenu.mount(user, this._guard);
+
     this._buildIndustrySelect();
     this._buildSwatches();
 
@@ -39,6 +42,31 @@ class OnboardingPage {
     this._$('logoInput').addEventListener('change', (e) => this._pickLogo(e));
     this._$('onbForm').addEventListener('submit', (e) => this._submit(e));
     this._$('deleteAccountBtn').addEventListener('click', () => this._deleteAccount());
+  }
+
+  /**
+   * Unlike every other page, this one runs for brand-new signups too -
+   * `profile` is null until the form below is submitted for the first
+   * time, so the header falls back to a generic "SiteWise" identity
+   * rather than assuming a real company profile already exists.
+   */
+  _applyProfile(user) {
+    const profile = user.profile;
+    if (profile) {
+      Theme.apply(profile.scheme);
+      this._$('companyName').textContent = profile.companyName;
+      this._$('companyTagline').textContent = 'Company details';
+      const logoBox = this._$('companyLogo');
+      if (profile.logo) {
+        logoBox.innerHTML = `<img src="${profile.logo}" alt="">`;
+      } else {
+        logoBox.textContent = (profile.companyName || 'S')[0].toUpperCase();
+      }
+    } else {
+      this._$('companyName').textContent = 'SiteWise';
+      this._$('companyTagline').textContent = 'Set up your business';
+      this._$('companyLogo').textContent = 'S';
+    }
   }
 
   async _deleteAccount() {

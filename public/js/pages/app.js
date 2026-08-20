@@ -32,10 +32,9 @@ class AppPage {
     if (!user) return;
 
     this._applyProfile(user.profile);
-    AccountMenu.mount(user);
+    AccountMenu.mount(user, this._guard, () => this._flushSave());
     this._job = await this._loadOrCreateJob(user.profile, jobPromise);
 
-    this._bindHeader();
     this._bindFields();
     this._buildChips();
     this._bindOutcome();
@@ -85,17 +84,6 @@ class AppPage {
     job.paymentTerms = profile.paymentTerms || job.paymentTerms;
     history.replaceState(null, '', `/app?id=${job.id}`);
     return job;
-  }
-
-  _bindHeader() {
-    this._$('logout').addEventListener('click', async () => {
-      await this._flushSave();
-      await this._guard.logout();
-      location.replace('/');
-    });
-    this._$('editProfile').addEventListener('click', () => {
-      location.assign('/onboarding');
-    });
   }
 
   // ── Field bindings ────────────────────────────────────────────

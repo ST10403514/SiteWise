@@ -168,6 +168,9 @@ section.card { background: var(--card); border: 1px solid var(--line); border-ra
 .acct-item svg { width: 16px; height: 16px; flex: 0 0 auto; color: var(--muted); }
 .acct-item.danger { color: var(--danger); }
 .acct-item.danger svg { color: var(--danger); }
+.acct-item.active { background: var(--blue-mist); color: var(--blue-ink); font-weight: 600; cursor: default; }
+.acct-item.active svg { color: var(--blue-ink); }
+.acct-item.active:hover { background: var(--blue-mist); }
 .acct-sep { height: 1px; background: var(--line); margin: 6px 4px; }
 
 /* == Header layout on mobile ================================= */

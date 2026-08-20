@@ -156,14 +156,15 @@
   // ---- choose the path for this device ----
   if (isDone()) return;                 // already installed anywhere - do nothing
 
-  // The install banner/button only render correctly on pages that load
-  // base.css (every real app page) - the marketing landing page and
-  // terms.html don't, so the iOS banner would get appended with no
-  // positioning CSS at all and show up as a plain block dumped after the
-  // footer instead of a floating overlay. Also just premature UX-wise to
-  // prompt someone to install before they've even signed up.
-  var hasAppStyles = !!document.querySelector('link[href="/css/base.css"]');
-  if (!hasAppStyles) return;
+  // Only the two places prompting to install actually makes sense: the
+  // auth/signup page (right as someone's about to start using the app) and
+  // the job-card screen (the one thing worth having on a home screen for
+  // site work). Every other logged-in page skips the install UI entirely -
+  // pwa.js still loads there for service worker registration (above), just
+  // not this part. location.pathname ignores query strings, so ?id=... /
+  // ?mode=... on either page don't affect the match.
+  var ALLOWED_PATHS = ['/auth', '/app'];
+  if (ALLOWED_PATHS.indexOf(location.pathname) === -1) return;
 
   if (isIos()) {
     // wait for DOM so we can append the banner
