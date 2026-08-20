@@ -18,16 +18,17 @@ class BusinessRepository {
     return {
       id: row.id,
       profile: row.profile ? JSON.parse(row.profile) : null,
-      // 'free' | 'solo' | 'team' - only 'team' currently unlocks anything
-      // (inviting others). No self-serve upgrade yet; flipped by hand until
-      // billing exists.
-      tier: row.tier || 'solo',
+      // 'free' | 'solo' | 'team' - 'free' and 'solo' currently behave
+      // identically (neither is paid-gated to anything yet); only 'team'
+      // unlocks anything (inviting others). No self-serve upgrade yet;
+      // flipped by hand until billing exists.
+      tier: row.tier || 'free',
       createdAt: row.createdAt,
     };
   }
 
   /** @param {{profile?: object|null, tier?: string}} [input] */
-  async create({ profile = null, tier = 'solo' } = {}) {
+  async create({ profile = null, tier = 'free' } = {}) {
     const business = {
       id: crypto.randomUUID(),
       profile,

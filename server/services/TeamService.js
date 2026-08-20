@@ -116,7 +116,7 @@ class TeamService {
     const business = await this._businesses.findById(invite.businessId);
     const finalUser = await this._users.findById(user.id);
     finalUser.profile = business ? business.profile : null;
-    finalUser.tier = business ? business.tier : 'solo';
+    finalUser.tier = business ? business.tier : 'free';
     return finalUser;
   }
 

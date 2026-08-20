@@ -50,7 +50,7 @@ async function lookupUser(email) {
 }
 
 async function inviteAndAccept(owner, email = `teammate-${crypto.randomUUID()}@example.com`) {
-  // New businesses default to 'solo' - every test using this helper is
+  // New businesses default to 'free' - every test using this helper is
   // exercising the invite mechanism itself, not the tier gate, so put the
   // owner's business on 'team' first (the gate has its own dedicated tests).
   await businessRepository.updateTier(owner.businessId, 'team');
@@ -77,7 +77,7 @@ test('owner can invite, invitee can accept and gets a working session', async ()
   assert.equal(me.status, 200);
 });
 
-test('an owner on the solo (default) tier gets 402 trying to invite', async () => {
+test('an owner on the free (default) tier gets 402 trying to invite', async () => {
   const { cookie: ownerCookie } = await signup();
   const res = await fetch(`${baseUrl}/api/team/invite`, {
     method: 'POST',
@@ -85,6 +85,19 @@ test('an owner on the solo (default) tier gets 402 trying to invite', async () =
     body: JSON.stringify({ email: `nope-${crypto.randomUUID()}@example.com` }),
   });
   assert.equal(res.status, 402, 'needs upgrading is a distinct outcome from not being allowed at all (403)');
+});
+
+test('an owner on the solo tier (paid, but not Team) also gets 402', async () => {
+  const { cookie: ownerCookie, email: ownerEmail } = await signup();
+  const owner = await lookupUser(ownerEmail);
+  await businessRepository.updateTier(owner.businessId, 'solo');
+
+  const res = await fetch(`${baseUrl}/api/team/invite`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: ownerCookie },
+    body: JSON.stringify({ email: `nope-${crypto.randomUUID()}@example.com` }),
+  });
+  assert.equal(res.status, 402, "solo is paid, but it isn't Team - only 'team' unlocks inviting");
 });
 
 test('an owner upgraded to the team tier can invite over HTTP', async () => {

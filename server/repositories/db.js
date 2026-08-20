@@ -39,7 +39,7 @@ const SCHEMA = `
   CREATE TABLE IF NOT EXISTS businesses (
     id        TEXT PRIMARY KEY,
     profile   TEXT,
-    tier      TEXT NOT NULL DEFAULT 'solo',
+    tier      TEXT NOT NULL DEFAULT 'free',
     createdAt TEXT NOT NULL
   );
 
@@ -114,10 +114,15 @@ const MIGRATIONS = [
   // Must run after the migration above, not in SCHEMA - see the comment by
   // idx_jobs_business's absence there for why.
   { name: 'idx_jobs_business', sql: 'CREATE INDEX IF NOT EXISTS idx_jobs_business ON jobs(businessId)' },
-  // 'solo' matches current reality (no caps enforced anywhere yet) for
-  // every pre-existing business - the only thing 'solo' vs 'team' actually
-  // gates today is the invite flow, so this migration alone doesn't change
-  // any existing business's behavior at all.
+  // NOTE: this shipped with the wrong default - 'solo' is a PAID tier, new
+  // signups haven't paid anything and should default to 'free'. Per the
+  // never-edit-a-shipped-migration rule, the SQL below is left as originally
+  // shipped (editing it wouldn't retroactively change SQLite's stored
+  // column default anyway); every pre-existing business this ALTER TABLE
+  // touched was corrected to 'free' by hand afterwards (except accounts
+  // deliberately upgraded for testing). The application-level default
+  // ({@link BusinessRepository.create}) is already correct ('free') for
+  // every business created from here on.
   { name: 'businesses.tier', sql: "ALTER TABLE businesses ADD COLUMN tier TEXT NOT NULL DEFAULT 'solo'" },
 ];
 

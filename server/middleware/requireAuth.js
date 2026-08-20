@@ -33,7 +33,7 @@ function requireAuth({ tokenService, userRepository, businessRepository, cookieN
       // `tier`, which gates the invite flow (TeamService.invite).
       const business = user.businessId ? await businessRepository.findById(user.businessId) : null;
       user.profile = business ? business.profile : null;
-      user.tier = business ? business.tier : 'solo';
+      user.tier = business ? business.tier : 'free';
       req.user = user;
       next();
     } catch (err) {
