@@ -83,6 +83,19 @@ class AccountMenu {
     const menu = root.querySelector('.acct-menu');
     const head = menu.querySelector('.acct-head');
 
+    // Free-plan usage, shown right in the header so it's visible from every
+    // page without each one building its own copy. Removed first in case
+    // mount() ever runs twice, so a stale count never lingers behind a fresh one.
+    const oldQuota = head.querySelector('.acct-quota');
+    if (oldQuota) oldQuota.remove();
+    const quota = user.jobQuota;
+    if (quota && !quota.unlimited) {
+      const quotaEl = document.createElement('div');
+      quotaEl.className = quota.atCap ? 'acct-quota at-cap' : 'acct-quota';
+      quotaEl.textContent = `${quota.count} of ${quota.cap} free job cards used this month`;
+      head.appendChild(quotaEl);
+    }
+
     // Team management only makes sense for the account owner - the API
     // enforces this independently either way, this just avoids offering a
     // link that would 402/403 for anyone else.

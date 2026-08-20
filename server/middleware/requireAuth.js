@@ -1,6 +1,7 @@
 'use strict';
 
 const ApiError = require('../utils/ApiError');
+const { jobQuota } = require('../utils/jobQuota');
 
 /**
  * Factory for the authentication guard.
@@ -30,10 +31,13 @@ function requireAuth({ tokenService, userRepository, businessRepository, cookieN
       // business's, shared by every team member on it. Attaching it here
       // means every downstream controller can keep reading req.user.profile
       // exactly as before, with no idea a business even exists. Same for
-      // `tier`, which gates the invite flow (TeamService.invite).
+      // `tier` (gates TeamService.invite) and `jobQuota` (gates
+      // JobController.save) - computed here from the same fetched row
+      // rather than queried again wherever it's needed.
       const business = user.businessId ? await businessRepository.findById(user.businessId) : null;
       user.profile = business ? business.profile : null;
       user.tier = business ? business.tier : 'free';
+      user.jobQuota = business ? jobQuota(business) : null;
       req.user = user;
       next();
     } catch (err) {

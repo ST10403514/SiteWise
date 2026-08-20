@@ -64,7 +64,7 @@ function createApp() {
   const profileController = new ProfileController({
     userRepository, businessRepository, jobRepository, storageService, config,
   });
-  const jobController = new JobController({ jobRepository, storageService });
+  const jobController = new JobController({ jobRepository, businessRepository, storageService });
   const teamController = new TeamController({ teamService });
   const uploadController = new UploadController({ storageService });
 

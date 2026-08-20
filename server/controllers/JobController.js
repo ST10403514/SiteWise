@@ -10,8 +10,9 @@ const ID_RE = /^[a-zA-Z0-9-]{8,64}$/;
 
 /** CRUD for a business's saved jobs - shared by every team member on it. */
 class JobController {
-  constructor({ jobRepository, storageService }) {
+  constructor({ jobRepository, businessRepository, storageService }) {
     this._jobs = jobRepository;
+    this._businesses = businessRepository;
     this._storage = storageService;
   }
 
@@ -54,12 +55,23 @@ class JobController {
       const migrated = await migrateInlinePhotos(data, this._storage, req.user.businessId);
 
       const existing = await this._jobs.findByIdForBusiness(id, req.user.businessId);
+
+      // Only a genuine new job counts against the free plan's monthly cap -
+      // req.user.jobQuota was already computed once in requireAuth from the
+      // same business row, so this needs no extra query. An update
+      // (autosave on an existing job) is never blocked, no matter the tier.
+      if (!existing && req.user.jobQuota?.atCap) {
+        throw new ApiError(402, `You've used all ${req.user.jobQuota.cap} free job cards this month - upgrade to Solo for unlimited.`);
+      }
+
       const record = await this._jobs.upsert(id, { businessId: req.user.businessId, userId: req.user.id }, migrated);
 
       if (existing) {
         const before = collectPhotoUrls(existing.data);
         const after = collectPhotoUrls(migrated);
         await this._cleanupRemovedPhotos(before, after);
+      } else {
+        await this._businesses.incrementMonthlyJobCount(req.user.businessId);
       }
 
       res.json({ job: { id: record.id, updatedAt: record.updatedAt } });

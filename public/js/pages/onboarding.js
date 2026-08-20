@@ -41,6 +41,7 @@ class OnboardingPage {
     updateWaHint();
     this._$('logoInput').addEventListener('change', (e) => this._pickLogo(e));
     this._$('onbForm').addEventListener('submit', (e) => this._submit(e));
+    this._$('onbForm').addEventListener('input', () => this._showError(''));
     this._$('deleteAccountBtn').addEventListener('click', () => this._deleteAccount());
   }
 
@@ -126,7 +127,7 @@ class OnboardingPage {
 
   _prefill(p) {
     const map = {
-      companyName: p.companyName, tagline: p.tagline, companyEmail: p.email,
+      companyNameInput: p.companyName, tagline: p.tagline, companyEmail: p.email,
       phone: p.phone, whatsapp: p.whatsapp, addressLine: p.addressLine, city: p.city,
       website: p.website, regNumber: p.regNumber, vatNumber: p.vatNumber,
       bankName: p.bankName, bankHolder: p.bankHolder, bankAccount: p.bankAccount,
@@ -170,7 +171,7 @@ class OnboardingPage {
     this._$('submitBtn').disabled = true;
     try {
       await this._api.saveProfile({
-        companyName: this._$('companyName').value,
+        companyName: this._$('companyNameInput').value,
         tagline: this._$('tagline').value,
         email: this._$('companyEmail').value,
         phone: this._$('phone').value,

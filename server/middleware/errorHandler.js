@@ -17,6 +17,12 @@ function errorHandler(err, req, res, _next) {
   if (err?.type === 'entity.too.large') {
     return res.status(413).json({ error: 'Upload is too large' });
   }
+  // A malformed request body (broken JSON) is a bad request, not a server
+  // bug - without this it falls through to the 500 branch below and burns
+  // Sentry's free-tier quota on every stray/scanner request that sends junk.
+  if (err?.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Malformed request body' });
+  }
   logger.error({ err, path: req.originalUrl, method: req.method }, err.message);
   Sentry.captureException(err);
   res.status(500).json({ error: 'Something went wrong on our side' });

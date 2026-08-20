@@ -37,10 +37,12 @@ const SCHEMA = `
   );
 
   CREATE TABLE IF NOT EXISTS businesses (
-    id        TEXT PRIMARY KEY,
-    profile   TEXT,
-    tier      TEXT NOT NULL DEFAULT 'free',
-    createdAt TEXT NOT NULL
+    id                    TEXT PRIMARY KEY,
+    profile               TEXT,
+    tier                  TEXT NOT NULL DEFAULT 'free',
+    jobsCreatedThisMonth  INTEGER NOT NULL DEFAULT 0,
+    jobsCreatedMonthKey   TEXT,
+    createdAt             TEXT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS jobs (
@@ -124,6 +126,14 @@ const MIGRATIONS = [
   // ({@link BusinessRepository.create}) is already correct ('free') for
   // every business created from here on.
   { name: 'businesses.tier', sql: "ALTER TABLE businesses ADD COLUMN tier TEXT NOT NULL DEFAULT 'solo'" },
+  // The free-tier monthly job-creation cap. jobsCreatedMonthKey ('YYYY-MM')
+  // is how server/utils/jobQuota.js tells "still this month" from "stale,
+  // roll it over to 0" without a background job - it's just checked lazily
+  // against the real current month on every read/write. NULL here for every
+  // pre-existing business is correct (jobQuota.js treats a mismatched/absent
+  // key as an empty month), not something that needs backfilling.
+  { name: 'businesses.jobsCreatedThisMonth', sql: 'ALTER TABLE businesses ADD COLUMN jobsCreatedThisMonth INTEGER NOT NULL DEFAULT 0' },
+  { name: 'businesses.jobsCreatedMonthKey', sql: 'ALTER TABLE businesses ADD COLUMN jobsCreatedMonthKey TEXT' },
 ];
 
 async function initSchema(config) {

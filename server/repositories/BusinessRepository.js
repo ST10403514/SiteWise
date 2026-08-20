@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const { getClient } = require('./db');
+const { jobQuota, currentMonthKey } = require('../utils/jobQuota');
 
 /**
  * libSQL/Turso-backed business (tenant) store. A business holds the
@@ -23,6 +24,8 @@ class BusinessRepository {
       // unlocks anything (inviting others). No self-serve upgrade yet;
       // flipped by hand until billing exists.
       tier: row.tier || 'free',
+      jobsCreatedThisMonth: row.jobsCreatedThisMonth || 0,
+      jobsCreatedMonthKey: row.jobsCreatedMonthKey || null,
       createdAt: row.createdAt,
     };
   }
@@ -68,6 +71,21 @@ class BusinessRepository {
   async updateTier(id, tier) {
     await this._db.execute({ sql: 'UPDATE businesses SET tier = :tier WHERE id = :id', args: { id, tier } });
     return this.findById(id);
+  }
+
+  /**
+   * Records one more job created this month, rolling the counter over to a
+   * fresh month first if the stored one has passed. Called only on a
+   * genuine new job create (JobController.save) - never on an update, and
+   * never undone by a delete.
+   */
+  async incrementMonthlyJobCount(id) {
+    const business = await this.findById(id);
+    const { count } = jobQuota(business); // already 0 if the stored month has passed
+    await this._db.execute({
+      sql: 'UPDATE businesses SET jobsCreatedThisMonth = :count, jobsCreatedMonthKey = :key WHERE id = :id',
+      args: { id, count: count + 1, key: currentMonthKey() },
+    });
   }
 
   /** Only ever called once a business has no users/jobs left referencing it. */

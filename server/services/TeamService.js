@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
+const { jobQuota } = require('../utils/jobQuota');
 
 const SALT_ROUNDS = 12;
 // Longer than a password-reset token's 1-hour TTL - an invite realistically
@@ -117,6 +118,7 @@ class TeamService {
     const finalUser = await this._users.findById(user.id);
     finalUser.profile = business ? business.profile : null;
     finalUser.tier = business ? business.tier : 'free';
+    finalUser.jobQuota = business ? jobQuota(business) : null;
     return finalUser;
   }
 

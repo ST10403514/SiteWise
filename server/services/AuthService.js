@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
+const { jobQuota } = require('../utils/jobQuota');
 
 const SALT_ROUNDS = 12;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -35,6 +36,7 @@ class AuthService {
     const business = user.businessId ? await this._businesses.findById(user.businessId) : null;
     user.profile = business ? business.profile : null;
     user.tier = business ? business.tier : 'free';
+    user.jobQuota = business ? jobQuota(business) : null;
     return user;
   }
 
@@ -129,6 +131,7 @@ class AuthService {
       onboarded: user.onboarded,
       isOwner: !!user.isOwner,
       tier: user.tier || 'free',
+      jobQuota: user.jobQuota || null,
       profile: user.profile,
     };
   }

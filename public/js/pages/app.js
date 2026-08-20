@@ -590,8 +590,15 @@ class AppPage {
         this._setSaveState(`Saved ${time}`);
       }
     } catch (err) {
-      this._dirty = true; // retry on next tick
-      this._setSaveState(err.message || 'Save failed - retrying');
+      if (err.status === 402) {
+        // A free-plan cap rejection can never succeed by retrying - leave
+        // dirty false so the autosave loop stops hammering it every tick.
+        this._setSaveState('Free plan limit reached - not saved to your account yet');
+        this._toast(err.message);
+      } else {
+        this._dirty = true; // retry on next tick
+        this._setSaveState(err.message || 'Save failed - retrying');
+      }
     } finally {
       this._saving = false;
     }
