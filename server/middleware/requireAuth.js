@@ -7,16 +7,22 @@ const { jobQuota } = require('../utils/jobQuota');
  * Factory for the authentication guard.
  * Reads the session cookie, verifies it and attaches `req.user`.
  *
- * findById is now async (libSQL), so the guard is async and awaits it;
- * any lookup error is forwarded to the error handler rather than thrown
+ * findByIdWithBusiness is async (libSQL), so the guard is async and awaits
+ * it; any lookup error is forwarded to the error handler rather than thrown
  * as an unhandled rejection.
  */
-function requireAuth({ tokenService, userRepository, businessRepository, cookieName }) {
+function requireAuth({ tokenService, userRepository, cookieName }) {
   return async (req, _res, next) => {
     try {
       const token = req.cookies?.[cookieName];
       const claims = token ? tokenService.verify(token) : null;
-      const user = claims ? await userRepository.findById(claims.id) : null;
+      // One round trip for both the user and their business (LEFT JOIN) -
+      // this runs on every authenticated request, so the two sequential
+      // fetches this used to be were the single biggest source of
+      // avoidable per-request DB latency in the app.
+      const { user, business } = claims
+        ? await userRepository.findByIdWithBusiness(claims.id)
+        : { user: null, business: null };
       if (!user) return next(ApiError.unauthorized('Please sign in'));
       // Reject tokens issued before the user's last password change, so a
       // reset (e.g. after a suspected leak) kills any stolen session too,
@@ -34,7 +40,6 @@ function requireAuth({ tokenService, userRepository, businessRepository, cookieN
       // `tier` (gates TeamService.invite) and `jobQuota` (gates
       // JobController.save) - computed here from the same fetched row
       // rather than queried again wherever it's needed.
-      const business = user.businessId ? await businessRepository.findById(user.businessId) : null;
       user.profile = business ? business.profile : null;
       user.tier = business ? business.tier : 'free';
       user.jobQuota = business ? jobQuota(business) : null;

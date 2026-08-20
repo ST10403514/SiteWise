@@ -54,6 +54,45 @@ class UserRepository {
     return this._hydrate(rs.rows[0]);
   }
 
+  /**
+   * findById(userId) + BusinessRepository.findById(user.businessId) in one
+   * round trip via LEFT JOIN, instead of two sequential ones - built for
+   * requireAuth, which needs both on every single authenticated request
+   * and was the biggest source of avoidable per-request DB latency in the
+   * app. Business columns are aliased (b_*) to avoid colliding with the
+   * user columns of the same name (id, profile, createdAt).
+   * @returns {Promise<{ user: object|null, business: object|null }>}
+   */
+  async findByIdWithBusiness(id) {
+    const rs = await this._db.execute({
+      sql: `SELECT
+              u.id, u.name, u.email, u.passwordHash, u.onboarded, u.profile,
+              u.acceptedTermsAt, u.passwordChangedAt, u.resetTokenHash, u.resetTokenExpires,
+              u.businessId, u.isOwner, u.createdAt,
+              b.id AS b_id, b.profile AS b_profile, b.tier AS b_tier,
+              b.jobsCreatedThisMonth AS b_jobsCreatedThisMonth,
+              b.jobsCreatedMonthKey AS b_jobsCreatedMonthKey, b.createdAt AS b_createdAt
+            FROM users u
+            LEFT JOIN businesses b ON u.businessId = b.id
+            WHERE u.id = ?`,
+      args: [id],
+    });
+    const row = rs.rows[0];
+    if (!row) return { user: null, business: null };
+    const user = this._hydrate(row);
+    // Mirrors BusinessRepository._hydrate - kept in sync by hand, same as
+    // every other repository in this codebase (no shared base class).
+    const business = row.b_id ? {
+      id: row.b_id,
+      profile: row.b_profile ? JSON.parse(row.b_profile) : null,
+      tier: row.b_tier || 'free',
+      jobsCreatedThisMonth: row.b_jobsCreatedThisMonth || 0,
+      jobsCreatedMonthKey: row.b_jobsCreatedMonthKey || null,
+      createdAt: row.b_createdAt,
+    } : null;
+    return { user, business };
+  }
+
   /** Look a user up by the stored SHA-256 hash of their reset token. */
   async findByResetTokenHash(resetTokenHash) {
     const rs = await this._db.execute({

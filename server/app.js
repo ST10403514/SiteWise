@@ -56,7 +56,6 @@ function createApp() {
   const authGuard = requireAuth({
     tokenService,
     userRepository,
-    businessRepository,
     cookieName: config.cookieName,
   });
 

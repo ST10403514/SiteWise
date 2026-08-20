@@ -2,7 +2,7 @@
 
 const crypto = require('crypto');
 const { getClient } = require('./db');
-const { jobQuota, currentMonthKey } = require('../utils/jobQuota');
+const { currentMonthKey } = require('../utils/jobQuota');
 
 /**
  * libSQL/Turso-backed business (tenant) store. A business holds the
@@ -78,13 +78,21 @@ class BusinessRepository {
    * fresh month first if the stored one has passed. Called only on a
    * genuine new job create (JobController.save) - never on an update, and
    * never undone by a delete.
+   *
+   * A single atomic UPDATE rather than a read-then-write - the CASE does
+   * the same rollover check jobQuota() does, in SQL, on the row being
+   * written. This also closes a real (if rare) race: two concurrent
+   * creates for the same business could previously both read the same
+   * starting count and both write count+1, losing one of the increments.
    */
   async incrementMonthlyJobCount(id) {
-    const business = await this.findById(id);
-    const { count } = jobQuota(business); // already 0 if the stored month has passed
+    const key = currentMonthKey();
     await this._db.execute({
-      sql: 'UPDATE businesses SET jobsCreatedThisMonth = :count, jobsCreatedMonthKey = :key WHERE id = :id',
-      args: { id, count: count + 1, key: currentMonthKey() },
+      sql: `UPDATE businesses
+            SET jobsCreatedThisMonth = CASE WHEN jobsCreatedMonthKey = :key THEN jobsCreatedThisMonth + 1 ELSE 1 END,
+                jobsCreatedMonthKey = :key
+            WHERE id = :id`,
+      args: { id, key },
     });
   }
 
