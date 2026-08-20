@@ -77,6 +77,8 @@
   .btn-primary:hover { background: var(--blue-ink); transform: translateY(-1px); }
   .btn-ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.28); }
   .btn-ghost:hover { border-color: #7dd3fc; color: #7dd3fc; }
+  .btn-ghost-navy { background: transparent; color: var(--navy); border: 1.5px solid var(--blue-line); }
+  .btn-ghost-navy:hover { border-color: var(--blue); background: var(--blue-mist); }
   .hero-sign { margin-top: 16px; font-size: 13px; color: #8fa2c2; }
   .hero-sign a { color: #9db9f2; text-decoration: underline; }
 
@@ -96,53 +98,95 @@
   .shead p { margin-top: 10px; color: var(--muted); font-size: 16px; max-width: 46ch; }
   .shead.mid { text-align: center; } .shead.mid p { margin-left: auto; margin-right: auto; }
 
-  /* ---------- BENEFITS ---------- */
-  .benefits { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .benefits.cols-3 { grid-template-columns: repeat(3, 1fr); }
-  @media (max-width: 900px) { .benefits.cols-3 { grid-template-columns: 1fr; } }
-  @media (max-width: 820px) { .benefits { grid-template-columns: 1fr; } }
-  .benefit { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
-  .benefit .ic { width: 42px; height: 42px; border-radius: 9px; background: var(--blue-mist); border: 1px solid var(--blue-line); display: grid; place-items: center; margin-bottom: 16px; }
-  .benefit .ic svg { width: 21px; height: 21px; stroke: var(--blue-ink); fill: none; stroke-width: 2; }
-  .benefit h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 18px; color: var(--navy); letter-spacing: .3px; }
-  .benefit p { margin-top: 8px; color: var(--muted); font-size: 14.5px; }
-
-  /* ---------- OFFLINE ---------- */
-  .offline { background: var(--navy); color: #fff; }
-  .offline .shead .kick { color: #9db9f2; }
-  .offline .shead h2 { color: #fff; }
-  .offline .shead p { color: #c3cfe3; }
-
-  /* ---------- STEP GRID (illustrated cards - replaces the old carousels) ---------- */
-  .step-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 8px; }
-  .step-grid.cols-3 { grid-template-columns: repeat(3, 1fr); max-width: 900px; margin-left: auto; margin-right: auto; }
-  @media (max-width: 900px) { .step-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 560px) { .step-grid, .step-grid.cols-3 { grid-template-columns: 1fr; } }
-  .step-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-  .step-card img { width: 100%; height: auto; aspect-ratio: 1200 / 750; object-fit: contain; background: var(--card); display: block; border-bottom: 1px solid var(--line); }
-  .step-card .cap { padding: 14px 16px 16px; }
-  .step-card .n {
-    display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%;
-    background: var(--blue-mist); border: 1px solid var(--blue-line); color: var(--blue-ink);
-    font-family: var(--font-display); font-weight: 700; font-size: 12.5px; margin-bottom: 8px;
+  /* ---------- HOW IT WORKS + PROJECT MANAGER: side by side ---------- */
+  .flow-split { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+  @media (max-width: 860px) { .flow-split { grid-template-columns: 1fr; gap: 44px; } }
+  .flow-col:last-child { border-left: 1px solid var(--line); padding-left: 60px; }
+  @media (max-width: 860px) { .flow-col:last-child { border-left: none; padding-left: 0; } }
+  .flow-label {
+    display: inline-block; font-family: var(--font-display); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.2px; font-size: 12px; color: #fff; background: var(--navy);
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 26px;
   }
-  .step-card h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 14.5px; color: var(--navy); letter-spacing: .3px; }
-  .step-card p { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+  .timeline { position: relative; }
+  .timeline::before {
+    content: ''; position: absolute; left: 21px; top: 22px; bottom: 22px; width: 2px;
+    background: var(--blue-line); z-index: 0;
+  }
+  .tl-step { display: flex; gap: 22px; position: relative; z-index: 1; margin-bottom: 32px; }
+  .tl-step:last-child { margin-bottom: 0; }
+  .tl-node {
+    flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: #fff;
+    display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 18px;
+  }
+  .tl-body { padding-top: 6px; }
+  .tl-body h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 18px; color: var(--navy); letter-spacing: .3px; }
+  .tl-body p { margin-top: 5px; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+
+  .pm-list { list-style: none; display: flex; flex-direction: column; gap: 22px; margin-bottom: 28px; }
+  .pm-list li { display: flex; gap: 16px; align-items: flex-start; }
+  .pm-list .ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 9px; background: var(--blue-mist); border: 1px solid var(--blue-line); display: grid; place-items: center; }
+  .pm-list .ic svg { width: 19px; height: 19px; stroke: var(--blue-ink); fill: none; stroke-width: 2; }
+  .pm-list h4 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; font-size: 15px; color: var(--navy); letter-spacing: .2px; }
+  .pm-list p { margin-top: 3px; color: var(--muted); font-size: 13.5px; }
+
+  /* ---------- OFFLINE + WHY, COMBINED: before/after comparison ---------- */
+  .vs-table { max-width: 840px; margin: 0 auto; }
+  .vs-head { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 2px; }
+  .vs-old-lbl, .vs-new-lbl { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; font-size: 12px; padding-bottom: 10px; border-bottom: 2px solid; }
+  .vs-old-lbl { color: var(--muted); border-color: var(--line); }
+  .vs-new-lbl { color: var(--blue-ink); border-color: var(--blue); }
+  .vs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--line); }
+  .vs-old { position: relative; padding-left: 24px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+  .vs-old::before { content: '\2715'; position: absolute; left: 0; top: 1px; color: #cbd5e1; font-size: 12px; font-weight: 700; }
+  .vs-new { position: relative; padding-left: 28px; color: var(--ink); font-size: 14.5px; font-weight: 500; line-height: 1.45; }
+  .vs-new::before {
+    content: ''; position: absolute; left: 0; top: 1px; width: 18px; height: 18px; border-radius: 5px; background: var(--blue);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+    background-size: 11px; background-repeat: no-repeat; background-position: center;
+  }
+  @media (max-width: 700px) {
+    .vs-head { display: none; }
+    .vs-row { grid-template-columns: 1fr; gap: 8px; padding: 18px 0; }
+    .vs-old { text-decoration: line-through; text-decoration-color: #cbd5e1; }
+  }
 
   /* ---------- PRICING ---------- */
   .pricing { background: var(--navy); color: #fff; }
   .pricing .shead h2 { color: #fff; } .pricing .shead p { color: #c3cfe3; }
-  .pcard { max-width: 440px; margin: 0 auto; background: var(--card); color: var(--ink); border-radius: 14px; overflow: hidden; box-shadow: 0 20px 44px rgba(0,0,0,.34); }
-  .pflag { background: var(--blue); color: #fff; text-align: center; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 13px; padding: 10px; }
-  .pbody { padding: 30px 30px 32px; text-align: center; }
-  .pamt { font-family: var(--font-display); font-weight: 700; font-size: 60px; line-height: 1; color: var(--navy); }
-  .pamt small { font-size: 19px; color: var(--muted); font-weight: 600; }
-  .psub { color: var(--muted); font-size: 14px; margin: 6px 0 22px; }
-  .pfeats { list-style: none; text-align: left; max-width: 290px; margin: 0 auto 24px; }
-  .pfeats li { display: flex; gap: 10px; padding: 7px 0; font-size: 14px; }
-  .pfeats li::before { content: ""; flex-shrink: 0; width: 19px; height: 19px; border-radius: 5px; background: var(--green); margin-top: 1px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); background-size: 13px; background-repeat: no-repeat; background-position: center; }
-  .pbody .btn { width: 100%; justify-content: center; }
+  .ptiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; max-width: 980px; margin: 0 auto; }
+  @media (max-width: 860px) { .ptiers { grid-template-columns: 1fr; max-width: 420px; } }
+  .ptier {
+    position: relative; display: flex; flex-direction: column;
+    background: var(--card); color: var(--ink); border-radius: 14px;
+    padding: 30px 26px 26px; text-align: center; border-top: 4px solid var(--blue-line);
+  }
+  .ptier.featured { box-shadow: 0 20px 44px rgba(0,0,0,.34); transform: translateY(-8px); border-top-color: var(--blue); }
+  @media (max-width: 860px) { .ptier.featured { transform: none; } }
+  .ptier.team { border-top-color: #a78bfa; }
+  .ptier-flag {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--blue); color: #fff; font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.2px; font-size: 11px; padding: 5px 14px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .ptier-ic { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 14px; display: grid; place-items: center; background: var(--blue-mist); border: 1px solid var(--blue-line); }
+  .ptier-ic svg { width: 22px; height: 22px; stroke: var(--blue-ink); fill: none; stroke-width: 2; }
+  .ptier.team .ptier-ic { background: #f5f3ff; border-color: #ddd6fe; }
+  .ptier.team .ptier-ic svg { stroke: #7c3aed; }
+  .ptier h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; font-size: 16px; color: var(--blue-ink); }
+  .ptier.team h3 { color: #7c3aed; }
+  .ptier-for { color: var(--muted); font-size: 12.5px; font-style: italic; margin-top: 3px; }
+  .pamt { font-family: var(--font-display); font-weight: 700; font-size: 44px; line-height: 1; color: var(--navy); margin-top: 10px; }
+  .pamt small { font-size: 15px; color: var(--muted); font-weight: 600; }
+  .psub { color: var(--muted); font-size: 13.5px; margin: 5px 0 20px; }
+  .pfeats { list-style: none; text-align: left; margin: 0 0 22px; }
+  .pfeats li { display: flex; gap: 9px; padding: 6px 0; font-size: 13.5px; }
+  .pfeats li::before { content: ""; flex-shrink: 0; width: 17px; height: 17px; border-radius: 5px; background: var(--green); margin-top: 1px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); background-size: 12px; background-repeat: no-repeat; background-position: center; }
+  .ptier .btn { width: 100%; justify-content: center; margin-top: auto; }
+  .pricing-note { text-align: center; color: #c3cfe3; font-size: 13px; margin-top: 24px; }
 
   /* ---------- FAQ ---------- */
   .faq { max-width: 760px; margin: 0 auto; }
@@ -189,8 +233,7 @@
     <button class="burger" id="burger" aria-label="Menu"><span></span></button>
     <div class="nav-links" id="navLinks">
       <a href="#how">How it works</a>
-      <a href="#offline">Works offline</a>
-      <a href="#why">Why it works</a>
+      <a href="#offline">What changes</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
       <a href="/auth?mode=login">Sign in</a>
@@ -220,119 +263,98 @@
 
 <div class="tick-rule"></div>
 
-<!-- HOW IT WORKS -->
+<!-- HOW IT WORKS + PROJECT MANAGER, COMBINED -->
 <section class="sect" id="how">
   <div class="wrap">
     <div class="shead mid reveal">
-      <span class="kick">How it works</span>
-      <h2>Four steps. One driveway.</h2>
-      <p>SiteWise follows the exact order you already work in, so there's nothing new to learn.</p>
+      <span class="kick">The whole job, start to finish</span>
+      <h2>One job. One record. No gaps.</h2>
+      <p>Capture and price the job on site, then once the client accepts, track it through to completion - budget, expenses, staff wages and photos, all linked to the same record.</p>
     </div>
-    <div class="step-grid reveal">
-      <div class="step-card">
-        <img src="/assets/screenshots/slide-1-capture.svg" alt="Capturing client details, job type and methods as chips" width="1200" height="750" loading="lazy">
-        <div class="cap"><span class="n">1</span><h3>Log the job</h3><p>Client, site and methods tapped in as chips. No clipboard.</p></div>
+    <div class="flow-split reveal">
+      <div class="flow-col">
+        <span class="flow-label">On site</span>
+        <div class="timeline">
+          <div class="tl-step">
+            <div class="tl-node">1</div>
+            <div class="tl-body"><h3>Log the job</h3><p>Client, site and methods tapped in as chips. No clipboard.</p></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-node">2</div>
+            <div class="tl-body"><h3>Write the report</h3><p>Findings, recommendation and a clear outcome.</p></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-node">3</div>
+            <div class="tl-body"><h3>Build the quote</h3><p>Line items and photos. VAT-inclusive total, live.</p></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-node">4</div>
+            <div class="tl-body"><h3>Hand it over</h3><p>Branded PDF, or straight to WhatsApp, before you leave.</p></div>
+          </div>
+        </div>
       </div>
-      <div class="step-card">
-        <img src="/assets/screenshots/slide-2-report.svg" alt="Writing the inspection report and choosing an outcome" width="1200" height="750" loading="lazy">
-        <div class="cap"><span class="n">2</span><h3>Write the report</h3><p>Findings, recommendation and a clear outcome.</p></div>
-      </div>
-      <div class="step-card">
-        <img src="/assets/screenshots/slide-3-quote.svg" alt="Site photos and the quotation with live totals" width="1200" height="750" loading="lazy">
-        <div class="cap"><span class="n">3</span><h3>Build the quote</h3><p>Line items and photos. VAT-inclusive total, live.</p></div>
-      </div>
-      <div class="step-card">
-        <img src="/assets/screenshots/slide-4-pdf.svg" alt="The finished branded PDF" width="1200" height="750" loading="lazy">
-        <div class="cap"><span class="n">4</span><h3>Hand it over</h3><p>Branded PDF, or straight to WhatsApp, before you leave.</p></div>
+      <div class="flow-col" id="projects">
+        <span class="flow-label">Once accepted</span>
+        <ul class="pm-list">
+          <li>
+            <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+            <div><h4>Every project, one dashboard</h4><p>Filter by status or job type at a glance.</p></div>
+          </li>
+          <li>
+            <div class="ic"><svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg></div>
+            <div><h4>Status, budget, spend</h4><p>Set once, updates itself as you log costs.</p></div>
+          </li>
+          <li>
+            <div class="ic"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+            <div><h4>Material &amp; labour, tracked</h4><p>Every expense and wage, with a total that updates live.</p></div>
+          </li>
+          <li>
+            <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+            <div><h4>Approved extras, tracked too</h4><p>Variations get logged and added straight to what you're owed.</p></div>
+          </li>
+        </ul>
+        <a class="btn btn-primary" href="/auth?mode=signup">Get Started &rarr;</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PROJECT MANAGER SHOWCASE -->
-<section class="sect alt" id="projects">
+<!-- OFFLINE + WHY, COMBINED: before/after contrast -->
+<section class="sect" id="offline">
   <div class="wrap">
     <div class="shead mid reveal">
-      <span class="kick">After the quote's accepted</span>
-      <h2>Now manage the job, not just the quote.</h2>
-      <p>One tap turns an accepted quote into a tracked project: status, budget, expenses, staff wages and approved variations for extra work, all linked back to the same job and synced across your phone and desktop.</p>
+      <span class="kick">What actually changes</span>
+      <h2>Same job. Completely different day.</h2>
+      <p>Most jobs aren't lost on price or workmanship - they're lost to dropped signal and slow paperwork. Here's what's actually different once you switch.</p>
     </div>
-    <div class="step-grid cols-3 reveal">
-      <div class="step-card">
-        <img src="/assets/screenshots/slide-pm-1-dashboard.svg" alt="Project manager dashboard with status and type filters" width="1200" height="750" loading="lazy">
-        <div class="cap"><h3>Every project, one dashboard</h3><p>Filter by status or job type.</p></div>
+    <div class="vs-table reveal">
+      <div class="vs-head">
+        <span class="vs-old-lbl">The old way</span>
+        <span class="vs-new-lbl">With SiteWise</span>
       </div>
-      <div class="step-card">
-        <img src="/assets/screenshots/slide-pm-2-overview.svg" alt="Project overview tab with status buttons, client figures and spend summary" width="1200" height="750" loading="lazy">
-        <div class="cap"><h3>Status, budget, spend</h3><p>Set once, updates itself as you log costs.</p></div>
+      <div class="vs-row">
+        <div class="vs-old">Lose signal, lose the job card</div>
+        <div class="vs-new">Every edit saved the instant you type it - signal or not</div>
       </div>
-      <div class="step-card">
-        <img src="/assets/screenshots/slide-pm-3-expenses.svg" alt="Expenses and staff wages ledgers with running totals" width="1200" height="750" loading="lazy">
-        <div class="cap"><h3>Material &amp; labour, tracked</h3><p>Every expense and wage, with a total that updates live.</p></div>
+      <div class="vs-row">
+        <div class="vs-old">Retype it all back at the office</div>
+        <div class="vs-new">Syncs itself the moment you're back in range</div>
       </div>
-    </div>
-    <div style="text-align:center; margin-top:32px">
-      <a class="btn btn-primary" href="/auth?mode=signup">Get Started &rarr;</a>
-    </div>
-  </div>
-</section>
-
-<!-- OFFLINE -->
-<section class="sect offline" id="offline">
-  <div class="wrap">
-    <div class="shead mid reveal">
-      <span class="kick">No signal? No problem</span>
-      <h2>Keeps working when the signal doesn't.</h2>
-      <p>Capture the job, add photos, build the quote - all of it works with zero bars. The moment you're back in range, it catches up on its own. Nothing to press, nothing to remember.</p>
-    </div>
-    <div class="benefits cols-3 reveal">
-      <div class="benefit">
-        <div class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div>
-        <h3>Saved the instant you type it</h3>
-        <p>Every edit is written to your phone immediately, not just held in memory - close the app or lose signal mid-photo, it's still there.</p>
+      <div class="vs-row">
+        <div class="vs-old">A generic quote on a notepad</div>
+        <div class="vs-new">A numbered, branded PDF with your logo and banking details</div>
       </div>
-      <div class="benefit">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M20 8a8 8 0 0 0-14.5-3M4 16a8 8 0 0 0 14.5 3"/></svg></div>
-        <h3>Syncs itself</h3>
-        <p>The moment you're back in range, everything catches up automatically - on this device, and any other you sign in on.</p>
+      <div class="vs-row">
+        <div class="vs-old">"I'll send the quote sometime this week"</div>
+        <div class="vs-new">Handed over before you leave the driveway</div>
       </div>
-      <div class="benefit">
-        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/></svg></div>
-        <h3>Never bounces you out</h3>
-        <p>Losing signal won't log you out or blank your job card. You keep working exactly where you left off.</p>
+      <div class="vs-row">
+        <div class="vs-old">That extra job, forgotten, never invoiced</div>
+        <div class="vs-new">Approved extras logged and added to what you're owed</div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- WHY / BENEFITS -->
-<section class="sect" id="why">
-  <div class="wrap">
-    <div class="shead reveal">
-      <span class="kick">Why tradies switch</span>
-      <h2>Look bigger. Work lighter.</h2>
-      <p>Most jobs aren't lost on price or workmanship. They're lost to whoever looks the most professional on paper.</p>
-    </div>
-    <div class="benefits reveal">
-      <div class="benefit">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
-        <h3>Look like a business twice your size</h3>
-        <p>Numbered, VAT-inclusive PDFs with your logo and banking details on every single one. Clients can't tell you're a team of one.</p>
-      </div>
-      <div class="benefit">
-        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-        <h3>Win the job before you leave the driveway</h3>
-        <p>While the next quote is still "coming this week," yours is already a branded PDF in the client's hand. Speed wins jobs that price alone won't.</p>
-      </div>
-      <div class="benefit">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
-        <h3>Never lose money to a forgotten extra</h3>
-        <p>Approved extra work gets logged as a variation and added straight to what you're owed, so that plug point from three weeks ago doesn't slip through.</p>
-      </div>
-      <div class="benefit">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 6h9"/><path d="M17 6h3"/><circle cx="13" cy="6" r="2"/><path d="M4 12h3"/><path d="M11 12h9"/><circle cx="7" cy="12" r="2"/><path d="M4 18h11"/><path d="M19 18h1"/><circle cx="15" cy="18" r="2"/></svg></div>
-        <h3>The paperwork does itself</h3>
-        <p>Budget, expenses, staff wages and time all update live from the same quote. No spreadsheet, no notebook, no Sunday-night catch-up.</p>
+      <div class="vs-row">
+        <div class="vs-old">A spreadsheet update on Sunday night</div>
+        <div class="vs-new">Budget, expenses and wages update live, automatically</div>
       </div>
     </div>
   </div>
@@ -343,25 +365,54 @@
   <div class="wrap">
     <div class="shead mid reveal">
       <span class="kick" style="color:#9db9f2">Simple pricing</span>
-      <h2>Free while we're in beta</h2>
-      <p>Get set up now and lock in early. No card required, no catch, just help us shape it.</p>
+      <h2>Pick the size that fits</h2>
+      <p>Every account gets full access free while we're in beta - this is what pricing looks like once that changes, so there's nothing to guess about later.</p>
     </div>
-    <div class="pcard reveal">
-      <div class="pflag">Beta: free for early users</div>
-      <div class="pbody">
-        <div class="pamt">R0<small>/month</small></div>
-        <div class="psub">While SiteWise is in beta</div>
+    <div class="ptiers reveal">
+      <div class="ptier">
+        <div class="ptier-ic"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <h3>Free</h3>
+        <p class="ptier-for">Try it out, no commitment</p>
+        <div class="pamt">R0<small>/mo</small></div>
+        <p class="psub">5 job cards or projects a month</p>
         <ul class="pfeats">
-          <li>Your fully branded app, start to finish</li>
-          <li>Unlimited job cards and PDFs</li>
-          <li>Project Manager: budget, expenses, wages &amp; photos</li>
-          <li>All 15+ trade presets and colour themes</li>
+          <li>Your fully branded app</li>
+          <li>Project Manager included</li>
           <li>WhatsApp handover built in</li>
           <li>Install to your phone like an app</li>
         </ul>
-        <a class="btn btn-primary" href="/auth?mode=signup">Start free &rarr;</a>
+        <a class="btn btn-ghost-navy" href="/auth?mode=signup">Get started &rarr;</a>
+      </div>
+      <div class="ptier featured">
+        <span class="ptier-flag">Most popular</span>
+        <div class="ptier-ic"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <h3>Solo</h3>
+        <p class="ptier-for">You're doing it all yourself</p>
+        <div class="pamt">R450<small>/mo</small></div>
+        <p class="psub">One login, no monthly limit</p>
+        <ul class="pfeats">
+          <li>Everything in Free</li>
+          <li>Unlimited job cards &amp; projects</li>
+          <li>Full CSV exports</li>
+          <li>Priority support</li>
+        </ul>
+        <a class="btn btn-primary" href="/auth?mode=signup">Get started &rarr;</a>
+      </div>
+      <div class="ptier team">
+        <div class="ptier-ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>Team</h3>
+        <p class="ptier-for">You've got people on the tools</p>
+        <div class="pamt">Custom</div>
+        <p class="psub">Multiple logins, one business</p>
+        <ul class="pfeats">
+          <li>Everything in Solo</li>
+          <li>Invite your whole team</li>
+          <li>Everyone shares the same jobs</li>
+        </ul>
+        <a class="btn btn-ghost-navy" href="mailto:hello@sitewise.co.za?subject=Team%20plan">Contact us &rarr;</a>
       </div>
     </div>
+    <p class="pricing-note reveal">Free for everyone right now, no card required - we'll give plenty of notice before anything changes.</p>
   </div>
 </section>
 
@@ -378,7 +429,7 @@
       <div class="fitem"><button class="fq">Which trades does it work for?</button><div class="fa"><p>Fifteen and counting, from painting and plumbing to solar, security, flooring and automotive, each with job types and methods in your trade's own language.</p></div></div>
       <div class="fitem"><button class="fq">What happens if I lose signal on site?</button><div class="fa"><p>Nothing stops. Every job card, photo and edit is saved straight to your phone the moment you make it, so losing signal - or even closing the app - doesn't lose your work. The instant you're back in range, it syncs to your account on its own.</p></div></div>
       <div class="fitem"><button class="fq">Does it help once the client says yes?</button><div class="fa"><p>Yes. When a quote's accepted, one tap turns it into a tracked project: status, a total or split budget, expense and staff-wage logging with receipt photos, approved variations for extra work, and site progress photos - all linked back to the original job.</p></div></div>
-      <div class="fitem"><button class="fq">What does it cost?</button><div class="fa"><p>Nothing while we're in beta. Get set up now, use it on real jobs, and help us shape it. We'll give early users plenty of notice before any paid plans arrive.</p></div></div>
+      <div class="fitem"><button class="fq">What does it cost?</button><div class="fa"><p>Nothing right now - every account gets full access free while we're in beta. See the Pricing section above for what plans look like once that changes; we'll give early users plenty of notice first, so nothing sneaks up on you.</p></div></div>
       <div class="fitem"><button class="fq">Is my client data safe?</button><div class="fa"><p>Your account is protected with a secure sign-in, and each business only ever sees its own jobs and clients. We're building toward full POPIA compliance as we grow.</p></div></div>
     </div>
   </div>
@@ -399,7 +450,7 @@
     <div class="ft-top">
       <div class="ft-brand"><b>SiteWise</b><p>The branded app for trade businesses. Quote and report on site, then manage the job through to completion, all from the phone in your pocket.</p></div>
       <div class="ft-cols">
-        <div class="ft-col"><h4>Product</h4><a href="#how">How it works</a><a href="#projects">Project manager</a><a href="#offline">Works offline</a><a href="#why">Why it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></div>
+        <div class="ft-col"><h4>Product</h4><a href="#how">How it works</a><a href="#projects">Project manager</a><a href="#offline">What changes</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></div>
         <div class="ft-col"><h4>Account</h4><a href="/auth?mode=login">Sign in</a><a href="/auth?mode=signup">Create account</a></div>
         <div class="ft-col"><h4>Contact</h4><a href="mailto:hello@sitewise.co.za">hello@sitewise.co.za</a></div>
       </div>
