@@ -34,6 +34,10 @@ class BusinessRepository {
       // failed, Paystack is retrying).
       subscriptionStatus: row.subscriptionStatus || null,
       subscriptionRenewsAt: row.subscriptionRenewsAt || null,
+      // The subscription an upgrade most recently disabled, if any - see
+      // markSuperseded() for why this needs its own field rather than just
+      // comparing against subscriptionCode.
+      supersededSubscriptionCode: row.supersededSubscriptionCode || null,
       createdAt: row.createdAt,
     };
   }
@@ -123,6 +127,23 @@ class BusinessRepository {
     await this._db.execute({
       sql: 'UPDATE businesses SET subscriptionStatus = :status WHERE id = :id',
       args: { id, status },
+    });
+  }
+
+  /**
+   * Records that `subscriptionCode` is being intentionally disabled as part
+   * of an upgrade, BEFORE actually calling Paystack to disable it - so that
+   * whenever the resulting subscription.disable webhook arrives (confirmed
+   * for real: this can happen before subscription.create for the new
+   * subscription has even been processed), it's recognized as expected
+   * noise about a superseded subscription, not a cancellation of whatever
+   * the business just upgraded to. Synchronous and set up front
+   * deliberately - correctness here can't depend on webhook arrival order.
+   */
+  async markSuperseded(id, subscriptionCode) {
+    await this._db.execute({
+      sql: 'UPDATE businesses SET supersededSubscriptionCode = :subscriptionCode WHERE id = :id',
+      args: { id, subscriptionCode },
     });
   }
 

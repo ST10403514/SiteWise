@@ -134,11 +134,19 @@ class BillingController {
       // The subscriptionCode still on the business row at this exact
       // point is unambiguously the OLD one - the new subscription's own
       // code doesn't exist yet, it only arrives later via a separate
-      // subscription.create event. If it's still active, disable it now
-      // so the business is never billed for two tiers at once. A failure
-      // here must not block activating what was actually paid for - it's
-      // logged loudly instead, since it needs a human to reconcile by hand.
+      // subscription.create event. If it's still active, mark it
+      // superseded and disable it now so the business is never billed for
+      // two tiers at once. markSuperseded happens first, synchronously,
+      // before Paystack is even asked to disable anything - confirmed for
+      // real that the resulting subscription.disable webhook can arrive
+      // before subscription.create for the NEW subscription does, and
+      // without this, that notification gets misread as cancelling
+      // whatever the business just upgraded to, not the old plan it
+      // actually applies to. A failure to disable must not block
+      // activating what was actually paid for - it's logged loudly
+      // instead, since it needs a human to reconcile by hand.
       if (business.subscriptionCode && business.subscriptionStatus === 'active') {
+        await this._businesses.markSuperseded(business.id, business.subscriptionCode);
         try {
           const oldSub = await this._paystack.fetchSubscription(business.subscriptionCode);
           await this._paystack.disableSubscription({
@@ -155,7 +163,14 @@ class BillingController {
         tier,
         paystackCustomerCode: customerCode || business.paystackCustomerCode,
       });
-    } else if (business.subscriptionStatus === 'past_due') {
+      // subscription.create (a separate event) establishes the NEW
+      // subscription's own code and renewal date - nothing further to do
+      // here, and refreshing via business.subscriptionCode below would
+      // wrongly operate on the OLD, just-superseded one.
+      return;
+    }
+
+    if (business.subscriptionStatus === 'past_due') {
       // A retried renewal succeeded after an earlier attempt had failed -
       // clear the warning state. A normal on-time renewal never enters
       // past_due in the first place, so there's nothing to do for that.
@@ -199,6 +214,20 @@ class BillingController {
     const business = await this._resolveBusiness(data);
     if (!business) {
       logger.warn({ data, status }, 'Paystack webhook: could not resolve a business for this event');
+      return;
+    }
+    // Guard against a status event about a subscription an upgrade already
+    // superseded - e.g. the OLD subscription being disabled fires its own
+    // subscription.disable webhook, which must NOT mark whatever the
+    // business just upgraded TO as cancelled. Only skip when the event
+    // unambiguously names that specific superseded subscription - one with
+    // no subscription_code at all, or that doesn't match anything on file,
+    // still applies normally (the safe default for a payload shape not yet
+    // confirmed against a real event).
+    const eventSubCode = data.subscription_code || data.subscription?.subscription_code;
+    if (eventSubCode && eventSubCode === business.supersededSubscriptionCode) {
+      logger.info({ eventSubCode, businessId: business.id, status },
+        'Paystack webhook: event is about a superseded subscription, ignoring');
       return;
     }
     await this._businesses.setSubscriptionStatus(business.id, status);

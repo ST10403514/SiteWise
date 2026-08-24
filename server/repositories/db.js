@@ -46,6 +46,7 @@ const SCHEMA = `
     subscriptionCode      TEXT,
     subscriptionStatus    TEXT,
     subscriptionRenewsAt  TEXT,
+    supersededSubscriptionCode TEXT,
     createdAt             TEXT NOT NULL
   );
 
@@ -146,6 +147,16 @@ const MIGRATIONS = [
   { name: 'businesses.subscriptionCode', sql: 'ALTER TABLE businesses ADD COLUMN subscriptionCode TEXT' },
   { name: 'businesses.subscriptionStatus', sql: 'ALTER TABLE businesses ADD COLUMN subscriptionStatus TEXT' },
   { name: 'businesses.subscriptionRenewsAt', sql: 'ALTER TABLE businesses ADD COLUMN subscriptionRenewsAt TEXT' },
+  // Set the moment an upgrade disables a business's previous subscription
+  // (see BillingController#_handleChargeSuccess) - lets a late-arriving
+  // subscription.disable webhook about that now-superseded subscription be
+  // recognized and ignored, instead of being mistaken for a cancellation of
+  // whatever the business just upgraded TO. Confirmed for real: that
+  // webhook can arrive before subscription.create for the new one has even
+  // been processed, so comparing only against the current subscriptionCode
+  // isn't enough - this needs its own explicit record, set synchronously,
+  // not dependent on webhook arrival order.
+  { name: 'businesses.supersededSubscriptionCode', sql: 'ALTER TABLE businesses ADD COLUMN supersededSubscriptionCode TEXT' },
 ];
 
 async function initSchema(config) {

@@ -194,6 +194,38 @@ test('subscription.not_renew is handled the same as subscription.disable', async
   assert.equal(business.subscriptionStatus, 'cancelled');
 });
 
+test('a late subscription.disable about a SUPERSEDED subscription does not cancel the new one', async () => {
+  // Reproduces exactly what happened for real: upgrading disables the old
+  // subscription, which fires its own subscription.disable webhook - if
+  // that arrives before subscription.create for the NEW subscription has
+  // updated subscriptionCode, a naive check would misread it as cancelling
+  // whatever the business just upgraded to.
+  const { businessId } = await signup();
+  await businessRepository.activateSubscription(businessId, { tier: 'solo', paystackCustomerCode: 'CUS_test_supersede' });
+  await businessRepository.recordSubscription(businessId, { subscriptionCode: 'SUB_test_old', subscriptionRenewsAt: '2026-09-20T00:00:00.000Z' });
+
+  // The upgrade: charge.success for team, which marks SUB_test_old superseded.
+  await sendWebhook('charge.success', {
+    metadata: { businessId, tier: 'team' },
+    customer: { customer_code: 'CUS_test_supersede' },
+  });
+  let business = await businessRepository.findById(businessId);
+  assert.equal(business.tier, 'team');
+  assert.equal(business.subscriptionStatus, 'active', 'must still be active immediately after the upgrade');
+
+  // The late-arriving notification about the OLD subscription, deliberately
+  // sent BEFORE subscription.create for the new one - business.subscriptionCode
+  // is still SUB_test_old at this exact point, which is exactly the
+  // scenario that broke without the supersededSubscriptionCode guard.
+  await sendWebhook('subscription.disable', {
+    customer: { customer_code: 'CUS_test_supersede' },
+    subscription_code: 'SUB_test_old',
+  });
+  business = await businessRepository.findById(businessId);
+  assert.equal(business.subscriptionStatus, 'active', 'the late notification about the superseded subscription must be ignored');
+  assert.equal(business.tier, 'team');
+});
+
 test('invoice.payment_failed marks the business past_due, tier untouched', async () => {
   const { businessId } = await signup();
   await businessRepository.activateSubscription(businessId, { tier: 'solo', paystackCustomerCode: 'CUS_test_failed' });
