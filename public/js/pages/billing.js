@@ -69,7 +69,7 @@ class BillingPage {
   async _awaitUpgrade(pendingTier, initialUser) {
     this._$('confirmingBanner').hidden = false;
     let latest = initialUser;
-    const deadline = Date.now() + 15000;
+    const deadline = Date.now() + 20000;
     while (Date.now() < deadline && latest.tier !== pendingTier) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       latest = await this._guard.currentUser().catch(() => latest);

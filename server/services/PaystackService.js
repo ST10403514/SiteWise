@@ -3,6 +3,10 @@
 const crypto = require('crypto');
 
 const API_BASE = 'https://api.paystack.co';
+// A real 504 was observed to hang long enough to delay webhook processing
+// past the frontend's polling window - bounding every call keeps a single
+// slow Paystack request from stalling a webhook handler indefinitely.
+const REQUEST_TIMEOUT_MS = 10_000;
 
 /**
  * Thin wrapper over Paystack's REST API. Knows nothing about HTTP status
@@ -28,6 +32,7 @@ class PaystackService {
         'Content-Type': 'application/json',
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
     const json = await res.json().catch(() => null);
     if (!res.ok || !json?.status) {

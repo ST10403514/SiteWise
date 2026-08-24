@@ -127,26 +127,34 @@ class BillingController {
     const tier = data.metadata?.tier;
     const customerCode = data.customer?.customer_code;
     if (tier === 'solo' || tier === 'team') {
-      // Upgrading (or re-subscribing) starts a brand new Paystack
-      // subscription - it does NOT touch whatever the business was
-      // already on. Confirmed for real: upgrading Solo -> Team left two
-      // fully independent subscriptions running, each billing on its own.
-      // The subscriptionCode still on the business row at this exact
-      // point is unambiguously the OLD one - the new subscription's own
-      // code doesn't exist yet, it only arrives later via a separate
-      // subscription.create event. If it's still active, mark it
-      // superseded and disable it now so the business is never billed for
-      // two tiers at once. markSuperseded happens first, synchronously,
-      // before Paystack is even asked to disable anything - confirmed for
-      // real that the resulting subscription.disable webhook can arrive
-      // before subscription.create for the NEW subscription does, and
-      // without this, that notification gets misread as cancelling
-      // whatever the business just upgraded to, not the old plan it
-      // actually applies to. A failure to disable must not block
-      // activating what was actually paid for - it's logged loudly
-      // instead, since it needs a human to reconcile by hand.
-      if (business.subscriptionCode && business.subscriptionStatus === 'active') {
+      // The customer already paid - activating must happen immediately and
+      // can't be allowed to wait on anything else below. Confirmed for
+      // real: a slow/hanging Paystack API call (a genuine 504) delayed
+      // this whole handler long enough to blow past the frontend's polling
+      // window on /billing, leaving someone looking at "still confirming"
+      // for a plan that would have activated fine moments later.
+      const hasOldSubscription = business.subscriptionCode && business.subscriptionStatus === 'active';
+      if (hasOldSubscription) {
+        // Recorded before Paystack is even asked to disable anything -
+        // confirmed for real that the resulting subscription.disable
+        // webhook can arrive before subscription.create for the NEW
+        // subscription does, and without this, that notification gets
+        // misread as cancelling whatever the business just upgraded to,
+        // not the old plan it actually applies to.
         await this._businesses.markSuperseded(business.id, business.subscriptionCode);
+      }
+      await this._businesses.activateSubscription(business.id, {
+        tier,
+        paystackCustomerCode: customerCode || business.paystackCustomerCode,
+      });
+      if (hasOldSubscription) {
+        // Upgrading (or re-subscribing) starts a brand new Paystack
+        // subscription - it does NOT touch whatever the business was
+        // already on. Confirmed for real: upgrading Solo -> Team left two
+        // fully independent subscriptions running, each billing on its
+        // own. Disabling the old one now stops that - but only after
+        // activation above, and a failure here must not undo it. Logged
+        // loudly instead, since it needs a human to reconcile by hand.
         try {
           const oldSub = await this._paystack.fetchSubscription(business.subscriptionCode);
           await this._paystack.disableSubscription({
@@ -159,10 +167,6 @@ class BillingController {
           Sentry.captureException(err);
         }
       }
-      await this._businesses.activateSubscription(business.id, {
-        tier,
-        paystackCustomerCode: customerCode || business.paystackCustomerCode,
-      });
       // subscription.create (a separate event) establishes the NEW
       // subscription's own code and renewal date - nothing further to do
       // here, and refreshing via business.subscriptionCode below would
