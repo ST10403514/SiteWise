@@ -137,6 +137,23 @@ test('subscription.create records the subscription code and renewal date', async
   assert.equal(business.subscriptionRenewsAt, '2026-09-20T00:00:00.000Z');
 });
 
+test('subscription.create arriving BEFORE charge.success still resolves, via email', async () => {
+  // Observed for real: Paystack doesn't guarantee delivery order, and
+  // subscription.create carries no metadata at all - if it lands before
+  // the charge.success that writes paystackCustomerCode onto the business,
+  // neither the metadata nor the customer_code lookup has anything to
+  // match yet, even though the business is real and already exists.
+  const { businessId, email } = await signup();
+  const res = await sendWebhook('subscription.create', {
+    customer: { customer_code: 'CUS_never_seen_yet', email },
+    subscription_code: 'SUB_test_early',
+    next_payment_date: '2026-09-20T00:00:00.000Z',
+  });
+  assert.equal(res.status, 200);
+  const business = await businessRepository.findById(businessId);
+  assert.equal(business.subscriptionCode, 'SUB_test_early');
+});
+
 test('subscription.disable marks cancelled but does not touch tier', async () => {
   const { businessId } = await signup();
   await businessRepository.activateSubscription(businessId, { tier: 'solo', paystackCustomerCode: 'CUS_test_disable' });

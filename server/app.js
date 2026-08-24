@@ -70,7 +70,7 @@ function createApp() {
   const jobController = new JobController({ jobRepository, businessRepository, storageService });
   const teamController = new TeamController({ teamService });
   const uploadController = new UploadController({ storageService });
-  const billingController = new BillingController({ businessRepository, paystackService, config });
+  const billingController = new BillingController({ businessRepository, userRepository, paystackService, config });
 
   const app = express();
   app.disable('x-powered-by');

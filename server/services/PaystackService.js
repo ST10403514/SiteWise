@@ -47,13 +47,14 @@ class PaystackService {
    * @returns {Promise<{authorizationUrl: string, reference: string}>}
    */
   async initializeTransaction({ email, amountCents, planCode, metadata, callbackUrl }) {
-    // No explicit currency here, deliberately - confirmed empirically
-    // against the real API that passing one alongside `plan` makes
-    // Paystack silently drop the plan attachment (still returns a normal
-    // 200 + working checkout URL, so the resulting transaction just never
-    // becomes a real subscription - no error anywhere to catch it on).
-    // The plan itself already carries its own currency (ZAR, set when it
-    // was created), so this isn't needed anyway.
+    // No explicit currency here - the plan itself already carries its own
+    // (ZAR, set when it was created via ensurePlan), so this would just be
+    // redundant. (An earlier version of this comment claimed passing one
+    // broke plan attachment - that was wrong, traced to checking the
+    // result through Paystack's transaction *list* endpoint, which doesn't
+    // reliably surface the plan field; /transaction/verify does, and shows
+    // the plan attaches correctly either way. Left removed anyway since
+    // it's genuinely unneeded, but that wasn't the real bug.)
     const data = await this._request('POST', '/transaction/initialize', {
       email,
       amount: amountCents,

@@ -12,8 +12,9 @@ const TIER_PRICES = { solo: SOLO_PRICE_CENTS, team: TEAM_PRICE_CENTS };
  * public/js/pages/billing.js owns presenting this to the user.
  */
 class BillingController {
-  constructor({ businessRepository, paystackService, config }) {
+  constructor({ businessRepository, userRepository, paystackService, config }) {
     this._businesses = businessRepository;
+    this._users = userRepository;
     this._paystack = paystackService;
     this._config = config;
   }
@@ -97,7 +98,21 @@ class BillingController {
       if (business) return business;
     }
     const customerCode = data?.customer?.customer_code;
-    return customerCode ? this._businesses.findByPaystackCustomerCode(customerCode) : null;
+    if (customerCode) {
+      const business = await this._businesses.findByPaystackCustomerCode(customerCode);
+      if (business) return business;
+    }
+    // Paystack doesn't guarantee delivery order - subscription.create has
+    // been observed arriving before the charge.success that actually writes
+    // paystackCustomerCode onto the business row, so the lookup above can
+    // legitimately find nothing yet even though the business is real and
+    // already exists. subscription.create also carries no metadata at all
+    // (confirmed against a real payload, not assumed). Email is stable from
+    // signup regardless of event ordering, so it's a reliable last resort.
+    const email = data?.customer?.email;
+    if (!email) return null;
+    const user = await this._users.findByEmail(email);
+    return user?.businessId ? this._businesses.findById(user.businessId) : null;
   }
 
   async _handleChargeSuccess(data) {
