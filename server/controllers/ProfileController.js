@@ -1,7 +1,9 @@
 'use strict';
 
+const Sentry = require('@sentry/node');
 const AuthService = require('../services/AuthService');
 const ApiError = require('../utils/ApiError');
+const logger = require('../utils/logger');
 const v = require('../utils/validators');
 const { collectPhotoUrls } = require('../utils/photoCleanup');
 
@@ -22,11 +24,12 @@ const SCHEMES = new Set([
  * identity, banking, industry presets and colour scheme.
  */
 class ProfileController {
-  constructor({ userRepository, businessRepository, jobRepository, storageService, config }) {
+  constructor({ userRepository, businessRepository, jobRepository, storageService, paystackService, config }) {
     this._users = userRepository;
     this._businesses = businessRepository;
     this._jobs = jobRepository;
     this._storage = storageService;
+    this._paystack = paystackService;
     this._config = config;
   }
 
@@ -152,6 +155,26 @@ class ProfileController {
       const memberCount = await this._users.countByBusiness(req.user.businessId);
       if (memberCount > 1) {
         throw ApiError.badRequest('Remove all team members before deleting your business');
+      }
+
+      // Deleting the account must not leave a Paystack subscription still
+      // billing every month with no SiteWise account left to even see or
+      // cancel it from. A failure here must not block the deletion the
+      // user actually asked for - logged loudly instead, since it needs a
+      // human to cancel it by hand on Paystack's side.
+      const business = await this._businesses.findById(req.user.businessId);
+      if (business?.subscriptionCode && business.subscriptionStatus === 'active') {
+        try {
+          const sub = await this._paystack.fetchSubscription(business.subscriptionCode);
+          await this._paystack.disableSubscription({
+            subscriptionCode: business.subscriptionCode,
+            emailToken: sub.email_token,
+          });
+        } catch (err) {
+          logger.error({ err, businessId: business.id, subscriptionCode: business.subscriptionCode },
+            'Could not cancel the Paystack subscription during account deletion - will keep billing with no account left, needs manual cancellation');
+          Sentry.captureException(err);
+        }
       }
 
       const jobs = await this._jobs.listFullDataForBusiness(req.user.businessId);

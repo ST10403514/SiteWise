@@ -313,3 +313,17 @@ test('a non-owner gets 403 on both checkout and cancel', async () => {
   const cancelRes = await fetch(`${baseUrl}/api/billing/cancel`, { method: 'POST', headers: { Cookie: teammateCookie } });
   assert.equal(cancelRes.status, 403);
 });
+
+test('deleting a sole-owner account with an active subscription still deletes the account', async () => {
+  // The subscription-cancel attempt inside deleteAccount hits Paystack's
+  // real API with this test's fake secret key, so it genuinely fails here -
+  // exactly like the upgrade-resilience test, that's what proves account
+  // deletion is never blocked by a failure to reach Paystack.
+  const { cookie, businessId } = await signup();
+  await businessRepository.activateSubscription(businessId, { tier: 'solo', paystackCustomerCode: 'CUS_test_delete' });
+  await businessRepository.recordSubscription(businessId, { subscriptionCode: 'SUB_test_delete', subscriptionRenewsAt: '2026-09-20T00:00:00.000Z' });
+
+  const res = await fetch(`${baseUrl}/api/profile`, { method: 'DELETE', headers: { Cookie: cookie } });
+  assert.equal(res.status, 200);
+  assert.equal(await businessRepository.findById(businessId), null, 'the business must actually be gone');
+});

@@ -65,7 +65,7 @@ function createApp() {
 
   const authController = new AuthController({ authService, teamService, tokenService, config });
   const profileController = new ProfileController({
-    userRepository, businessRepository, jobRepository, storageService, config,
+    userRepository, businessRepository, jobRepository, storageService, paystackService, config,
   });
   const jobController = new JobController({ jobRepository, businessRepository, storageService });
   const teamController = new TeamController({ teamService });
