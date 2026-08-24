@@ -47,10 +47,16 @@ class PaystackService {
    * @returns {Promise<{authorizationUrl: string, reference: string}>}
    */
   async initializeTransaction({ email, amountCents, planCode, metadata, callbackUrl }) {
+    // No explicit currency here, deliberately - confirmed empirically
+    // against the real API that passing one alongside `plan` makes
+    // Paystack silently drop the plan attachment (still returns a normal
+    // 200 + working checkout URL, so the resulting transaction just never
+    // becomes a real subscription - no error anywhere to catch it on).
+    // The plan itself already carries its own currency (ZAR, set when it
+    // was created), so this isn't needed anyway.
     const data = await this._request('POST', '/transaction/initialize', {
       email,
       amount: amountCents,
-      currency: 'ZAR',
       plan: planCode,
       metadata,
       callback_url: callbackUrl,
