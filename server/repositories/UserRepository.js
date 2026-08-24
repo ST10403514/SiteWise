@@ -71,7 +71,12 @@ class UserRepository {
               u.businessId, u.isOwner, u.createdAt,
               b.id AS b_id, b.profile AS b_profile, b.tier AS b_tier,
               b.jobsCreatedThisMonth AS b_jobsCreatedThisMonth,
-              b.jobsCreatedMonthKey AS b_jobsCreatedMonthKey, b.createdAt AS b_createdAt
+              b.jobsCreatedMonthKey AS b_jobsCreatedMonthKey,
+              b.paystackCustomerCode AS b_paystackCustomerCode,
+              b.subscriptionCode AS b_subscriptionCode,
+              b.subscriptionStatus AS b_subscriptionStatus,
+              b.subscriptionRenewsAt AS b_subscriptionRenewsAt,
+              b.createdAt AS b_createdAt
             FROM users u
             LEFT JOIN businesses b ON u.businessId = b.id
             WHERE u.id = ?`,
@@ -88,6 +93,10 @@ class UserRepository {
       tier: row.b_tier || 'free',
       jobsCreatedThisMonth: row.b_jobsCreatedThisMonth || 0,
       jobsCreatedMonthKey: row.b_jobsCreatedMonthKey || null,
+      paystackCustomerCode: row.b_paystackCustomerCode || null,
+      subscriptionCode: row.b_subscriptionCode || null,
+      subscriptionStatus: row.b_subscriptionStatus || null,
+      subscriptionRenewsAt: row.b_subscriptionRenewsAt || null,
       createdAt: row.b_createdAt,
     } : null;
     return { user, business };

@@ -11,6 +11,23 @@ function currentMonthKey(now = new Date()) {
 }
 
 /**
+ * A cancelled (or payment-failed) subscription keeps working until the
+ * period it was already paid for actually ends - Paystack itself behaves
+ * this way (disabling a subscription just stops the *next* charge, it
+ * doesn't refund/revoke the current one). No cron needed to enforce the
+ * eventual downgrade: like the month-key rollover above, it's just checked
+ * lazily, here, against every read - once subscriptionRenewsAt is in the
+ * past, the stored tier column is stale and this returns 'free' instead.
+ * @param {{tier: string, subscriptionStatus?: string|null, subscriptionRenewsAt?: string|null}} business
+ */
+function effectiveTier(business) {
+  const lapsed = (business.subscriptionStatus === 'cancelled' || business.subscriptionStatus === 'past_due')
+    && business.subscriptionRenewsAt
+    && Date.now() > Date.parse(business.subscriptionRenewsAt);
+  return lapsed ? 'free' : business.tier;
+}
+
+/**
  * Where a business's free-tier monthly job-creation quota stands right now.
  * Pure - takes an already-fetched business row, makes no DB call itself, so
  * it's cheap enough to compute on every authenticated request (requireAuth)
@@ -26,7 +43,7 @@ function currentMonthKey(now = new Date()) {
 function jobQuota(business) {
   const key = currentMonthKey();
   const count = business.jobsCreatedMonthKey === key ? (business.jobsCreatedThisMonth || 0) : 0;
-  const unlimited = business.tier !== 'free';
+  const unlimited = effectiveTier(business) !== 'free';
   return {
     count,
     cap: FREE_TIER_MONTHLY_CAP,
@@ -36,4 +53,4 @@ function jobQuota(business) {
   };
 }
 
-module.exports = { jobQuota, currentMonthKey, FREE_TIER_MONTHLY_CAP };
+module.exports = { jobQuota, effectiveTier, currentMonthKey, FREE_TIER_MONTHLY_CAP };

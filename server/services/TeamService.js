@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
-const { jobQuota } = require('../utils/jobQuota');
+const { jobQuota, effectiveTier } = require('../utils/jobQuota');
 
 const SALT_ROUNDS = 12;
 // Longer than a password-reset token's 1-hour TTL - an invite realistically
@@ -42,11 +42,10 @@ class TeamService {
     // allowed", it's "needs upgrading", and the frontend needs to tell the
     // two apart (an owner always passes requireOwner's 403 check by the
     // time they reach here, so a 403 here would be indistinguishable from
-    // that). No self-serve upgrade yet, so this is a real dead end for a
-    // free/solo business today - the message says so rather than
-    // pretending there's a button to press.
-    if (!business || business.tier !== 'team') {
-      throw new ApiError(402, 'Inviting a team member needs the Team plan - contact us to upgrade.');
+    // that). effectiveTier (not the raw column) so a cancelled-but-still-
+    // paid-through Team subscription keeps working until it actually lapses.
+    if (!business || effectiveTier(business) !== 'team') {
+      throw new ApiError(402, 'Inviting a team member needs the Team plan - upgrade from the Billing page.');
     }
     // Not anti-enumeration-safe like forgotPassword, deliberately - this is
     // an authenticated, owner-only action about someone the owner already
@@ -117,8 +116,10 @@ class TeamService {
     const business = await this._businesses.findById(invite.businessId);
     const finalUser = await this._users.findById(user.id);
     finalUser.profile = business ? business.profile : null;
-    finalUser.tier = business ? business.tier : 'free';
+    finalUser.tier = business ? effectiveTier(business) : 'free';
     finalUser.jobQuota = business ? jobQuota(business) : null;
+    finalUser.subscriptionStatus = business ? business.subscriptionStatus : null;
+    finalUser.subscriptionRenewsAt = business ? business.subscriptionRenewsAt : null;
     return finalUser;
   }
 

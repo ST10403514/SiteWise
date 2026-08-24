@@ -76,6 +76,19 @@ class Config {
     // as it always did, rather than failing to start.
     this.sentry = { dsn: process.env.SENTRY_DSN_SERVER || null };
     this.sentryConfigured = !!this.sentry.dsn;
+
+    // ── Billing (Paystack) ────────────────────────────────────────────────
+    // Optional, same pattern as above: until all four are set, billing
+    // routes fail closed with a clear "not configured" error rather than
+    // the app refusing to start. planSolo/planTeam come from running
+    // server/scripts/setup-paystack-plans.js once real API keys exist.
+    this.paystack = {
+      secretKey: process.env.PAYSTACK_SECRET_KEY || null,
+      publicKey: process.env.PAYSTACK_PUBLIC_KEY || null,
+      planSolo: process.env.PAYSTACK_PLAN_SOLO || null,
+      planTeam: process.env.PAYSTACK_PLAN_TEAM || null,
+    };
+    this.paystackConfigured = Object.values(this.paystack).every(Boolean);
   }
 
   _loadOrCreateSecret() {

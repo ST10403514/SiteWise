@@ -42,6 +42,10 @@ const SCHEMA = `
     tier                  TEXT NOT NULL DEFAULT 'free',
     jobsCreatedThisMonth  INTEGER NOT NULL DEFAULT 0,
     jobsCreatedMonthKey   TEXT,
+    paystackCustomerCode  TEXT,
+    subscriptionCode      TEXT,
+    subscriptionStatus    TEXT,
+    subscriptionRenewsAt  TEXT,
     createdAt             TEXT NOT NULL
   );
 
@@ -134,6 +138,14 @@ const MIGRATIONS = [
   // key as an empty month), not something that needs backfilling.
   { name: 'businesses.jobsCreatedThisMonth', sql: 'ALTER TABLE businesses ADD COLUMN jobsCreatedThisMonth INTEGER NOT NULL DEFAULT 0' },
   { name: 'businesses.jobsCreatedMonthKey', sql: 'ALTER TABLE businesses ADD COLUMN jobsCreatedMonthKey TEXT' },
+  // Paystack billing. subscriptionStatus/subscriptionRenewsAt are read
+  // through jobQuota.js's effectiveTier() rather than directly, so a
+  // cancelled-but-still-paid-through subscription keeps working until it
+  // actually lapses - see the comment on effectiveTier for why.
+  { name: 'businesses.paystackCustomerCode', sql: 'ALTER TABLE businesses ADD COLUMN paystackCustomerCode TEXT' },
+  { name: 'businesses.subscriptionCode', sql: 'ALTER TABLE businesses ADD COLUMN subscriptionCode TEXT' },
+  { name: 'businesses.subscriptionStatus', sql: 'ALTER TABLE businesses ADD COLUMN subscriptionStatus TEXT' },
+  { name: 'businesses.subscriptionRenewsAt', sql: 'ALTER TABLE businesses ADD COLUMN subscriptionRenewsAt TEXT' },
 ];
 
 async function initSchema(config) {

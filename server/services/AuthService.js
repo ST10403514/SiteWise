@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
-const { jobQuota } = require('../utils/jobQuota');
+const { jobQuota, effectiveTier } = require('../utils/jobQuota');
 
 const SALT_ROUNDS = 12;
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -35,8 +35,10 @@ class AuthService {
   async _withProfile(user) {
     const business = user.businessId ? await this._businesses.findById(user.businessId) : null;
     user.profile = business ? business.profile : null;
-    user.tier = business ? business.tier : 'free';
+    user.tier = business ? effectiveTier(business) : 'free';
     user.jobQuota = business ? jobQuota(business) : null;
+    user.subscriptionStatus = business ? business.subscriptionStatus : null;
+    user.subscriptionRenewsAt = business ? business.subscriptionRenewsAt : null;
     return user;
   }
 
@@ -132,6 +134,8 @@ class AuthService {
       isOwner: !!user.isOwner,
       tier: user.tier || 'free',
       jobQuota: user.jobQuota || null,
+      subscriptionStatus: user.subscriptionStatus || null,
+      subscriptionRenewsAt: user.subscriptionRenewsAt || null,
       profile: user.profile,
     };
   }

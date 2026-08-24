@@ -19,13 +19,21 @@ class BusinessRepository {
     return {
       id: row.id,
       profile: row.profile ? JSON.parse(row.profile) : null,
-      // 'free' | 'solo' | 'team' - 'free' and 'solo' currently behave
-      // identically (neither is paid-gated to anything yet); only 'team'
-      // unlocks anything (inviting others). No self-serve upgrade yet;
-      // flipped by hand until billing exists.
+      // 'free' | 'solo' | 'team'. Set by the Paystack webhook handler on a
+      // real subscription event - callers that need to account for a
+      // cancelled-but-still-paid-through subscription should read
+      // jobQuota.js's effectiveTier(business) instead of this field
+      // directly (see requireAuth for the standard example).
       tier: row.tier || 'free',
       jobsCreatedThisMonth: row.jobsCreatedThisMonth || 0,
       jobsCreatedMonthKey: row.jobsCreatedMonthKey || null,
+      paystackCustomerCode: row.paystackCustomerCode || null,
+      subscriptionCode: row.subscriptionCode || null,
+      // null (never subscribed) | 'active' | 'cancelled' (won't renew, paid
+      // through subscriptionRenewsAt) | 'past_due' (a renewal charge
+      // failed, Paystack is retrying).
+      subscriptionStatus: row.subscriptionStatus || null,
+      subscriptionRenewsAt: row.subscriptionRenewsAt || null,
       createdAt: row.createdAt,
     };
   }
@@ -67,10 +75,55 @@ class BusinessRepository {
     return this.findById(id);
   }
 
-  /** No self-serve path yet - called by hand (a script, or direct DB access) until billing exists. */
+  /** Manual override (support/comping an account) - the real, customer-facing
+   * path is the Paystack webhook handler's activateSubscription() below. */
   async updateTier(id, tier) {
     await this._db.execute({ sql: 'UPDATE businesses SET tier = :tier WHERE id = :id', args: { id, tier } });
     return this.findById(id);
+  }
+
+  /** @returns {Promise<object|null>} */
+  async findByPaystackCustomerCode(code) {
+    const rs = await this._db.execute({
+      sql: 'SELECT * FROM businesses WHERE paystackCustomerCode = ?',
+      args: [code],
+    });
+    return this._hydrate(rs.rows[0]);
+  }
+
+  /**
+   * charge.success for a subscription-linked transaction - the business
+   * just paid for (or renewed) a paid tier. Idempotent: re-running with the
+   * same values on a redelivered webhook is a harmless no-op.
+   * @param {{tier: string, paystackCustomerCode: string}} changes
+   */
+  async activateSubscription(id, { tier, paystackCustomerCode }) {
+    await this._db.execute({
+      sql: `UPDATE businesses
+            SET tier = :tier, paystackCustomerCode = :paystackCustomerCode, subscriptionStatus = 'active'
+            WHERE id = :id`,
+      args: { id, tier, paystackCustomerCode },
+    });
+  }
+
+  /** subscription.create - Paystack has finished setting up the recurring
+   * side once the first charge clears. @param {{subscriptionCode: string, subscriptionRenewsAt: string|null}} changes */
+  async recordSubscription(id, { subscriptionCode, subscriptionRenewsAt }) {
+    await this._db.execute({
+      sql: 'UPDATE businesses SET subscriptionCode = :subscriptionCode, subscriptionRenewsAt = :subscriptionRenewsAt WHERE id = :id',
+      args: { id, subscriptionCode, subscriptionRenewsAt },
+    });
+  }
+
+  /** subscription.disable / subscription.not_renew / invoice.payment_failed -
+   * a status change only. tier is deliberately untouched here - see
+   * jobQuota.js's effectiveTier() for how/when access actually lapses.
+   * @param {string} status */
+  async setSubscriptionStatus(id, status) {
+    await this._db.execute({
+      sql: 'UPDATE businesses SET subscriptionStatus = :status WHERE id = :id',
+      args: { id, status },
+    });
   }
 
   /**

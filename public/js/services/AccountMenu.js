@@ -33,6 +33,11 @@ class AccountMenu {
     icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   };
 
+  static BILLING_ITEM = {
+    href: '/billing', label: 'Billing', activePaths: ['/billing'],
+    icon: '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
+  };
+
   /** A page's own detail/editor view (e.g. /app for a single job, /project-detail
    * for a single project) counts as "within" its parent section for highlighting. */
   static _navLink(item) {
@@ -90,16 +95,23 @@ class AccountMenu {
     if (oldQuota) oldQuota.remove();
     const quota = user.jobQuota;
     if (quota && !quota.unlimited) {
-      const quotaEl = document.createElement('div');
+      // A link (not just a div) - the whole point of surfacing this is to
+      // give someone at/near the cap a one-click path to upgrade. Owner-
+      // only, same as the Billing nav item itself, since a non-owner would
+      // just 402/403 there anyway.
+      const quotaEl = document.createElement(user.isOwner ? 'a' : 'div');
+      if (user.isOwner) quotaEl.href = '/billing';
       quotaEl.className = quota.atCap ? 'acct-quota at-cap' : 'acct-quota';
       quotaEl.textContent = `${quota.count} of ${quota.cap} free job cards used this month`;
       head.appendChild(quotaEl);
     }
 
-    // Team management only makes sense for the account owner - the API
-    // enforces this independently either way, this just avoids offering a
-    // link that would 402/403 for anyone else.
-    const items = user.isOwner ? [...AccountMenu.NAV_ITEMS, AccountMenu.TEAM_ITEM] : AccountMenu.NAV_ITEMS;
+    // Team management and billing only make sense for the account owner -
+    // the API enforces both independently either way, this just avoids
+    // offering a link that would 402/403 for anyone else.
+    const items = user.isOwner
+      ? [...AccountMenu.NAV_ITEMS, AccountMenu.TEAM_ITEM, AccountMenu.BILLING_ITEM]
+      : AccountMenu.NAV_ITEMS;
 
     const sep = document.createElement('div');
     sep.className = 'acct-sep';

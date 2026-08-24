@@ -42,6 +42,10 @@ class ApiClient {
   inviteTeamMember(email)  { return this._request('POST', '/team/invite', { email }); }
   removeTeamMember(userId) { return this._request('DELETE', `/team/members/${userId}`); }
 
+  /** @param {'solo'|'team'} tier @returns {Promise<{authorizationUrl: string}>} */
+  startCheckout(tier)  { return this._request('POST', '/billing/checkout', { tier }); }
+  cancelSubscription() { return this._request('POST', '/billing/cancel'); }
+
   /**
    * Upload a compressed base64 image to R2 and get back its public URL.
    * @param {string} dataUrl

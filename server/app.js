@@ -17,20 +17,23 @@ const TeamService = require('./services/TeamService');
 const TokenService = require('./services/TokenService');
 const StorageService = require('./services/StorageService');
 const EmailService = require('./services/EmailService');
+const PaystackService = require('./services/PaystackService');
 const AuthController = require('./controllers/AuthController');
 const ProfileController = require('./controllers/ProfileController');
 const JobController = require('./controllers/JobController');
 const TeamController = require('./controllers/TeamController');
 const UploadController = require('./controllers/UploadController');
+const BillingController = require('./controllers/BillingController');
 const requireAuth = require('./middleware/requireAuth');
 const requireOwner = require('./middleware/requireOwner');
 const errorHandler = require('./middleware/errorHandler');
-const { inviteLimiter } = require('./middleware/rateLimiters');
+const { inviteLimiter, webhookLimiter } = require('./middleware/rateLimiters');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const jobRoutes = require('./routes/jobRoutes');
 const teamRoutes = require('./routes/teamRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const billingRoutes = require('./routes/billingRoutes');
 
 function createApp() {
   const userRepository = new UserRepository(config.db);
@@ -39,6 +42,7 @@ function createApp() {
   const jobRepository = new JobRepository(config.db);
   const tokenService = new TokenService(config.jwtSecret, config.tokenTtl);
   const storageService = new StorageService(config.r2);
+  const paystackService = new PaystackService(config.paystack);
   const emailService = new EmailService({
     apiKey: config.resend.apiKey,
     from: config.resend.from,
@@ -66,6 +70,7 @@ function createApp() {
   const jobController = new JobController({ jobRepository, businessRepository, storageService });
   const teamController = new TeamController({ teamService });
   const uploadController = new UploadController({ storageService });
+  const billingController = new BillingController({ businessRepository, paystackService, config });
 
   const app = express();
   app.disable('x-powered-by');
@@ -111,7 +116,13 @@ function createApp() {
   // content (images) automatically.
   app.use(compression());
 
-  app.use(express.json({ limit: '25mb' }));
+  // The verify callback captures the exact raw bytes onto req.rawBody -
+  // needed for Paystack webhook signature verification (server/controllers/
+  // BillingController.js), which must be checked against the byte-exact
+  // body Paystack sent, not a re-serialization of the parsed JSON. Applied
+  // globally since it's cheap (a buffer reference) and every other route
+  // ignores req.rawBody entirely.
+  app.use(express.json({ limit: '25mb', verify: (req, _res, buf) => { req.rawBody = buf; } }));
   app.use(cookieParser());
 
   // Unauthenticated, unrate-limited - for Render's own health checks and an
@@ -140,6 +151,10 @@ function createApp() {
         ? { status: 'pass', message: 'Resend configured' }
         : { status: 'warn', message: 'Resend not configured - password reset emails will not send' };
 
+      const billing = config.paystackConfigured
+        ? { status: 'pass', message: 'Paystack configured' }
+        : { status: 'warn', message: 'Paystack not configured - upgrades will not be available' };
+
       const mem = process.memoryUsage();
       const memory = {
         status: 'pass',
@@ -159,7 +174,7 @@ function createApp() {
         timestamp: new Date().toISOString(),
         uptimeSeconds: Math.round(process.uptime()),
         responseTimeMs: Date.now() - startedAt,
-        checks: { db, storage, email, memory },
+        checks: { db, storage, email, billing, memory },
       });
     } catch (err) {
       // Should be unreachable given the checks above are already
@@ -174,6 +189,7 @@ function createApp() {
   app.use('/api/jobs', jobRoutes({ jobController, authGuard }));
   app.use('/api/team', teamRoutes({ teamController, authGuard, requireOwner, inviteLimiter }));
   app.use('/api/uploads', uploadRoutes({ uploadController, authGuard }));
+  app.use('/api/billing', billingRoutes({ billingController, authGuard, requireOwner, webhookLimiter }));
 
   // The raw R2 endpoint domain is dynamic (built from env vars), so it can't be
   // hardcoded into a static <link rel="preconnect"> the way the Google Fonts one
@@ -186,10 +202,13 @@ function createApp() {
   // JS/CSS are cached for a short while so navigating between pages doesn't
   // re-validate ~10 files with the server every time. HTML pages are left
   // out so markup/route changes still show up immediately on next load.
+  // Production only - in dev this just meant every CSS/JS edit needed a
+  // hard refresh to actually show up, which cost real time chasing "why
+  // isn't my fix showing" during local testing more than once.
   app.use(express.static(config.publicDir, {
     extensions: ['html'],
     setHeaders(res, filePath) {
-      if (/\.(?:css|js)$/.test(filePath)) {
+      if (config.isProduction && /\.(?:css|js)$/.test(filePath)) {
         res.setHeader('Cache-Control', 'public, max-age=600');
       }
       if (r2Origin && PHOTO_PAGES.has(path.basename(filePath))) {

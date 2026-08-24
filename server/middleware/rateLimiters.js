@@ -92,7 +92,20 @@ const acceptInviteLimiter = rateLimit({
   handler: handler('Too many attempts. Please wait a while and try again.'),
 });
 
+// Public, unauthenticated endpoint by necessity (Paystack calls it, not a
+// logged-in browser) - signature verification inside the controller is the
+// real gate; this is just defense in depth against wasting compute on
+// abuse, generous enough that real Paystack traffic never gets near it.
+const webhookLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipInTest,
+  handler: handler('Too many requests.'),
+});
+
 module.exports = {
   loginLimiter, loginAccountLimiter, signupLimiter, forgotPasswordLimiter, resetPasswordLimiter,
-  inviteLimiter, acceptInviteLimiter,
+  inviteLimiter, acceptInviteLimiter, webhookLimiter,
 };

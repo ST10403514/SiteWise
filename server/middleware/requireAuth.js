@@ -1,7 +1,7 @@
 'use strict';
 
 const ApiError = require('../utils/ApiError');
-const { jobQuota } = require('../utils/jobQuota');
+const { jobQuota, effectiveTier } = require('../utils/jobQuota');
 
 /**
  * Factory for the authentication guard.
@@ -41,8 +41,10 @@ function requireAuth({ tokenService, userRepository, cookieName }) {
       // JobController.save) - computed here from the same fetched row
       // rather than queried again wherever it's needed.
       user.profile = business ? business.profile : null;
-      user.tier = business ? business.tier : 'free';
+      user.tier = business ? effectiveTier(business) : 'free';
       user.jobQuota = business ? jobQuota(business) : null;
+      user.subscriptionStatus = business ? business.subscriptionStatus : null;
+      user.subscriptionRenewsAt = business ? business.subscriptionRenewsAt : null;
       req.user = user;
       next();
     } catch (err) {
