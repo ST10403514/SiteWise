@@ -1,5 +1,6 @@
 'use strict';
 
+const Sentry = require('@sentry/node');
 const ApiError = require('../utils/ApiError');
 const logger = require('../utils/logger');
 const { SOLO_PRICE_CENTS, TEAM_PRICE_CENTS } = require('../utils/pricing');
@@ -126,8 +127,30 @@ class BillingController {
     const tier = data.metadata?.tier;
     const customerCode = data.customer?.customer_code;
     if (tier === 'solo' || tier === 'team') {
-      // The checkout-initiating charge (see #checkout above, which is the
-      // only place this metadata gets set).
+      // Upgrading (or re-subscribing) starts a brand new Paystack
+      // subscription - it does NOT touch whatever the business was
+      // already on. Confirmed for real: upgrading Solo -> Team left two
+      // fully independent subscriptions running, each billing on its own.
+      // The subscriptionCode still on the business row at this exact
+      // point is unambiguously the OLD one - the new subscription's own
+      // code doesn't exist yet, it only arrives later via a separate
+      // subscription.create event. If it's still active, disable it now
+      // so the business is never billed for two tiers at once. A failure
+      // here must not block activating what was actually paid for - it's
+      // logged loudly instead, since it needs a human to reconcile by hand.
+      if (business.subscriptionCode && business.subscriptionStatus === 'active') {
+        try {
+          const oldSub = await this._paystack.fetchSubscription(business.subscriptionCode);
+          await this._paystack.disableSubscription({
+            subscriptionCode: business.subscriptionCode,
+            emailToken: oldSub.email_token,
+          });
+        } catch (err) {
+          logger.error({ err, businessId: business.id, oldSubscriptionCode: business.subscriptionCode },
+            'Could not disable the previous subscription during an upgrade - business may now be billed for two tiers, needs manual reconciliation');
+          Sentry.captureException(err);
+        }
+      }
       await this._businesses.activateSubscription(business.id, {
         tier,
         paystackCustomerCode: customerCode || business.paystackCustomerCode,

@@ -114,6 +114,29 @@ test('charge.success with metadata activates the business onto the right tier', 
   assert.equal(business.paystackCustomerCode, 'CUS_test_activate');
 });
 
+test('upgrading tries to disable the previous subscription, but activation is never blocked if that fails', async () => {
+  // Confirmed for real against the live API: upgrading Solo -> Team left
+  // two fully independent subscriptions running, each billing separately,
+  // because starting a new checkout never touches whatever was already
+  // active. The fix disables the old one during charge.success - this
+  // test can't reach Paystack's real API (no real secret key here), so
+  // that disable attempt genuinely fails, which is exactly what proves
+  // the actually-important behavior: a reconciliation failure must never
+  // stop the customer getting what they just paid for.
+  const { businessId } = await signup();
+  await businessRepository.activateSubscription(businessId, { tier: 'solo', paystackCustomerCode: 'CUS_test_upgrade' });
+  await businessRepository.recordSubscription(businessId, { subscriptionCode: 'SUB_test_old_solo', subscriptionRenewsAt: '2026-09-20T00:00:00.000Z' });
+
+  const res = await sendWebhook('charge.success', {
+    metadata: { businessId, tier: 'team' },
+    customer: { customer_code: 'CUS_test_upgrade' },
+  });
+  assert.equal(res.status, 200);
+  const business = await businessRepository.findById(businessId);
+  assert.equal(business.tier, 'team', 'the paid-for upgrade must still apply even though disabling the old subscription failed');
+  assert.equal(business.subscriptionStatus, 'active');
+});
+
 test('redelivering the same charge.success event is a harmless no-op', async () => {
   const { businessId } = await signup();
   const data = { metadata: { businessId, tier: 'team' }, customer: { customer_code: 'CUS_test_redeliver' } };
