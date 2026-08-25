@@ -188,6 +188,20 @@
   .ptier .btn { width: 100%; justify-content: center; margin-top: auto; }
   .pricing-note { text-align: center; color: #c3cfe3; font-size: 13px; margin-top: 24px; }
 
+  /* ---------- LIVE DEMO ---------- */
+  .demo-sect { background: var(--wash, #f8fafc); }
+  .demo-form { max-width: 640px; margin: 0 auto; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: clamp(22px,4vw,34px); }
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; margin-bottom: 20px; }
+  .demo-grid .field { text-align: left; }
+  .demo-grid label { display: block; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; font-size: 12px; color: var(--navy); margin-bottom: 6px; }
+  .demo-grid input { width: 100%; font: inherit; font-size: 15px; color: var(--navy); border: 1.5px solid var(--line); border-radius: 8px; padding: 11px 13px; background: #fff; transition: border-color .12s, box-shadow .12s; }
+  .demo-grid input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-mist); }
+  .demo-form .btn { width: 100%; justify-content: center; }
+  .demo-note { margin-top: 16px; text-align: center; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .demo-error { display: none; margin-top: 14px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 8px; padding: 10px 14px; font-size: 13.5px; }
+  .demo-error.show { display: block; }
+  @media (max-width: 640px) { .demo-grid { grid-template-columns: 1fr; } }
+
   /* ---------- FAQ ---------- */
   .faq { max-width: 760px; margin: 0 auto; }
   .fitem { border-bottom: 1px solid var(--line); }
@@ -316,6 +330,36 @@
         <a class="btn btn-primary" href="/auth?mode=signup">Get Started &rarr;</a>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- LIVE DEMO: a real, downloadable quote, generated right here -->
+<section class="sect demo-sect" id="demo">
+  <div class="wrap">
+    <div class="shead mid reveal">
+      <span class="kick">Try it yourself</span>
+      <h2>See exactly what your clients receive</h2>
+      <p>Fill in a sample job below - download a real, fully-branded quote PDF, generated right here in your browser, so you can see exactly what SiteWise produces.</p>
+    </div>
+    <form class="demo-form reveal" id="demoForm" novalidate>
+      <div class="demo-grid">
+        <div class="field">
+          <label for="demoClientName">Client's name</label>
+          <input id="demoClientName" type="text" placeholder="e.g. Thabo Mokoena" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="demoDescription">What's the job?</label>
+          <input id="demoDescription" type="text" placeholder="e.g. Repaint exterior walls" autocomplete="off" />
+        </div>
+        <div class="field" style="grid-column: 1 / -1">
+          <label for="demoPrice">Price (R)</label>
+          <input id="demoPrice" type="number" min="0" step="1" placeholder="e.g. 4500" autocomplete="off" />
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit" id="demoBtn">Download the example quote (PDF) &rarr;</button>
+      <div class="demo-error" id="demoError"></div>
+      <p class="demo-note">This uses a sample company profile so you can see the full, finished PDF - nothing you type here is saved or sent anywhere, it all runs in your browser.</p>
+    </form>
   </div>
 </section>
 
@@ -458,6 +502,14 @@
     <div class="ft-bot"><span>&copy; SiteWise. Quote it. Manage it. Done.</span><span><a href="/terms.html#privacy">Privacy</a> &middot; <a href="/terms.html">Terms</a></span></div>
   </div>
 </footer>
+
+<!-- Live demo: reuses the same PDF-generation code the real app uses,
+     so the downloaded quote is identical to what a real customer gets. -->
+<script src="/js/config/IndustryPresets.js"></script>
+<script src="/js/services/Theme.js"></script>
+<script src="/js/models/Job.js"></script>
+<script src="/js/services/PdfService.js"></script>
+<script src="/js/pages/landingDemo.js"></script>
 
 <script>
   // trade ticker - the list is duplicated so the CSS animation (translateX
